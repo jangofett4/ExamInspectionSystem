@@ -88,9 +88,9 @@ namespace ExamEvaluationSystem
                 // Debug
                 else
                 {
-                    var panel = new DebugPanel();
+                    /*var panel = new DebugPanel();
                     panel.Show();
-                    Close();
+                    Close();*/
                 }
 
                 reader.Close();
