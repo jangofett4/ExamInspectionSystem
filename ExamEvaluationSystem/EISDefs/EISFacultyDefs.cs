@@ -11,8 +11,8 @@ namespace ExamEvaluationSystem
     public class EISFaculty : EISDataPoint<EISFaculty>
     {
         public int ID { get; private set; }
-        public string Name;
-        public List<EISDepartment> Departments;
+        public string Name { get; set; }
+        public List<EISDepartment> Departments { get; set; }
 
         public EISFaculty(int id, string name)
         {
@@ -74,9 +74,9 @@ namespace ExamEvaluationSystem
     public class EISDepartment : EISDataPoint<EISDepartment>
     {
         public int ID { get; private set; }
-        public string Name;
-        public EISFaculty Faculty;
-        public List<EISEarning> Earnings;
+        public string Name { get; set; }
+        public EISFaculty Faculty { get; set; }
+        public List<EISEarning> Earnings { get; set; }
 
         public EISDepartment(int id, string name, EISFaculty faculty, List<EISEarning> earnings)
         {

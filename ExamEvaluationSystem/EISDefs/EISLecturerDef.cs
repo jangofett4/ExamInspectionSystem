@@ -10,9 +10,9 @@ namespace ExamEvaluationSystem
     public class EISLecturer : EISDataPoint<EISLecturer>
     {
         public int ID { get; private set; }
-        public string Name;
-        public string Surname;
-        public EISFaculty Faculty;
+        public string Name { get; set; }
+        public string Surname { get; set; }
+        public EISFaculty Faculty { get; set; }
 
         public EISLecturer(int id, string name, string surname, EISFaculty faculty)
         {

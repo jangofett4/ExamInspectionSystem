@@ -10,7 +10,7 @@ namespace ExamEvaluationSystem
     public class EISPeriod : EISDataPoint<EISPeriod>
     {
         public int ID { get; private set; }
-        public string Name;
+        public string Name { get; set; }
 
         public EISPeriod(int id, string name)
         {

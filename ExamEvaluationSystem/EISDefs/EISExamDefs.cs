@@ -10,8 +10,8 @@ namespace ExamEvaluationSystem
     public class EISExamType : EISDataPoint<EISExamType>
     {
         public int ID { get; private set; }
-        public string Name;
-        public bool Multiple;
+        public string Name { get; set; }
+        public bool Multiple { get; set; }
 
         public EISExamType(int id)
         {

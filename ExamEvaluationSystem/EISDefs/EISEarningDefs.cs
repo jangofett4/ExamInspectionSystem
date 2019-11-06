@@ -10,8 +10,8 @@ namespace ExamEvaluationSystem
     public class EISEarning : EISDataPoint<EISEarning>
     {
         public int ID { get; private set; }
-        public string Name;
-        public EISEarningType EarningType;
+        public string Name { get; set; }
+        public EISEarningType EarningType { get; set; }
 
         public EISEarning(int id, string name, EISEarningType type)
         {
