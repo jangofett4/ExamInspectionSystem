@@ -7,7 +7,57 @@
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         mc:Ignorable="d"
-        Title="Yönetici Paneli" Height="450" Width="800" WindowState="Maximized">
+        Title="Yönetici Paneli" Height="534.375" Width="2077.742" WindowState="Maximized">
     <Grid>
+        <TabControl>
+            <TabItem Header="Fakülteler">
+                <Grid Background="#FFE5E5E5">
+                    <DataGrid x:Name="dgFaculty" HorizontalAlignment="Left" Height="438" Margin="10,10,0,0" VerticalAlignment="Top" Width="329"/>
+                    <TextBox x:Name="txtFacultyID" HorizontalAlignment="Left" Height="13" Margin="376,55,0,0" TextWrapping="Wrap" Text="ID" VerticalAlignment="Top" Width="278"/>
+                    <TextBox x:Name="txtFacultyName" HorizontalAlignment="Left" Height="23" Margin="376,141,0,0" TextWrapping="Wrap" Text="Name" VerticalAlignment="Top" Width="278"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Bölümler" HorizontalAlignment="Left" Width="123" Margin="0,0,-111,0">
+                <Grid Background="#FFE5E5E5">
+                    <DataGrid x:Name="dgDeparments" HorizontalAlignment="Left" Height="438" Margin="10,10,0,0" VerticalAlignment="Top" Width="266"/>
+                    <TextBox x:Name="txtDepartmentID" HorizontalAlignment="Left" Height="23" Margin="300,78,0,0" TextWrapping="Wrap" Text="DepartmentID" VerticalAlignment="Top" Width="319"/>
+                    <TextBox x:Name="txtDepartmentName" HorizontalAlignment="Left" Height="23" Margin="300,120,0,0" TextWrapping="Wrap" Text="DepartmentName" VerticalAlignment="Top" Width="319"/>
+                    <TextBox HorizontalAlignment="Left" Height="23" Margin="300,31,0,0" TextWrapping="Wrap" Text="Facultys" VerticalAlignment="Top" Width="319"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Dönemler" HorizontalAlignment="Left" Height="39" VerticalAlignment="Top" Width="128">
+                <Grid Background="#FFE5E5E5">
+                    <DataGrid x:Name="dgPeriods" HorizontalAlignment="Left" Height="438" Margin="10,10,0,0" VerticalAlignment="Top" Width="238"/>
+                    <TextBox x:Name="txtPeriodsID" HorizontalAlignment="Left" Height="23" Margin="277,33,0,0" TextWrapping="Wrap" Text="PeriodsID" VerticalAlignment="Top" Width="319"/>
+                    <TextBox x:Name="txtPeriodsName" HorizontalAlignment="Left" Height="23" Margin="277,90,0,0" TextWrapping="Wrap" Text="PeriodsName" VerticalAlignment="Top" Width="319"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Öğretim Görevlileri" HorizontalAlignment="Left" Height="39" VerticalAlignment="Top" Width="239" Margin="0,0,-134,0">
+                <Grid Background="#FFE5E5E5">
+                    <DataGrid x:Name="dgLecturers" HorizontalAlignment="Left" Height="438" Margin="10,10,0,0" VerticalAlignment="Top" Width="266"/>
+                    <TextBox x:Name="txtLecturerID" HorizontalAlignment="Left" Height="23" Margin="342,44,0,0" TextWrapping="Wrap" Text="LecturerID(SicilNo)" VerticalAlignment="Top" Width="315"/>
+                    <TextBox x:Name="txtLecturerName" HorizontalAlignment="Left" Height="23" Margin="342,92,0,0" TextWrapping="Wrap" Text="LecturerName" VerticalAlignment="Top" Width="315"/>
+                    <TextBox x:Name="txtLecturerSurname" HorizontalAlignment="Left" Height="23" Margin="342,143,0,0" TextWrapping="Wrap" Text="LecturerSurname" VerticalAlignment="Top" Width="315"/>
+                    <TextBox x:Name="txtLecturerName_Copy" HorizontalAlignment="Left" Height="23" Margin="342,193,0,0" TextWrapping="Wrap" Text="FacultyID" VerticalAlignment="Top" Width="315"/>
+                    <TextBox x:Name="txtUserLoginInfoUsername" HorizontalAlignment="Left" Height="23" Margin="342,243,0,0" TextWrapping="Wrap" Text="LoginInfoUsername" VerticalAlignment="Top" Width="315"/>
+                    <PasswordBox x:Name="pbUserLoginInfoPassword" HorizontalAlignment="Left" Margin="342,301,0,0" VerticalAlignment="Top" Width="315"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Kazanımlar" HorizontalAlignment="Left" Height="39" VerticalAlignment="Top" Width="144" Margin="0,0,-39,0">
+                <Grid Background="#FFE5E5E5">
+                    <DataGrid x:Name="dgEarnings" HorizontalAlignment="Left" Height="438" Margin="10,10,0,0" VerticalAlignment="Top" Width="229"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Sınavlar" HorizontalAlignment="Left" Height="39" VerticalAlignment="Top" Width="105">
+                <Grid Background="#FFE5E5E5"/>
+            </TabItem>
+            <TabItem Header="Dersler" HorizontalAlignment="Left" Height="39" VerticalAlignment="Top" Width="96">
+                <Grid Background="#FFE5E5E5"/>
+            </TabItem>
+            <TabItem Header="Öğrenciler" HorizontalAlignment="Left" Height="39" VerticalAlignment="Top" Width="142">
+                <Grid Background="#FFE5E5E5"/>
+            </TabItem>
+        </TabControl>
+
     </Grid>
 </Controls:MetroWindow>
