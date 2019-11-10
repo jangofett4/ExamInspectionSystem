@@ -9,7 +9,7 @@
         mc:Ignorable="d"
         Title="AdminPanel" Height="450" Width="800">
     <Window.Resources>
-        <DataTemplate x:Key="UserHamburger">
+        <DataTemplate x:Key="AdminHamburger">
             <Grid Height="48">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="48" />
@@ -26,8 +26,8 @@
     </Window.Resources>
     <Grid>
         <Controls:HamburgerMenu 
-            ItemTemplate="{StaticResource UserHamburger}"
-            OptionsItemTemplate="{StaticResource UserHamburger}">
+            ItemTemplate="{StaticResource AdminHamburger}"
+            OptionsItemTemplate="{StaticResource AdminHamburger}">
             <Controls:HamburgerMenu.ContentTemplate>
                 <DataTemplate DataType="{x:Type Controls:HamburgerMenuItem}">
                     <Grid x:Name="TheContentGrid">
