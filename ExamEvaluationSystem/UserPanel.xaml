@@ -1,0 +1,74 @@
+﻿<Window x:Class="ExamEvaluationSystem.UserPanel"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ExamEvaluationSystem"
+        xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        mc:Ignorable="d"
+        Title="UserPanel" Height="450" Width="800">
+    <Window.Resources>
+        <DataTemplate x:Key="UserHamburger">
+            <Grid Height="48">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="48" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <iconPacks:PackIconFontAwesome Kind="{Binding Icon.Kind}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <TextBlock Grid.Column="1"
+                    VerticalAlignment="Center"
+                    FontSize="16"
+                    Foreground="White"
+                    Text="{Binding Label}" />
+            </Grid>
+        </DataTemplate>
+    </Window.Resources>
+    <Grid>
+        <Controls:HamburgerMenu 
+            ItemTemplate="{StaticResource UserHamburger}"
+            OptionsItemTemplate="{StaticResource UserHamburger}">
+            <Controls:HamburgerMenu.ContentTemplate>
+                <DataTemplate DataType="{x:Type Controls:HamburgerMenuItem}">
+                    <Grid x:Name="TheContentGrid">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="48" />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <ContentControl x:Name="TheContent"
+                                        Grid.Row="1"
+                                        Focusable="False"
+                                        Foreground="{DynamicResource BlackBrush}"
+                                        Content="{Binding Tag}"/>
+                    </Grid>
+                </DataTemplate>
+            </Controls:HamburgerMenu.ContentTemplate>
+            <Controls:HamburgerMenu.ItemsSource>
+                <Controls:HamburgerMenuItemCollection>
+                    <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=GlassesSolid}" Label="Private">
+                        <!--<Controls:HamburgerMenuIconItem.Tag>
+                            Yes
+                        </Controls:HamburgerMenuIconItem.Tag>-->
+                    </Controls:HamburgerMenuIconItem>
+
+                    <Controls:HamburgerMenuIconItem  Icon="{iconPacks:FontAwesome Kind=CogSolid}" Label="Settings">
+                        <!--<Controls:HamburgerMenuIconItem.Tag>
+                            Yes
+                        </Controls:HamburgerMenuIconItem.Tag>-->
+                    </Controls:HamburgerMenuIconItem>
+                </Controls:HamburgerMenuItemCollection>
+            </Controls:HamburgerMenu.ItemsSource>
+
+            <!--  Options  -->
+            <Controls:HamburgerMenu.OptionsItemsSource>
+                <Controls:HamburgerMenuItemCollection>
+                    <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=BookSolid}" Label="About">
+                        <!--<Controls:HamburgerMenuIconItem.Tag>
+                            Yes
+                        </Controls:HamburgerMenuIconItem.Tag>-->
+                    </Controls:HamburgerMenuIconItem>
+                </Controls:HamburgerMenuItemCollection>
+            </Controls:HamburgerMenu.OptionsItemsSource>
+        </Controls:HamburgerMenu>
+    </Grid>
+</Window>
