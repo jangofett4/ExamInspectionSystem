@@ -7,7 +7,7 @@
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         mc:Ignorable="d"
-        Title="AdminPanel" Height="450" Width="800">
+        Title="AdminPanel" Height="450" Width="800" WindowState="Maximized" WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <DataTemplate x:Key="AdminHamburger">
             <Grid Height="48">
@@ -28,33 +28,39 @@
         <Controls:HamburgerMenu 
             ItemTemplate="{StaticResource AdminHamburger}"
             OptionsItemTemplate="{StaticResource AdminHamburger}">
-            <Controls:HamburgerMenu.ContentTemplate>
-                <DataTemplate DataType="{x:Type Controls:HamburgerMenuItem}">
-                    <Grid x:Name="TheContentGrid">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="48" />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-                        <ContentControl x:Name="TheContent"
-                                        Grid.Row="1"
-                                        Focusable="False"
-                                        Foreground="{DynamicResource BlackBrush}"
-                                        Content="{Binding Tag}"/>
-                    </Grid>
-                </DataTemplate>
-            </Controls:HamburgerMenu.ContentTemplate>
+            <Controls:HamburgerMenu.Content>
+                <Frame x:Name="AdminHamburgerMenuFrame"/>
+            </Controls:HamburgerMenu.Content>
             <Controls:HamburgerMenu.ItemsSource>
                 <Controls:HamburgerMenuItemCollection>
-                    <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=GlassesSolid}" Label="Private">
+                    <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=BuildingSolid}" Label="Fakülteler">
                         <!--<Controls:HamburgerMenuIconItem.Tag>
                             Yes
                         </Controls:HamburgerMenuIconItem.Tag>-->
                     </Controls:HamburgerMenuIconItem>
 
-                    <Controls:HamburgerMenuIconItem  Icon="{iconPacks:FontAwesome Kind=CogSolid}" Label="Settings">
+                    <Controls:HamburgerMenuIconItem  Icon="{iconPacks:FontAwesome Kind=SchoolSolid}" Label="Bölümler">
                         <!--<Controls:HamburgerMenuIconItem.Tag>
                             Yes
                         </Controls:HamburgerMenuIconItem.Tag>-->
+                    </Controls:HamburgerMenuIconItem>
+                    <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=CalendarSolid}" Label="Dönemler" Command="">
+
+                    </Controls:HamburgerMenuIconItem>
+                    <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=UserTieSolid}" Label="Öğretim Görevlileri">
+                        
+                    </Controls:HamburgerMenuIconItem>
+                    <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=BookSolid}" Label="Dersler">
+
+                    </Controls:HamburgerMenuIconItem>
+                    <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=BookOpenSolid}" Label="Sınavlar">
+
+                    </Controls:HamburgerMenuIconItem>
+                    <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=StarSolid}" Label="Kazanımlar">
+
+                    </Controls:HamburgerMenuIconItem>
+                    <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=UsersSolid}" Label="Öğrenciler">
+
                     </Controls:HamburgerMenuIconItem>
                 </Controls:HamburgerMenuItemCollection>
             </Controls:HamburgerMenu.ItemsSource>
@@ -62,11 +68,12 @@
             <!--  Options  -->
             <Controls:HamburgerMenu.OptionsItemsSource>
                 <Controls:HamburgerMenuItemCollection>
-                    <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=BookSolid}" Label="About">
+                    <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=UserSolid}" Label="MASTER ADMİN">
                         <!--<Controls:HamburgerMenuIconItem.Tag>
                             Yes
                         </Controls:HamburgerMenuIconItem.Tag>-->
                     </Controls:HamburgerMenuIconItem>
+                    
                 </Controls:HamburgerMenuItemCollection>
             </Controls:HamburgerMenu.OptionsItemsSource>
         </Controls:HamburgerMenu>

@@ -10,19 +10,19 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace ExamEvaluationSystem
 {
     /// <summary>
-    /// AdminPanel.xaml etkileşim mantığı
+    /// ViewAdminFaculty.xaml etkileşim mantığı
     /// </summary>
-    public partial class AdminPanel
+    public partial class ViewAdminFaculty : Page
     {
-        public AdminPanel()
+        public ViewAdminFaculty()
         {
             InitializeComponent();
-            AdminHamburgerMenuFrame.Navigate(new Uri("ViewAdminFaculty.xaml", UriKind.RelativeOrAbsolute));
         }
     }
 }
