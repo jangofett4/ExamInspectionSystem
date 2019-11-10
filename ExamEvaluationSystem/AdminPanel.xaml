@@ -7,14 +7,38 @@
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         mc:Ignorable="d"
-        Title="Yönetici Paneli" Height="534.375" Width="2077.742" WindowState="Maximized">
+        Title="Yönetici Paneli" Height="600" Width="1024" WindowState="Maximized">
     <Grid>
         <TabControl>
             <TabItem Header="Fakülteler">
                 <Grid Background="#FFE5E5E5">
-                    <DataGrid x:Name="dgFaculty" HorizontalAlignment="Left" Height="438" Margin="10,10,0,0" VerticalAlignment="Top" Width="329"/>
-                    <TextBox x:Name="txtFacultyID" HorizontalAlignment="Left" Height="13" Margin="376,55,0,0" TextWrapping="Wrap" Text="ID" VerticalAlignment="Top" Width="278"/>
-                    <TextBox x:Name="txtFacultyName" HorizontalAlignment="Left" Height="23" Margin="376,141,0,0" TextWrapping="Wrap" Text="Name" VerticalAlignment="Top" Width="278"/>
+                    <Grid Background="ForestGreen">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="250"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid Grid.Column="0" Background="White">
+                            
+                            <Image Height="125" VerticalAlignment="Top" Source="Assets/koulogo.png"/>
+                            <StackPanel Margin="0,125,0,10" >
+                                <TextBlock Text="GirenKisiAdi" Foreground="ForestGreen" FontSize="24" Margin="50 5" VerticalAlignment="Top"/>
+                                <Button Margin="10 5" FontSize="20" Foreground="ForestGreen" VerticalAlignment="Top" FontWeight="Medium" >Fakülteler</Button>
+                                <Button Margin="10 5" FontSize="20" Foreground="ForestGreen" VerticalAlignment="Top" FontWeight="Medium" >Bölümler</Button>
+                                <Button Margin="10 5" FontSize="20" Foreground="ForestGreen" VerticalAlignment="Top" FontWeight="Medium" >Dönemler</Button>
+                                <Button Margin="10 5" FontSize="20" Foreground="ForestGreen" VerticalAlignment="Top" FontWeight="Medium" >Öğretim Görevlileri</Button>
+                                <Button Margin="10 5" FontSize="20" Foreground="ForestGreen" VerticalAlignment="Top" FontWeight="Medium" >Öğrenciler</Button>
+                                <Button Margin="10 5" FontSize="20" Foreground="ForestGreen" VerticalAlignment="Top" FontWeight="Medium" >Dersler</Button>
+                                <Button Margin="10 5" FontSize="20" Foreground="ForestGreen" VerticalAlignment="Top" FontWeight="Medium" >Sınavlar</Button>
+                                <Button Margin="10 5" FontSize="20" Foreground="ForestGreen" VerticalAlignment="Top" FontWeight="Medium" >Kazanımlar</Button>
+                            </StackPanel>
+                        </Grid>
+
+
+
+                    </Grid>
+                    <DataGrid x:Name="dgFaculty" HorizontalAlignment="Left" Height="438" Margin="271,10,0,0" VerticalAlignment="Top" Width="329"/>
+                    <TextBox x:Name="txtFacultyID" HorizontalAlignment="Left" Height="13" Margin="627,37,0,0" TextWrapping="Wrap" Text="ID" VerticalAlignment="Top" Width="278"/>
+                    <TextBox x:Name="txtFacultyName" HorizontalAlignment="Left" Height="23" Margin="627,123,0,0" TextWrapping="Wrap" Text="Name" VerticalAlignment="Top" Width="278"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Bölümler" HorizontalAlignment="Left" Width="123" Margin="0,0,-111,0">
