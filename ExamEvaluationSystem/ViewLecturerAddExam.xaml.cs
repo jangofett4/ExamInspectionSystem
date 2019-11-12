@@ -10,24 +10,19 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace ExamEvaluationSystem
 {
     /// <summary>
-    /// UserPanel.xaml etkileşim mantığı
+    /// ViewLecturerAddExam.xaml etkileşim mantığı
     /// </summary>
-    public partial class UserPanel : Window
+    public partial class ViewLecturerAddExam : Page
     {
-        public EISLecturer Lecturer { get; set; }
-
-        public UserPanel(EISLecturer lec)
+        public ViewLecturerAddExam()
         {
             InitializeComponent();
-            Lecturer = lec;
-            Resources.Add("CurrentLecturerID", lec.ID.ToString());
-            Resources.Add("CurrentLecturerName", lec.Name + " " + lec.Surname);
-            UserHamburgerMenuFrame.Navigate(new Uri("ViewLecturerAddExam.xaml",UriKind.RelativeOrAbsolute));
         }
     }
 }

@@ -84,6 +84,9 @@
     <Compile Include="UserPanel.xaml.cs">
       <DependentUpon>UserPanel.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ViewLecturerAddExam.xaml.cs">
+      <DependentUpon>ViewLecturerAddExam.xaml</DependentUpon>
+    </Compile>
     <Page Include="AdminPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -114,6 +117,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="UserPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ViewLecturerAddExam.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

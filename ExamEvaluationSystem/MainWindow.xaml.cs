@@ -77,7 +77,7 @@ namespace ExamEvaluationSystem
                 {
                     var lec = new EISLecturer(uid);
                     lec = lec.SelectT(EISSystem.Connection);
-                    var panel = new UserPanel();
+                    var panel = new UserPanel(lec);
                     panel.Show();
                     Close();
                 }

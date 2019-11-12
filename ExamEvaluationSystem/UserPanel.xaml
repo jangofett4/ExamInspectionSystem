@@ -23,50 +23,50 @@
                     Text="{Binding Label}" />
             </Grid>
         </DataTemplate>
+        <DataTemplate x:Key="UserHamburgerOptions">
+            <Grid Height="32">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="48" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <iconPacks:PackIconFontAwesome Grid.RowSpan="3" Kind="{Binding Icon.Kind}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <TextBlock Grid.Column="1" x:Name="txtLecturerName"
+                    VerticalAlignment="Center"
+                    FontSize="13"
+                    Foreground="White" Text="{DynamicResource CurrentLecturerName}"/>
+                <TextBlock Grid.Row="1" Grid.Column="1" x:Name="txtLecturerID" Text="{DynamicResource CurrentLecturerID}"
+                    VerticalAlignment="Center"
+                    FontSize="10"
+                    Foreground="White"/>
+            </Grid>
+        </DataTemplate>
     </Window.Resources>
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0*"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
         <Controls:HamburgerMenu 
-            ItemTemplate="{StaticResource UserHamburger}"
-            OptionsItemTemplate="{StaticResource UserHamburger}">
-            <Controls:HamburgerMenu.ContentTemplate>
-                <DataTemplate DataType="{x:Type Controls:HamburgerMenuItem}">
-                    <Grid x:Name="TheContentGrid">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="48" />
-                            <RowDefinition />
-                        </Grid.RowDefinitions>
-                        <ContentControl x:Name="TheContent"
-                                        Grid.Row="1"
-                                        Focusable="False"
-                                        Foreground="{DynamicResource BlackBrush}"
-                                        Content="{Binding Tag}"/>
-                    </Grid>
-                </DataTemplate>
-            </Controls:HamburgerMenu.ContentTemplate>
+            ItemTemplate="{StaticResource UserHamburger}" x:Name="UserHamburgerMenu"
+            OptionsItemTemplate="{StaticResource UserHamburgerOptions}" Grid.RowSpan="2" IsPaneOpen="True">
+            <Controls:HamburgerMenu.Content>
+                <Frame x:Name="UserHamburgerMenuFrame"/>
+            </Controls:HamburgerMenu.Content>
             <Controls:HamburgerMenu.ItemsSource>
                 <Controls:HamburgerMenuItemCollection>
-                    <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=GlassesSolid}" Label="Private">
-                        <!--<Controls:HamburgerMenuIconItem.Tag>
-                            Yes
-                        </Controls:HamburgerMenuIconItem.Tag>-->
-                    </Controls:HamburgerMenuIconItem>
-
-                    <Controls:HamburgerMenuIconItem  Icon="{iconPacks:FontAwesome Kind=CogSolid}" Label="Settings">
-                        <!--<Controls:HamburgerMenuIconItem.Tag>
-                            Yes
-                        </Controls:HamburgerMenuIconItem.Tag>-->
-                    </Controls:HamburgerMenuIconItem>
+                    <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=GlassesSolid}" Label="Private"></Controls:HamburgerMenuIconItem>
+                    <Controls:HamburgerMenuIconItem  Icon="{iconPacks:FontAwesome Kind=CogSolid}" Label="Settings"></Controls:HamburgerMenuIconItem>
                 </Controls:HamburgerMenuItemCollection>
             </Controls:HamburgerMenu.ItemsSource>
 
             <!--  Options  -->
             <Controls:HamburgerMenu.OptionsItemsSource>
                 <Controls:HamburgerMenuItemCollection>
-                    <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=BookSolid}" Label="About">
-                        <!--<Controls:HamburgerMenuIconItem.Tag>
-                            Yes
-                        </Controls:HamburgerMenuIconItem.Tag>-->
-                    </Controls:HamburgerMenuIconItem>
+                    <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=InfoCircleSolid}" IsEnabled="False"></Controls:HamburgerMenuIconItem>
                 </Controls:HamburgerMenuItemCollection>
             </Controls:HamburgerMenu.OptionsItemsSource>
         </Controls:HamburgerMenu>

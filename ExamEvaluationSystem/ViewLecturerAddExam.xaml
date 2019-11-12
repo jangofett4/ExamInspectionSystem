@@ -1,0 +1,29 @@
+﻿<Page x:Class="ExamEvaluationSystem.ViewLecturerAddExam"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+      xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+      xmlns:local="clr-namespace:ExamEvaluationSystem"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="ViewLecturerAddExam">
+    <Grid>
+        <DataGrid HorizontalAlignment="Left" Height="430" Margin="10,10,0,0" VerticalAlignment="Top" Width="272">
+            <DataGrid.Columns>
+                <DataGridTextColumn Width="100" Header="Yarrak"/>
+            </DataGrid.Columns>
+        </DataGrid>
+        <DataGrid Margin="10,10,119,10">
+            <DataGrid.Columns>
+                <DataGridTextColumn Width="200" Header="Ders"/>
+                <DataGridTextColumn Width="150" Header="Sınav Türü"/>
+                <DataGridTextColumn Width="150" Header="Dönem"/>
+            </DataGrid.Columns>
+        </DataGrid>
+        <Controls:Tile Margin="0,10,10,0" Height="100" Width="100" Content="{iconPacks:FontAwesome Kind=PlusCircleSolid, Height=50, Width=30}" HorizontalAlignment="Right" VerticalAlignment="Top">
+        </Controls:Tile>
+        <Controls:Tile Margin="0,115,10,0" Height="100" Width="100" Content="{iconPacks:FontAwesome Kind=MinusCircleSolid, Height=50, Width=30}" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+    </Grid>
+</Page>
