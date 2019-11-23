@@ -84,11 +84,32 @@
     <Compile Include="UserPanel.xaml.cs">
       <DependentUpon>UserPanel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewAdminFaculty.xaml.cs">
+    <Compile Include="AdminViews\ViewAdminDepartment.xaml.cs">
+      <DependentUpon>ViewAdminDepartment.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="AdminViews\ViewAdminFaculty.xaml.cs">
       <DependentUpon>ViewAdminFaculty.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="AdminViews\ViewAdminLecturers.xaml.cs">
+      <DependentUpon>ViewAdminLecturers.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="AdminViews\ViewAdminLectures.xaml.cs">
+      <DependentUpon>ViewAdminLectures.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="AdminViews\ViewAdminPeriods.xaml.cs">
+      <DependentUpon>ViewAdminPeriods.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="AdminViews\ViewAdminEarnings.xaml.cs">
+      <DependentUpon>ViewAdminEarnings.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="AdminViews\ViewAdminExams.xaml.cs">
+      <DependentUpon>ViewAdminExams.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewLecturerAddExam.xaml.cs">
       <DependentUpon>ViewLecturerAddExam.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="AdminViews\ViewAdminStudents.xaml.cs">
+      <DependentUpon>ViewAdminStudents.xaml</DependentUpon>
     </Compile>
     <Page Include="AdminPanel.xaml">
       <SubType>Designer</SubType>
@@ -123,11 +144,39 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="AdminViews\ViewAdminDepartment.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AdminViews\ViewAdminLecturers.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AdminViews\ViewAdminLectures.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AdminViews\ViewAdminPeriods.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AdminViews\ViewAdminEarnings.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AdminViews\ViewAdminExams.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ViewLecturerAddExam.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ViewAdminFaculty.xaml">
+    <Page Include="AdminViews\ViewAdminFaculty.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AdminViews\ViewAdminStudents.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
