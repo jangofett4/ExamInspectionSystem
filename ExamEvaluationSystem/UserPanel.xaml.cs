@@ -27,6 +27,13 @@ namespace ExamEvaluationSystem
         public UserPanel(EISLecturer lec)
         {
             InitializeComponent();
+
+            DataGridBuilder<EISLecture> builder = new DataGridBuilder<EISLecture>(EISSystem.Lectures, "ID", ("Name", "Ders Adı"), ("Credit", "Kredi"));
+            var s = new PropertyDataSelector("Title");
+            builder.BuildColumns(s.dgSelector);
+            builder.BuildData(s.dgSelector);
+            s.ShowDialog();
+
             Lecturer = lec;
             Resources.Add("CurrentLecturerID", lec.ID.ToString());
             Resources.Add("CurrentLecturerName", lec.Name + " " + lec.Surname);
