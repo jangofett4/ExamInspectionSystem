@@ -17,9 +17,12 @@ namespace ExamEvaluationSystem
     /// <summary>
     /// UserPanel.xaml etkileşim mantığı
     /// </summary>
-    public partial class UserPanel : Window
+    public partial class UserPanel
     {
         public EISLecturer Lecturer { get; set; }
+
+        // Views
+        public ViewLecturerAddExam ExamView;
 
         public UserPanel(EISLecturer lec)
         {
@@ -27,7 +30,20 @@ namespace ExamEvaluationSystem
             Lecturer = lec;
             Resources.Add("CurrentLecturerID", lec.ID.ToString());
             Resources.Add("CurrentLecturerName", lec.Name + " " + lec.Surname);
-            UserHamburgerMenuFrame.Navigate(new Uri("ViewLecturerAddExam.xaml",UriKind.RelativeOrAbsolute));
+            // UserHamburgerMenuFrame.Navigate(new Uri("ViewLecturerAddExam.xaml", UriKind.RelativeOrAbsolute));
+
+            /* Initialize views */
+            ExamView = new ViewLecturerAddExam();
+            /* End of view initialization */
+            
+            
+            UserHamburgerMenuFrame.Content = ExamView; // Initial view
+        }
+
+        private void HamburgerItemClick(object sender, MahApps.Metro.Controls.ItemClickEventArgs e)
+        {
+            var tag = ((MahApps.Metro.Controls.HamburgerMenuItem)e.ClickedItem).Tag.ToString();
+
         }
     }
 }

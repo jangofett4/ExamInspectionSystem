@@ -87,7 +87,7 @@
     <Compile Include="ViewAdminFaculty.xaml.cs">
       <DependentUpon>ViewAdminFaculty.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewLecturerAddExam.xaml.cs">
+    <Compile Include="LecturerViews\ViewLecturerAddExam.xaml.cs">
       <DependentUpon>ViewLecturerAddExam.xaml</DependentUpon>
     </Compile>
     <Page Include="AdminPanel.xaml">
@@ -123,7 +123,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="ViewLecturerAddExam.xaml">
+    <Page Include="LecturerViews\ViewLecturerAddExam.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

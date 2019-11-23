@@ -1,4 +1,4 @@
-﻿<Window x:Class="ExamEvaluationSystem.UserPanel"
+﻿<Controls:MetroWindow x:Class="ExamEvaluationSystem.UserPanel"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -52,14 +52,15 @@
         </Grid.RowDefinitions>
         <Controls:HamburgerMenu 
             ItemTemplate="{StaticResource UserHamburger}" x:Name="UserHamburgerMenu"
-            OptionsItemTemplate="{StaticResource UserHamburgerOptions}" Grid.RowSpan="2" IsPaneOpen="True">
+            OptionsItemTemplate="{StaticResource UserHamburgerOptions}" Grid.RowSpan="2" IsPaneOpen="True"
+            ItemClick="HamburgerItemClick">
             <Controls:HamburgerMenu.Content>
-                <Frame x:Name="UserHamburgerMenuFrame"/>
+                <Frame x:Name="UserHamburgerMenuFrame" NavigationUIVisibility="Hidden"/>
             </Controls:HamburgerMenu.Content>
             <Controls:HamburgerMenu.ItemsSource>
                 <Controls:HamburgerMenuItemCollection>
-                    <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=GlassesSolid}" Label="Private"></Controls:HamburgerMenuIconItem>
-                    <Controls:HamburgerMenuIconItem  Icon="{iconPacks:FontAwesome Kind=CogSolid}" Label="Settings"></Controls:HamburgerMenuIconItem>
+                    <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=GlassesSolid}" Label="Private" Tag="1"></Controls:HamburgerMenuIconItem>
+                    <Controls:HamburgerMenuIconItem  Icon="{iconPacks:FontAwesome Kind=CogSolid}" Label="Settings" Tag="2"></Controls:HamburgerMenuIconItem>
                 </Controls:HamburgerMenuItemCollection>
             </Controls:HamburgerMenu.ItemsSource>
 
@@ -71,4 +72,4 @@
             </Controls:HamburgerMenu.OptionsItemsSource>
         </Controls:HamburgerMenu>
     </Grid>
-</Window>
+</Controls:MetroWindow>

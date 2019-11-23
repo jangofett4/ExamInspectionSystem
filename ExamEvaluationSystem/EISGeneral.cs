@@ -146,6 +146,46 @@ namespace ExamEvaluationSystem
         }
     }
 
+    // SELECT * FROM tablename ORDER BY column DESC LIMIT 1;
+    /// <summary>
+    /// SQL select last entry command
+    /// </summary>
+    public class EISSelectLastCommand : EISBaseCommand
+    {
+        public string Table;
+        public string Where;
+        public string Column;
+
+        public EISSelectLastCommand(string table, string column, string where = "") : base()
+        {
+            Table = table;
+            Where = where;
+            Column = column;
+        }
+
+        public override SQLiteCommand Create(SQLiteConnection connection, params string[] args)
+        {
+            StringBuilder selector = new StringBuilder();
+            if (args.Length == 0)
+                selector.Append('*');
+            else
+                for (int i = 0; i < args.Length; i++)
+                    if (i != args.Length - 1)
+                    {
+                        selector.Append(args[i]);
+                        selector.Append(',');
+                    }
+                    else
+                        selector.Append(args[i]);
+
+            CommandBase.Append($"SELECT { selector.ToString() } FROM { Table }");
+            if (Where != "")
+                CommandBase.Append($" WHERE { Where }");
+            CommandBase.Append($" ORDER BY { Column } DESC LIMIT 1");
+
+            return new SQLiteCommand(CommandBase.ToString(), connection);
+        }
+    }
     /// <summary>
     /// SQL select command
     /// </summary>

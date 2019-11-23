@@ -14,6 +14,9 @@ namespace ExamEvaluationSystem
         public static List<EISFaculty> Faculties;
         public static List<EISDepartment> Departments;
         public static List<EISEarning> Earnings;
+        public static List<EISPeriod> Periods;
+        public static List<EISLecture> Lectures;
+        public static List<EISExamType> ExamTypes;
 
         public static EISPeriod ActivePeriod;
 
@@ -35,6 +38,27 @@ namespace ExamEvaluationSystem
         {
             foreach (var e in Earnings)
                 if (e.ID == EID) return e;
+            return null;
+        }
+
+        public static EISPeriod GetPeriod(int PID)
+        {
+            foreach (var p in Periods)
+                if (p.ID == PID) return p;
+            return null;
+        }
+
+        public static EISLecture GetLecture(int LID)
+        {
+            foreach (var l in Lectures)
+                if (l.ID == LID) return l;
+            return null;
+        }
+
+        public static EISExamType GetExamType(int ETID)
+        {
+            foreach (var e in ExamTypes)
+                if (e.ID == ETID) return e;
             return null;
         }
     }

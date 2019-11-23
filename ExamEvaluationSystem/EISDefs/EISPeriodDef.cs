@@ -41,7 +41,11 @@ namespace ExamEvaluationSystem
         {
             var cmd = new EISInsertCommand("Periods");
             var sql = cmd.Create(connection, "Name", $"'{ Name }'");
-            return sql.ExecuteNonQuery();
+            var res = sql.ExecuteNonQuery();
+            var last = new EISSelectLastCommand("Periods", "ID");
+            sql = last.Create(connection, "ID");
+            ID = (int)(long)sql.ExecuteScalar();
+            return res;
         }
 
         public override int Delete(SQLiteConnection connection)
@@ -56,6 +60,21 @@ namespace ExamEvaluationSystem
             var cmd = new EISSelectCommand("Periods", where == "" ? $"ID = { ID }" : where);
             var sql = cmd.Create(connection);
             return sql.ExecuteReader();
+        }
+
+        public override EISPeriod SelectT(SQLiteConnection connection, string where = "")
+        {
+            using (var val = Select(connection, where))
+            {
+                if (!val.HasRows)
+                    return null;
+
+                val.Read();
+
+                var per = new EISPeriod(val.GetInt32(0));
+                per.Name = val.GetString(1);
+                return per;
+            }
         }
 
         public override SQLiteDataReader SelectAll(SQLiteConnection connection)

@@ -20,9 +20,12 @@ namespace ExamEvaluationSystem
     /// </summary>
     public partial class ViewLecturerAddExam : Page
     {
+        public List<int> EditedIndices;
+
         public ViewLecturerAddExam()
         {
             InitializeComponent();
+            EditedIndices = new List<int>();
         }
     }
 }

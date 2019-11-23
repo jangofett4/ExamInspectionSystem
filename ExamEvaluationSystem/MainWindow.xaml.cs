@@ -53,6 +53,59 @@ namespace ExamEvaluationSystem
                 while (rd.Read())
                     EISSystem.Earnings.Add(new EISEarning(rd.GetInt32(0), rd.GetString(1), (EISEarningType)rd.GetInt32(2)));
             }
+
+            using (var rd = new EISPeriod(-1).SelectAll(EISSystem.Connection))
+            {
+                EISSystem.Periods = new List<EISPeriod>();
+                while (rd.Read())
+                    EISSystem.Periods.Add(new EISPeriod(rd.GetInt32(0), rd.GetString(1)));
+            }
+
+            using (var rd = new EISLecture(-1).SelectAll(EISSystem.Connection))
+            {
+                EISSystem.Lectures = new List<EISLecture>();
+                while (rd.Read())
+                    EISSystem.Lectures.Add(new EISLecture(rd.GetInt32(0), rd.GetString(1), rd.GetInt32(2)));
+            }
+
+            using (var rd = new EISExamType(-1).SelectAll(EISSystem.Connection))
+            {
+                EISSystem.ExamTypes = new List<EISExamType>();
+                while (rd.Read())
+                    EISSystem.ExamTypes.Add(new EISExamType(rd.GetInt32(0), rd.GetString(1), rd.GetBoolean(2)));
+            }
+
+            using (var rd = new EISSelectCommand("System").Create(EISSystem.Connection).ExecuteReader())
+            {
+                if (!rd.Read())
+                {
+                    int y = DateTime.Now.Year;
+                    string newperiod = y + "-" + (y + 1) + " Dönemi";
+                    var result = MessageBox.Show(
+                        "Sistemde aktif dönem bulunamadı, bu sistemin ilk defa çalıştığı anlamına gelebilir.\n" +
+                        "Yeni aktif dönem oluşturmak için 'OK/Evet' seçeneğini, uygulamadan çıkmak için 'Cancel/İptal' seçeneğini kullanın.\n" +
+                        " Oluşturulacak Yeni Dönem: " + newperiod
+                    , "Aktif Dönem Bulunamadı", MessageBoxButton.OKCancel, MessageBoxImage.Information);
+                    if (result == MessageBoxResult.Cancel)
+                    {
+                        Environment.Exit(1);    // exit from application without creating a new active period
+                        return;                 // SOMEHOW?
+                    }
+
+                    var per = new EISPeriod(-1, newperiod);
+                    if (per.Insert(EISSystem.Connection) <= 0)
+                    {
+                        MessageBox.Show("Sisteme yeni dönem ekleme başarısız. Kurulumda eksiklik mi var?", "Hata", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                        Environment.Exit(1);    // exit from application without creating a new active period
+                        return;                 // SOMEHOW?
+                    }
+
+                    new EISInsertCommand("System").Create(EISSystem.Connection, "ActivePeriod", per.ID.ToString()).ExecuteNonQuery();
+                    EISSystem.ActivePeriod = per;
+                }
+                else
+                    EISSystem.ActivePeriod = new EISPeriod((int)((long)new EISSelectLastCommand("System", "ActivePeriod").Create(EISSystem.Connection).ExecuteScalar())).SelectT(EISSystem.Connection);
+            }
         }
 
         private void ClickLoginButton(object sender, RoutedEventArgs e)
