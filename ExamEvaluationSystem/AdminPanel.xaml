@@ -1,4 +1,4 @@
-﻿<Window x:Class="ExamEvaluationSystem.AdminPanel"
+﻿<Controls:MetroWindow x:Class="ExamEvaluationSystem.AdminPanel"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -27,39 +27,40 @@
     <Grid>
         <Controls:HamburgerMenu 
             ItemTemplate="{StaticResource AdminHamburger}"
-            OptionsItemTemplate="{StaticResource AdminHamburger}">
+            OptionsItemTemplate="{StaticResource AdminHamburger}" ItemClick="HamburgerMenu_ItemClick"> 
+         
             <Controls:HamburgerMenu.Content>
-                <Frame x:Name="AdminHamburgerMenuFrame"/>
+                <Frame x:Name="AdminHamburgerMenuFrame" NavigationUIVisibility="Hidden"/>
             </Controls:HamburgerMenu.Content>
             <Controls:HamburgerMenu.ItemsSource>
                 <Controls:HamburgerMenuItemCollection>
-                    <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=BuildingSolid}" Label="Fakülteler">
+                    <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=BuildingSolid}" Label="Fakülteler" Tag="1">
                         <!--<Controls:HamburgerMenuIconItem.Tag>
                             Yes
                         </Controls:HamburgerMenuIconItem.Tag>-->
                     </Controls:HamburgerMenuIconItem>
 
-                    <Controls:HamburgerMenuIconItem  Icon="{iconPacks:FontAwesome Kind=SchoolSolid}" Label="Bölümler">
+                    <Controls:HamburgerMenuIconItem  Icon="{iconPacks:FontAwesome Kind=SchoolSolid}" Label="Bölümler" Tag="2">
                         <!--<Controls:HamburgerMenuIconItem.Tag>
                             Yes
                         </Controls:HamburgerMenuIconItem.Tag>-->
                     </Controls:HamburgerMenuIconItem>
-                    <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=CalendarSolid}" Label="Dönemler" Command="">
+                    <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=CalendarSolid}" Label="Dönemler" Tag="3">
 
                     </Controls:HamburgerMenuIconItem>
-                    <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=UserTieSolid}" Label="Öğretim Görevlileri">
+                    <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=UserTieSolid}" Label="Öğretim Görevlileri" Tag="4">
                         
                     </Controls:HamburgerMenuIconItem>
-                    <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=BookSolid}" Label="Dersler">
+                    <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=BookSolid}" Label="Dersler" Tag="5">
 
                     </Controls:HamburgerMenuIconItem>
-                    <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=BookOpenSolid}" Label="Sınavlar">
+                    <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=BookOpenSolid}" Label="Sınavlar" Tag="6">
 
                     </Controls:HamburgerMenuIconItem>
-                    <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=StarSolid}" Label="Kazanımlar">
+                    <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=StarSolid}" Label="Kazanımlar" Tag="7">
 
                     </Controls:HamburgerMenuIconItem>
-                    <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=UsersSolid}" Label="Öğrenciler">
+                    <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=UsersSolid}" Label="Öğrenciler" Tag="8">
 
                     </Controls:HamburgerMenuIconItem>
                 </Controls:HamburgerMenuItemCollection>
@@ -78,4 +79,4 @@
             </Controls:HamburgerMenu.OptionsItemsSource>
         </Controls:HamburgerMenu>
     </Grid>
-</Window>
+</Controls:MetroWindow>
