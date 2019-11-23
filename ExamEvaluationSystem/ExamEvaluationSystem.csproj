@@ -105,7 +105,6 @@
     <Compile Include="AdminViews\ViewAdminExams.xaml.cs">
       <DependentUpon>ViewAdminExams.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewLecturerAddExam.xaml.cs">
     <Compile Include="LecturerViews\ViewLecturerAddExam.xaml.cs">
       <DependentUpon>ViewLecturerAddExam.xaml</DependentUpon>
     </Compile>
@@ -146,6 +145,9 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="LecturerViews\ViewLecturerAddExam.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="AdminViews\ViewAdminDepartment.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -167,10 +169,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="AdminViews\ViewAdminExams.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="ViewLecturerAddExam.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
