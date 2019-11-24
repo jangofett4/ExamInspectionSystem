@@ -28,11 +28,12 @@ namespace ExamEvaluationSystem
         {
             InitializeComponent();
 
-            DataGridBuilder<EISLecture> builder = new DataGridBuilder<EISLecture>(EISSystem.Lectures, "ID", ("Name", "Ders Adı"), ("Credit", "Kredi"));
+            /*
             var s = new PropertyDataSelector("Title");
-            builder.BuildColumns(s.dgSelector);
-            builder.BuildData(s.dgSelector);
+            var builder = new SingleDataSelectorBuilder<EISLecture>(EISSystem.Lectures, s, "ID", ("Name", "Ders Adı"), ("Credit", "Kredi"));
+            builder.BuildAll();
             s.ShowDialog();
+            */
 
             Lecturer = lec;
             Resources.Add("CurrentLecturerID", lec.ID.ToString());
@@ -50,7 +51,6 @@ namespace ExamEvaluationSystem
         private void HamburgerItemClick(object sender, MahApps.Metro.Controls.ItemClickEventArgs e)
         {
             var tag = ((MahApps.Metro.Controls.HamburgerMenuItem)e.ClickedItem).Tag.ToString();
-
         }
     }
 }

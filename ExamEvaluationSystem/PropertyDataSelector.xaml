@@ -6,9 +6,24 @@
         xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         xmlns:local="clr-namespace:ExamEvaluationSystem"
-        mc:Ignorable="d" Height="306" Width="530.182">
+        mc:Ignorable="d" Height="393" Width="530.182">
     <Grid>
-        <DataGrid Margin="10" Name="dgSelector">
-        </DataGrid>
+        <DockPanel>
+            <Menu DockPanel.Dock="Top">
+                <MenuItem Header="Seç" Name="MenuSelectButton"/>
+            </Menu>
+            <StackPanel></StackPanel>
+            <DataGrid Margin="10,5,10,10" Name="dgSelector">
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox Name="Check" IsChecked="False"></CheckBox>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </DockPanel>
     </Grid>
 </Controls:MetroWindow>
