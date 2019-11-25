@@ -2,6 +2,7 @@
 using MahApps.Metro.Controls.Dialogs;
 using System;
 using System.Collections.Generic;
+using System.Data.SQLite;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -93,6 +94,103 @@ namespace ExamEvaluationSystem
                 Grid.SelectedIndex = -1;
                 ParentObject.NotifyInformation("Silme işlemi iptal edildi.");
             }
+        }
+        private void GridDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (Grid.SelectedItem == null)
+                return;
+
+            var item = (EISLecturer)Grid.SelectedItem;
+            itemToEdit = item;
+            txtLecturerName.Text = item.Name;
+            txtLecturerID.Value = item.ID;
+            txtLecturerID.IsReadOnly = true; // cannot change this, lots of foreign key erors
+            selectorLecturerFaculty.SelectedData = item.Faculty;
+            selectorLecturerFaculty.Text = item.Faculty.Name;
+
+            sideFlyout.Header = "Düzenle";
+            sideFlyout.IsOpen = true;
+            SideMenuState = FlyoutState.Edit;
+        }
+        private void TileFlyoutDoneClick(object sender, RoutedEventArgs e)
+        {
+            if (!txtLecturerID.Value.HasValue)
+            {
+                ParentObject.NotifyWarning("Sicil numarası alanı boş burakılamaz!");
+                return;
+            }
+
+            txtLecturerName.Text = txtLecturerName.Text.Trim();
+            if (string.IsNullOrEmpty(txtLecturerName.Text))
+            {
+                ParentObject.NotifyWarning("İsim alanı boş bırakılamaz!");
+                return;
+            }
+
+            if (selectorLecturerFaculty.SelectedData == null)
+            {
+                ParentObject.NotifyWarning("Fakülte alanı boş bırakılamaz!");
+                return;
+            }
+
+            if (SideMenuState == FlyoutState.Add)
+            {
+                var lec = new EISLecturer((int)txtLecturerID.Value.Value, txtLecturerName.Text,txtLecturerSurname.Text, (EISFaculty)selectorLecturerFaculty.SelectedData);
+                var result = lec.Insert(EISSystem.Connection);
+                if (result == -1)
+                {
+                    ParentObject.NotifyError("Sicil numarası çakışması, başka numara belirtin.");
+                    return;
+                }
+                var cmd = new EISInsertCommand("UserLoginInfo");
+                var sqlcmd = cmd.Create(EISSystem.Connection, "Username", $"'{ txtLecturerUsername.Text }'", "Password", txtLecturerPassword.Password.EncapsulateQuote(),"UserID",lec.ID.ToString(),"MemberPrivilege","1"); 
+                /*try
+                {
+                    sqlcmd.ExecuteNonQuery();
+                }
+                catch (SQLiteException e)
+                {
+                    if (e.Message.Contains(".Name"))
+
+                      
+                }*/
+
+                EISSystem.Lecturers.Add(lec);
+                Grid.Items.Add(lec);
+                ParentObject.NotifySuccess("Öğretim elemanı ekleme başarılı!");
+
+                sideFlyout.IsOpen = false;
+            }
+            // Flyout is in edit mode
+            else
+            {
+                /* if (itemToEdit == null)
+                    return; // somehow??
+
+                var elem = (TextBlock)Grid.Columns[1].GetCellContent(itemToEdit);
+                var elem1 = (TextBlock)Grid.Columns[3].GetCellContent(itemToEdit);
+                itemToEdit.Name = txtLecturerName.Text;
+                
+                itemToEdit.Faculty = (EISFaculty)selectorLecturerFaculty.SelectedData;
+
+                var result = itemToEdit.Update(EISSystem.Connection);
+                if (result == -1)
+                {
+                    ParentObject.NotifyError("Bölüm isim çakışması, başka isim belirtin.");
+                    return;
+                }
+
+                elem.Text = itemToEdit.Name; // Edit the datagrid cell
+                elem1.Text = itemToEdit.Faculty.Name;
+                itemToEdit.InsertEarnings(EISSystem.Connection);
+
+                ParentObject.NotifySuccess("Düzenleme başarılı!");
+                sideFlyout.IsOpen = false; */
+            }
+        }
+        private void TileSearchClick(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

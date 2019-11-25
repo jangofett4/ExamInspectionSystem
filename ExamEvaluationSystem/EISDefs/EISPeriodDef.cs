@@ -48,7 +48,15 @@ namespace ExamEvaluationSystem
         {
             var cmd = new EISUpdateCommand("Periods", $"ID = { ID }");
             var sql = cmd.Create(connection, "Name", $"'{ Name }'");
-            return sql.ExecuteNonQuery();
+            try
+            {
+                return sql.ExecuteNonQuery();
+            }
+            catch (SQLiteException)
+            {
+
+                return -1;
+            }
         }
 
         public override int Insert(SQLiteConnection connection)

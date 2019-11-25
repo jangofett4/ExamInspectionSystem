@@ -26,7 +26,7 @@
                     <DataGridTextColumn Width="200" Header="İsim" Binding="{Binding Path=Name}"/>
                     <DataGridTextColumn Width="200" Header="Soyisim" Binding="{Binding Path=Surname}"/>
                     <DataGridTextColumn Width="250" Header="Fakülte Adı" Binding="{Binding Path=FacultyName}"/>
-                    
+
                 </DataGrid.Columns>
             </DataGrid>
             <Controls:Tile Margin="0,10,10,0" Height="100" Width="100" Content="{iconPacks:FontAwesome Kind=PlusCircleSolid, Height=50, Width=30}" HorizontalAlignment="Right" VerticalAlignment="Top" Click="TileAddClick" TabIndex="0"/>
@@ -42,7 +42,15 @@
                         <Label Content="Fakülteler:" HorizontalContentAlignment="Right" Height="26" Margin="10,72,0,0" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Left" Width="91" VerticalAlignment="Top"/>
                         <local:DataSelector Margin="106,72,10,0" x:Name="selectorLecturerFaculty" VerticalAlignment="Top" TabIndex="2"/>
                         <TextBox Margin="106,41,10,0" Height="26"  TabIndex="1"  HorizontalContentAlignment="Left" Name="txtLecturerSurname" VerticalAlignment="Top"/>
-                        <Controls:Tile Margin="10,0,10,10" Height="50" Width="Auto" Content="{iconPacks:FontAwesome Kind=CheckSolid, Height=50, Width=30}" Click="TileFlyoutDoneClick" VerticalAlignment="Bottom" TabIndex="2"/>
+                        <Controls:Tile Margin="10,0,10,10" Height="50" Width="Auto" Content="{iconPacks:FontAwesome Kind=CheckSolid, Height=50, Width=30}" Click="TileFlyoutDoneClick" VerticalAlignment="Bottom" TabIndex="6"/>
+                        <Label Content="Sicil No:" Margin="48,103,0,0" Height="26" VerticalAlignment="Top" HorizontalAlignment="Left" Width="53" />
+                        <Controls:NumericUpDown Margin="106,103,10,0" Height="26" HideUpDownButtons="True" TabIndex="3"  HorizontalContentAlignment="Left" Name="txtLecturerID" VerticalAlignment="Top"/>
+                        <Label Content="Kullanıcı Adı" HorizontalAlignment="Left" Margin="26,134,0,0" VerticalAlignment="Top"/>
+                        <TextBox Margin="106,134,10,0" Height="26"  TabIndex="4"  HorizontalContentAlignment="Left" x:Name="txtLecturerUsername" VerticalAlignment="Top"/>
+                        <Label Content="Şifre" HorizontalAlignment="Left" Margin="63,165,0,0" VerticalAlignment="Top"/>
+                        <PasswordBox HorizontalAlignment="Left" Margin="106,165,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.09,-0.207" Width="184" Name="txtLecturerPassword" TabIndex="5"/>
+
+
                     </Grid>
                 </Controls:Flyout>
             </Controls:FlyoutsControl>

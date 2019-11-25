@@ -11,16 +11,30 @@
       Title="ViewAdminPeriods">
 
     <Grid>
-        <DataGrid Margin="10,10,119,10">
+        <DataGrid Margin="10,10,119,10" Name="Grid" IsReadOnly="True" MouseDoubleClick="GridDoubleClick">
             <DataGrid.Columns>
-                <DataGridTextColumn Width="95" Header="ID" Visibility="Hidden"/>
-                <DataGridTextColumn Width="170" Header="Dönem Adı"/>
+                <DataGridTemplateColumn>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox Name="Check" IsChecked="False"></CheckBox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Width="95" Header="ID" Visibility="Hidden" Binding="{Binding Path=ID}"/>
+                <DataGridTextColumn Width="170" Header="Dönem Adı" Binding="{Binding Path=Name}"/>
             </DataGrid.Columns>
         </DataGrid>
-        <Controls:Tile Margin="0,10,10,0" Height="100" Width="100" Content="{iconPacks:FontAwesome Kind=PlusCircleSolid, Height=50, Width=30}" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-        <Controls:Tile Margin="0,115,10,0" Height="100" Width="100" Content="{iconPacks:FontAwesome Kind=MinusCircleSolid, Height=50, Width=30}" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-        <Controls:Tile Margin="0,225,10,0" Height="100" Width="100" Content="{iconPacks:FontAwesome Kind=SaveSolid, Height=50, Width=30}" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-        <Controls:Tile Margin="0,335,10,0" Height="100" Width="100" Content="{iconPacks:FontAwesome Kind=SearchSolid, Height=50, Width=30}" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-
+        <Controls:Tile Margin="0,10,10,0" Height="100" Width="100" Content="{iconPacks:FontAwesome Kind=PlusCircleSolid, Height=50, Width=30}" HorizontalAlignment="Right" VerticalAlignment="Top" Click="TileAddClick" TabIndex="0"/>
+        <Controls:Tile Margin="0,115,10,0" Height="100" Width="100" Content="{iconPacks:FontAwesome Kind=MinusCircleSolid, Height=50, Width=30}" HorizontalAlignment="Right" VerticalAlignment="Top" Click="TileDeleteClick" TabIndex="1"/>
+        <Controls:Tile Margin="0,330,10,10" Height="100" Width="100" Content="{iconPacks:FontAwesome Kind=SearchSolid, Height=50, Width=30}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="TileSearchClick" TabIndex="2"/>
+        <Controls:FlyoutsControl>
+            <Controls:Flyout Header="$FlyoutName" Position="Right" Width="300" Name="sideFlyout" IsOpen="True">
+                <Grid>
+                    <TextBox Height="23" Margin="106,10,10,0" TextWrapping="Wrap" Text="" TabIndex="0" Name="txtPeriodsName" VerticalAlignment="Top"/>
+                    <Label Content="Dönem Adı:" HorizontalContentAlignment="Right" Margin="10,10,0,0" Height="26" HorizontalAlignment="Left" Width="91" VerticalAlignment="Top"/>
+                    <Controls:Tile Margin="10,0,10,10" Height="50" Width="Auto" Content="{iconPacks:FontAwesome Kind=CheckSolid, Height=50, Width=30}" Click="TileFlyoutDoneClick" VerticalAlignment="Bottom" TabIndex="2"/>
+                </Grid>
+            </Controls:Flyout>
+        </Controls:FlyoutsControl>
     </Grid>
 </Page>
