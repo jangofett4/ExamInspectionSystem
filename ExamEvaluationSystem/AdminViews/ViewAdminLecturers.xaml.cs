@@ -104,6 +104,9 @@ namespace ExamEvaluationSystem
             itemToEdit = item;
             txtLecturerName.Text = item.Name;
             txtLecturerID.Value = item.ID;
+            txtLecturerSurname.Text = item.Surname;
+            //txtLecturerUsername.Text = zıkkım.Username;
+            //txtLecturerPassword.Password = zıkkım.Password;
             txtLecturerID.IsReadOnly = true; // cannot change this, lots of foreign key erors
             selectorLecturerFaculty.SelectedData = item.Faculty;
             selectorLecturerFaculty.Text = item.Faculty.Name;

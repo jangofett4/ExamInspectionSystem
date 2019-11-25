@@ -14,6 +14,8 @@ namespace ExamEvaluationSystem
         public string Surname { get; set; }
         public EISFaculty Faculty { get; set; }
 
+        public string FacultyName { get { return Faculty.Name; } }
+
         public EISLecturer(int id, string name, string surname, EISFaculty faculty)
         {
             ID = id;
