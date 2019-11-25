@@ -16,6 +16,7 @@ namespace ExamEvaluationSystem
     public partial class ViewAdminPeriods : IChildObject<AdminPanel>
     {
         public AdminPanel ParentObject { get; set; }
+        public FlyoutState SideMenuState { get; set; }
 
         public ViewAdminPeriods(AdminPanel parent)
         {

@@ -16,6 +16,7 @@ namespace ExamEvaluationSystem
     {
         public AdminPanel ParentObject { get; set; }
 
+        public FlyoutState SideMenuState { get; set; }
         public ViewAdminEarnings(AdminPanel parent)
         {
             InitializeComponent();

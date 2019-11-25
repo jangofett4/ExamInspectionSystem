@@ -77,8 +77,21 @@ namespace ExamEvaluationSystem
             using (var rd = new EISLecture(-1).SelectAll(EISSystem.Connection))
             {
                 EISSystem.Lectures = new List<EISLecture>();
+
                 while (rd.Read())
-                    EISSystem.Lectures.Add(new EISLecture(rd.GetInt32(0), rd.GetString(1), rd.GetInt32(2)));
+                {
+                    var lec = new EISLecture(rd.GetInt32(0));
+                    lec.Name = rd.GetString(1);
+                    lec.Credit = rd.GetInt32(2);
+                    var cmd = new EISSelectCommand("LectureEarnings", $"LectureID = { lec.ID }");
+                    using (var sql = cmd.Create(EISSystem.Connection).ExecuteReader())
+                    {
+                        while (sql.Read())
+                            lec.Earnings.Add(EISSystem.GetEarning(sql.GetInt32(0)));
+                    }
+                    EISSystem.Lectures.Add(lec);
+                }
+                    
             }
 
             using (var rd = new EISExamType(-1).SelectAll(EISSystem.Connection))

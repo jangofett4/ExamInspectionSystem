@@ -56,14 +56,20 @@ namespace ExamEvaluationSystem
 
             ID = id;
 
+            return res;
+        }
+        public void InsertEarnings(SQLiteConnection connection)
+        {
+            var del = new EISDeleteCommand("LectureEarnings", Where.Equals("LectureID", ID.ToString()));
+            var delcmd = del.Create(connection);
+            delcmd.ExecuteNonQuery();
+
             foreach (var e in Earnings)
             {
-                cmd = new EISInsertCommand("LectureEarnings");
-                sql = cmd.Create(connection, "LectureID", ID.ToString(), "EarningID", e.ID.ToString());
-                sql.ExecuteNonQuery();
+                var cmd = new EISInsertCommand("LectureEarnings");
+                var sqlcmd = cmd.Create(connection, "LectureID", ID.ToString(), "EarningID", e.ID.ToString());
+                sqlcmd.ExecuteNonQuery();
             }
-
-            return res;
         }
 
         public override int Delete(SQLiteConnection connection)
