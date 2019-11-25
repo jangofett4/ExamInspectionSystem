@@ -132,6 +132,13 @@ namespace ExamEvaluationSystem
                 else
                     EISSystem.ActivePeriod = new EISPeriod((int)((long)new EISSelectLastCommand("System", "ActivePeriod").Create(EISSystem.Connection).ExecuteScalar())).SelectT(EISSystem.Connection);
             }
+
+            using (var rd = new EISSelectCommand("Lecturers").Create(EISSystem.Connection).ExecuteReader())
+            {
+                EISSystem.Lecturers = new List<EISLecturer>();
+                while (rd.Read())
+                    EISSystem.Lecturers.Add(new EISLecturer(rd.GetInt32(0), rd.GetString(1), rd.GetString(2), EISSystem.GetFaculty(rd.GetInt32(3))));
+            }
         }
 
         private void ClickLoginButton(object sender, RoutedEventArgs e)

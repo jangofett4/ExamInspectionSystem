@@ -13,6 +13,8 @@ namespace ExamEvaluationSystem
         public string Name { get; set; }
         public EISEarningType EarningType { get; set; }
 
+        public string FriendlyEarningTypeName { get { return EarningType == EISEarningType.Department ? "Bölüm Kazanımı" : "Ders Kazanımı"; } }
+
         public EISEarning(int id, string name, EISEarningType type)
         {
             ID = id;
