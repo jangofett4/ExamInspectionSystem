@@ -15,6 +15,7 @@ namespace ExamEvaluationSystem
     public partial class ViewAdminExams : IChildObject<AdminPanel>
     {
         public AdminPanel ParentObject { get; set; }
+        public FlyoutState SideMenuState { get; set; }
 
         public ViewAdminExams(AdminPanel parent)
         {
