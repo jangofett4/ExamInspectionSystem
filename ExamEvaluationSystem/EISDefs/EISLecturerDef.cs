@@ -38,6 +38,26 @@ namespace ExamEvaluationSystem
             Faculty = null;
         }
 
+        private int id;
+        private string name;
+        private string surname;
+        private EISFaculty faculty;
+        public override void Store()
+        {
+            id = ID;
+            name = Name;
+            surname = Surname;
+            faculty = Faculty;
+        }
+
+        public override void Restore()
+        {
+            ID = id;
+            Name = name;
+            Surname = surname;
+            Faculty = faculty;
+        }
+
         public override int Update(SQLiteConnection connection)
         {
             var cmd = new EISUpdateCommand("Lecturers", $"ID = { ID }");

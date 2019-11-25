@@ -65,6 +65,18 @@ namespace ExamEvaluationSystem
             AdminHamburgerMenuFrame.Content = ViewAdminFaculty;
         }
 
+        public void HandleUpdate(string part)
+        {
+            switch (part)
+            {
+                case "faculty":
+                    ViewAdminDepartment.RefreshDataGrid();
+                    break;
+                default:
+                    break;
+            }
+        }
+
         public void NotifySuccess(string message)
         {
             Notifier.ShowSuccess(message);

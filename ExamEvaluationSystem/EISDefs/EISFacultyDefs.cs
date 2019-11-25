@@ -10,7 +10,7 @@ namespace ExamEvaluationSystem
 {
     public class EISFaculty : EISDataPoint<EISFaculty>
     {
-        public int ID { get; private set; }
+        public int ID { get; set; }
         public string Name { get; set; }
         public List<EISDepartment> Departments { get; set; }
 
@@ -35,6 +35,23 @@ namespace ExamEvaluationSystem
             Departments = new List<EISDepartment>();
         }
 
+        private int id;
+        private string name;
+        private List<EISDepartment> departments;
+        public override void Store()
+        {
+            id = ID;
+            name = Name;
+            departments = Departments;
+        }
+
+        public override void Restore()
+        {
+            ID = id;
+            Name = name;
+            Departments = departments;
+        }
+
         public override int Update(SQLiteConnection connection)
         {
             var cmd = new EISUpdateCommand("Faculties", $"ID = { ID }");
@@ -45,6 +62,22 @@ namespace ExamEvaluationSystem
             } catch (SQLiteException e)
             {
                 return -1; // cant update name anyway
+            }
+        }
+
+        public override int UpdateWhere(SQLiteConnection connection, string where)
+        {
+            var cmd = new EISUpdateCommand("Faculties", where);
+            var sqlcmd = cmd.Create(connection, "ID", ID.ToString(), "Name", $"'{ Name }'");
+            try
+            {
+                return sqlcmd.ExecuteNonQuery();
+            }
+            catch (SQLiteException e)
+            {
+                if (e.Message.Contains(".Name"))
+                    return -1;
+                return -2;
             }
         }
 
@@ -87,7 +120,7 @@ namespace ExamEvaluationSystem
 
     public class EISDepartment : EISDataPoint<EISDepartment>
     {
-        public int ID { get; private set; }
+        public int ID { get; set; }
         public string Name { get; set; }
         public EISFaculty Faculty { get; set; }
         public List<EISEarning> Earnings { get; set; }
@@ -121,14 +154,51 @@ namespace ExamEvaluationSystem
         public override int Update(SQLiteConnection connection)
         {
             var cmd = new EISUpdateCommand("Departments", $"ID = { ID }");
-            var sqlcmd = cmd.Create(connection, "Name", $"'{ Name }'", "FacultyID", Faculty.ID.ToString());
+            var sqlcmd = cmd.Create(connection, "Name", Name.EncapsulateQuote(), "FacultyID", Faculty.ID.ToString());
             try
             {
                 return sqlcmd.ExecuteNonQuery();
             }
             catch (SQLiteException e)
             {
-                return -1;
+                if (e.Message.Contains(".Name"))
+                    return -1;
+                else
+                    return -2;
+            }
+        }
+
+        public override int UpdateWhere(SQLiteConnection connection, string where = "")
+        {
+            var cmd = new EISUpdateCommand("Departments", where);
+            var sqlcmd = cmd.Create(connection, "ID", ID.ToString(), "Name", Name.EncapsulateQuote(), "FacultyID", Faculty.ID.ToString());
+            try
+            {
+                return sqlcmd.ExecuteNonQuery();
+            }
+            catch (SQLiteException e)
+            {
+                if (e.Message.Contains(".Name"))
+                    return -1;
+                else
+                    return -2;
+            }
+        }
+
+        public override int UpdateWhereFields(SQLiteConnection connection, string where = "", params string[] args)
+        {
+            var cmd = new EISUpdateCommand("Departments", where);
+            var sqlcmd = cmd.Create(connection, args);
+            try
+            {
+                return sqlcmd.ExecuteNonQuery();
+            }
+            catch (SQLiteException e)
+            {
+                if (e.Message.Contains(".Name"))
+                    return -1;
+                else
+                    return -2;
             }
         }
 
@@ -165,6 +235,13 @@ namespace ExamEvaluationSystem
         public override int Delete(SQLiteConnection connection)
         {
             var cmd = new EISDeleteCommand("Departments", $"ID = { ID }");
+            var sql = cmd.Create(connection);
+            return sql.ExecuteNonQuery();
+        }
+
+        public override int DeleteWhere(SQLiteConnection connection, string where = "")
+        {
+            var cmd = new EISDeleteCommand("Departments", where);
             var sql = cmd.Create(connection);
             return sql.ExecuteNonQuery();
         }

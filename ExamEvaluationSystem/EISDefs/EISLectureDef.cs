@@ -38,6 +38,26 @@ namespace ExamEvaluationSystem
             Earnings = new List<EISEarning>();
         }
 
+        private int id;
+        private string name;
+        private int credit;
+        private List<EISEarning> earnings;
+        public override void Store()
+        {
+            id = ID;
+            name = Name;
+            credit = Credit;
+            earnings = Earnings;
+        }
+
+        public override void Restore()
+        {
+            ID = id;
+            Name = name;
+            Credit = credit;
+            Earnings = earnings;
+        }
+
         public override int Update(SQLiteConnection connection)
         {
             var cmd = new EISUpdateCommand("Lectures", $"ID = { ID }");

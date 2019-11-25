@@ -44,7 +44,6 @@ namespace ExamEvaluationSystem
         {
             sideFlyout.Header = "Ekle";
             sideFlyout.IsOpen = true;
-            txtFacultyID.IsReadOnly = false; // might be artifact from edit mode
             SideMenuState = FlyoutState.Add;
         }
 
@@ -91,7 +90,6 @@ namespace ExamEvaluationSystem
             itemToEdit = item;
             txtFacultyName.Text = item.Name;
             txtFacultyID.Value = item.ID;
-            txtFacultyID.IsReadOnly = true; // cannot change this, lots of foreign key erors
             
             sideFlyout.Header = "Düzenle";
             sideFlyout.IsOpen = true;
@@ -142,15 +140,46 @@ namespace ExamEvaluationSystem
                     return; // somehow??
 
                 var elem = (TextBlock)Grid.Columns[1].GetCellContent(itemToEdit);
-                itemToEdit.Name = txtFacultyName.Text;
-                var result = itemToEdit.Update(EISSystem.Connection);
-                if (result == -1)
+                var elem1 = (TextBlock)Grid.Columns[2].GetCellContent(itemToEdit);
+                int id = itemToEdit.ID;
+                itemToEdit.Store();
+
+                if (id == (int)txtFacultyID.Value.Value)
                 {
-                    ParentObject.NotifyError("Fakülte isim çakışması, başka isim belirtin.");
-                    return;
+                    itemToEdit.Name = txtFacultyName.Text;
+                    var result = itemToEdit.Update(EISSystem.Connection);
+                    if (result == -1)
+                    {
+                        ParentObject.NotifyError("Fakülte isim çakışması, başka isim belirtin.");
+                        itemToEdit.Restore();
+                        return;
+                    }
+                }
+                else
+                {
+                    string name = itemToEdit.Name;
+                    itemToEdit.ID = (int)txtFacultyID.Value.Value;
+                    itemToEdit.Name = txtFacultyName.Text;
+                    var result = itemToEdit.UpdateWhere(EISSystem.Connection, Where.Equals("ID", id.ToString()));
+                    if (result == -1)
+                    {
+                        ParentObject.NotifyError("Fakülte isim çakışması, başka isim belirtin.");
+                        itemToEdit.Restore();
+                        return;
+                    }
+                    else if (result == -2)
+                    {
+                        ParentObject.NotifyError("Fakülte kodu çakışması, başka kod belirtin.");
+                        itemToEdit.Restore();
+                        return;
+                    }
                 }
 
-                elem.Text = txtFacultyName.Text; // Edit the datagrid cell
+                ParentObject.HandleUpdate("faculty");
+
+                // Edit the datagrid cell
+                elem.Text = txtFacultyName.Text;
+                elem1.Text = ((int)txtFacultyID.Value.Value).ToString();
 
                 ParentObject.NotifySuccess("Düzenleme başarılı!");
                 sideFlyout.IsOpen = false;

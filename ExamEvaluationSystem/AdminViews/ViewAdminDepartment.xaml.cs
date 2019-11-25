@@ -77,6 +77,7 @@ namespace ExamEvaluationSystem
 
         public void RefreshDataGrid()
         {
+            Grid.Items.Clear();
             foreach (var data in EISSystem.Departments)
                 if (data.ID >= 10)
                     Grid.Items.Add(data);
@@ -133,7 +134,7 @@ namespace ExamEvaluationSystem
             itemToEdit = item;
             txtDepartmentName.Text = item.Name;
             txtDepartmentID.Value = item.ID;
-            txtDepartmentID.IsReadOnly = true; // cannot change this, lots of foreign key erors
+            // txtDepartmentID.IsReadOnly = true; // cannot change this, lots of foreign key erors
             selectorDepartmentEarnings.SelectedData = item.Earnings;
             selectorDepartmentEarnings.Text = $"[{ item.Earnings.Count } bölüm kazanımı]";
             selectorDepartmentFaculty.SelectedData = item.Faculty;
@@ -209,23 +210,60 @@ namespace ExamEvaluationSystem
 
                 var elem = (TextBlock)Grid.Columns[1].GetCellContent(itemToEdit);
                 var elem1 = (TextBlock)Grid.Columns[3].GetCellContent(itemToEdit);
-                itemToEdit.Name = txtDepartmentName.Text;
-                itemToEdit.Earnings = (List<EISEarning>)selectorDepartmentEarnings.SelectedData;
-                itemToEdit.Faculty = (EISFaculty)selectorDepartmentFaculty.SelectedData;
+                var elem2 = (TextBlock)Grid.Columns[2].GetCellContent(itemToEdit);
 
-                var result = itemToEdit.Update(EISSystem.Connection);
-                if (result == -1)
+                int id = itemToEdit.ID;
+
+                if ((int)txtDepartmentID.Value.Value == id) // ID is NOT changed
                 {
-                    ParentObject.NotifyError("Bölüm isim çakışması, başka isim belirtin.");
-                    return;
+                    itemToEdit.Name = txtDepartmentName.Text;
+                    itemToEdit.Earnings = (List<EISEarning>)selectorDepartmentEarnings.SelectedData;
+                    itemToEdit.Faculty = (EISFaculty)selectorDepartmentFaculty.SelectedData;
+
+                    var result = itemToEdit.Update(EISSystem.Connection);
+                    if (result == -1)
+                    {
+                        ParentObject.NotifyError("Bölüm isim çakışması, başka isim belirtin.");
+                        return;
+                    }
+
+                    // Edit the datagrid cell
+                    elem.Text = itemToEdit.Name;
+                    elem1.Text = itemToEdit.Faculty.Name;
+
+                    itemToEdit.InsertEarnings(EISSystem.Connection);
+
+                    ParentObject.NotifySuccess("Düzenleme başarılı!");
+                    sideFlyout.IsOpen = false;
                 }
+                else
+                {
+                    itemToEdit.ID = (int)txtDepartmentID.Value.Value;
+                    itemToEdit.Name = txtDepartmentName.Text;
+                    itemToEdit.Earnings = (List<EISEarning>)selectorDepartmentEarnings.SelectedData;
+                    itemToEdit.Faculty = (EISFaculty)selectorDepartmentFaculty.SelectedData;
 
-                elem.Text = itemToEdit.Name; // Edit the datagrid cell
-                elem1.Text = itemToEdit.Faculty.Name;
-                itemToEdit.InsertEarnings(EISSystem.Connection);
+                    var result = itemToEdit.UpdateWhere(EISSystem.Connection, Where.Equals("ID", id.ToString()));
+                    if (result == -1)
+                    {
+                        ParentObject.NotifyError("Bölüm isim çakışması, başka isim belirtin.");
+                        return;
+                    }
+                    else if (result == -2)
+                    {
+                        ParentObject.NotifyError("Bölüm kodu çakışması, başka kod belirtin.");
+                        return;
+                    }
 
-                ParentObject.NotifySuccess("Düzenleme başarılı!");
-                sideFlyout.IsOpen = false;
+                    elem.Text = itemToEdit.Name; // Edit the datagrid cell
+                    elem1.Text = itemToEdit.Faculty.Name;
+                    elem2.Text = itemToEdit.ID.ToString();
+
+                    itemToEdit.InsertEarnings(EISSystem.Connection);
+
+                    ParentObject.NotifySuccess("Düzenleme başarılı!");
+                    sideFlyout.IsOpen = false;
+                }
             }
         }
     }

@@ -36,6 +36,24 @@ namespace ExamEvaluationSystem
             EarningType = 0;
         }
 
+        private int id;
+        private string name;
+        private EISEarningType type;
+
+        public override void Store()
+        {
+            id = ID;
+            name = Name;
+            type = EarningType;
+        }
+
+        public override void Restore()
+        {
+            ID = id;
+            Name = name;
+            EarningType = type;
+        }
+
         public override int Update(SQLiteConnection connection)
         {
             var cmd = new EISUpdateCommand("Earnings", $"ID = { ID }");

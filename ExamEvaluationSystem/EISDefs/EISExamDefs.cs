@@ -48,6 +48,29 @@ namespace ExamEvaluationSystem
             Questions = questions;
         }
 
+        private int id;
+        private EISLecture lec;
+        private EISPeriod period;
+        private EISExamType type;
+        private List<EISQuestion> questions;
+        public override void Store()
+        {
+            id = ID;
+            lec = Lecture;
+            period = Period;
+            type = Type;
+            questions = Questions;
+        }
+
+        public override void Restore()
+        {
+            ID = id;
+            Lecture = lec;
+            Period = period;
+            Type = type;
+            Questions = questions;
+        }
+
         public override int Update(SQLiteConnection connection)
         {
             var cmd = new EISUpdateCommand("Exams", $"ID = { ID }");

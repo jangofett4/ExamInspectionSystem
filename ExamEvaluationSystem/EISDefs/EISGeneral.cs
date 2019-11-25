@@ -295,17 +295,42 @@ namespace ExamEvaluationSystem
     public abstract class EISDataPoint<T>
     {
         public abstract int Update(SQLiteConnection connection);
+        public virtual int UpdateWhere(SQLiteConnection connection, string where = "")
+        {
+            throw new NotImplementedException();
+        }
+        public virtual int UpdateWhereFields(SQLiteConnection connection, string where = "", params string[] args)
+        {
+            throw new NotImplementedException();
+        }
+
         public abstract int Insert(SQLiteConnection connection);
+        
         public abstract int Delete(SQLiteConnection connection);
+        public virtual int DeleteWhere(SQLiteConnection connection, string where = "")
+        {
+            throw new NotImplementedException();
+        }
+        
         public abstract SQLiteDataReader Select(SQLiteConnection connection, string where = "");
         public abstract SQLiteDataReader SelectAll(SQLiteConnection connection);
+        
         public virtual T SelectT(SQLiteConnection connection, string where = "")
         {
-            return default;
+            throw new NotImplementedException();
         }
         public virtual List<T> SelectAllT(SQLiteConnection connection)
         {
-            return default;
+            throw new NotImplementedException();
+        }
+
+        public virtual void Store()
+        {
+            throw new NotImplementedException();
+        }
+        public virtual void Restore()
+        {
+            throw new NotImplementedException();
         }
     }
 }

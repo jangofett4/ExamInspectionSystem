@@ -20,7 +20,29 @@ namespace ExamEvaluationSystem
         {
             InitializeComponent();
             ParentObject = parent;
+            RefreshDataGrid();
         }
 
+        public void RefreshDataGrid()
+        {
+            Grid.Items.Clear();
+            foreach (var data in EISSystem.Earnings)
+                Grid.Items.Add(data);
+        }
+
+        private void TileAddClick(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void TileDeleteClick(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void TileFlyoutDoneClick(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

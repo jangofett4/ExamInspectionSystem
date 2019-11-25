@@ -21,6 +21,9 @@ namespace ExamEvaluationSystem
             EISSystem.Connection = new SQLiteConnection($"Data Source=./data.db; Version=3;");
             EISSystem.Connection.Open();
 
+            var fkcmd = new SQLiteCommand("PRAGMA foreign_keys = ON;", EISSystem.Connection);
+            fkcmd.ExecuteNonQuery();
+
             using (var rd = new EISFaculty(-1).SelectAll(EISSystem.Connection))
             {
                 EISSystem.Faculties = new List<EISFaculty>();

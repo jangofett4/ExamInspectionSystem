@@ -30,6 +30,20 @@ namespace ExamEvaluationSystem
             Name = "";
         }
 
+        private int id;
+        private string name;
+        public override void Store()
+        {
+            id = ID;
+            name = Name;
+        }
+
+        public override void Restore()
+        {
+            ID = id;
+            Name = name;
+        }
+
         public override int Update(SQLiteConnection connection)
         {
             var cmd = new EISUpdateCommand("Periods", $"ID = { ID }");
