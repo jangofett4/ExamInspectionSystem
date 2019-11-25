@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MahApps.Metro.Controls;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,23 +7,20 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace ExamEvaluationSystem
 {
     /// <summary>
     /// ViewAdminPeriods.xaml etkileşim mantığı
     /// </summary>
-    public partial class ViewAdminPeriods : Page
+    public partial class ViewAdminPeriods : IChildObject<AdminPanel>
     {
-        public ViewAdminPeriods()
+        public AdminPanel ParentObject { get; set; }
+
+        public ViewAdminPeriods(AdminPanel parent)
         {
             InitializeComponent();
+            ParentObject = parent;
         }
     }
 }

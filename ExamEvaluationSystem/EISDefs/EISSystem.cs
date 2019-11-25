@@ -13,7 +13,11 @@ namespace ExamEvaluationSystem
 
         public static List<EISFaculty> Faculties;
         public static List<EISDepartment> Departments;
+
         public static List<EISEarning> Earnings;
+        public static List<EISEarning> DepartmentEarnings;
+        public static List<EISEarning> LectureEarnings;
+
         public static List<EISPeriod> Periods;
         public static List<EISLecture> Lectures;
         public static List<EISExamType> ExamTypes;

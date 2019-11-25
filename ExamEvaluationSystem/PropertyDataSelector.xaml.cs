@@ -27,7 +27,7 @@ namespace ExamEvaluationSystem
 
         private void MenuSelectClick(object sender, System.Windows.RoutedEventArgs e)
         {
-
+            // actually nothing.
         }
     }
 
@@ -64,13 +64,25 @@ namespace ExamEvaluationSystem
 
             grid.MouseDoubleClick += (object sender, System.Windows.Input.MouseButtonEventArgs e) =>
             {
-                SelectedData = (T)grid.SelectedItem;
+                if (SelectedData != null && ReferenceEquals(SelectedData, grid.SelectedItem)) // If someone already set data
+                {
+                    Form.Close(); // Just use it
+                    return;
+                }
+
+                SelectedData = (T)grid.SelectedItem; // Set data
                 Form.Close();
             };
 
             Form.MenuSelectButton.Click += (object sender, RoutedEventArgs e) =>
             {
-                SelectedData = (T)grid.SelectedItem;
+                if (SelectedData != null && ReferenceEquals(SelectedData, grid.SelectedItem)) // If someone already set data
+                {
+                    Form.Close(); // Just use it
+                    return;
+                }
+
+                SelectedData = (T)grid.SelectedItem; // Set data
                 Form.Close();
             };
         }
@@ -86,6 +98,11 @@ namespace ExamEvaluationSystem
         {
             foreach (var d in Data)
                     grid.Items.Add(d);
+        }
+
+        public void GridSelect(DataGrid grid, object data)
+        {
+            grid.SelectedItem = data; // developer takes full reponsibility on this one
         }
     }
 
@@ -121,13 +138,21 @@ namespace ExamEvaluationSystem
 
             Form.MenuSelectButton.Click += (object sender, RoutedEventArgs e) =>
             {
+                /*
+                 * Wont work anyway. Since two different list is created their reference will never be same
+                if (SelectedData != null && ReferenceEquals(SelectedData, grid.SelectedItem)) // If someone already set data
+                {
+                    Form.Close();
+                    return;
+                }
+                */
+
                 SelectedData = new List<T>();
                 foreach (var item in grid.Items)
                 {
                     var x = ((DataGridTemplateColumn)grid.Columns[0]).GetCellContent(item).FindChild<CheckBox>("Check");
                     if (x.IsChecked == true)
                         SelectedData.Add((T)item);
-
                 }
                 Form.Close();
             };
@@ -145,6 +170,27 @@ namespace ExamEvaluationSystem
         {
             foreach (var d in Data)
                 grid.Items.Add(d);
+        }
+
+        public void GridSelect(DataGrid grid, object data)
+        {
+            // developer takes full reponsibility on these
+            var lst = data as IList;
+            if (lst != null)
+            {
+                grid.SelectedItems.Clear();
+                for (int i = 0; i < lst.Count; i++)
+                    grid.SelectedItems.Add(lst[i]);
+            }
+            else
+            {
+                // If some moron decides to send single data
+                grid.SelectedItem = data;
+                /*
+                var x = ((DataGridTemplateColumn)grid.Columns[0]).GetCellContent(data).FindChild<CheckBox>("Check");
+                x.IsChecked = true;
+                */
+            }
         }
     }
 }

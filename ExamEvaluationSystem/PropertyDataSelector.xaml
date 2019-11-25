@@ -6,7 +6,7 @@
         xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         xmlns:local="clr-namespace:ExamEvaluationSystem"
-        mc:Ignorable="d" Height="393" Width="530.182">
+        mc:Ignorable="d" Height="393" Width="530.182" WindowStartupLocation="CenterOwner">
     <Grid>
         <DockPanel>
             <Menu DockPanel.Dock="Top">

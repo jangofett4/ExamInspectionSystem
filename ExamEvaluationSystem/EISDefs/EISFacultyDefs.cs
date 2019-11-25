@@ -39,14 +39,28 @@ namespace ExamEvaluationSystem
         {
             var cmd = new EISUpdateCommand("Faculties", $"ID = { ID }");
             var sqlcmd = cmd.Create(connection, "Name", $"'{ Name }'");
-            return sqlcmd.ExecuteNonQuery();
+            try
+            {
+                return sqlcmd.ExecuteNonQuery();
+            } catch (SQLiteException e)
+            {
+                return -1; // cant update name anyway
+            }
         }
 
         public override int Insert(SQLiteConnection connection)
         {
             var cmd = new EISInsertCommand("Faculties");
-            var sqlcmd = cmd.Create(connection, "Name", $"'{ Name }'");
-            return sqlcmd.ExecuteNonQuery();
+            var sqlcmd = cmd.Create(connection, "ID", ID.ToString(), "Name", $"'{ Name }'");
+            try
+            {
+                return sqlcmd.ExecuteNonQuery();
+            } catch (SQLiteException e)
+            {
+                if (e.Message.Contains(".Name"))
+                    return -1;
+                return -2;
+            }
         }
 
         public override int Delete(SQLiteConnection connection)
@@ -77,6 +91,8 @@ namespace ExamEvaluationSystem
         public string Name { get; set; }
         public EISFaculty Faculty { get; set; }
         public List<EISEarning> Earnings { get; set; }
+        
+        public string FacultyName { get { return Faculty.Name; } }
 
         public EISDepartment(int id, string name, EISFaculty faculty, List<EISEarning> earnings)
         {

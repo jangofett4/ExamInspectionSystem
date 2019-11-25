@@ -50,8 +50,21 @@ namespace ExamEvaluationSystem
             using (var rd = new EISEarning(-1).SelectAll(EISSystem.Connection))
             {
                 EISSystem.Earnings = new List<EISEarning>();
+                EISSystem.DepartmentEarnings = new List<EISEarning>();
+                EISSystem.LectureEarnings = new List<EISEarning>();
+
                 while (rd.Read())
-                    EISSystem.Earnings.Add(new EISEarning(rd.GetInt32(0), rd.GetString(1), (EISEarningType)rd.GetInt32(2)));
+                {
+                    var e = new EISEarning(rd.GetInt32(0), rd.GetString(1), (EISEarningType)rd.GetInt32(2));
+                    
+                    // Categorize earnings so they will be easier to use later
+                    if (e.EarningType == EISEarningType.Department)
+                        EISSystem.DepartmentEarnings.Add(e);
+                    else
+                        EISSystem.LectureEarnings.Add(e);
+
+                    EISSystem.Earnings.Add(e);
+                }
             }
 
             using (var rd = new EISPeriod(-1).SelectAll(EISSystem.Connection))

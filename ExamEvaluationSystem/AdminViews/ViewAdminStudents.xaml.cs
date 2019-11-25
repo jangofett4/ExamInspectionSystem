@@ -1,28 +1,25 @@
-﻿using System;
+﻿using MahApps.Metro.Controls;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace ExamEvaluationSystem
 {
     /// <summary>
     /// ViewStudents.xaml etkileşim mantığı
     /// </summary>
-    public partial class ViewAdminStudents : Page
+    public partial class ViewAdminStudents : IChildObject<AdminPanel>
     {
-        public ViewAdminStudents()
+        public AdminPanel ParentObject { get; set; }
+
+        public ViewAdminStudents(AdminPanel parent)
         {
             InitializeComponent();
+            ParentObject = parent;
         }
     }
 }
