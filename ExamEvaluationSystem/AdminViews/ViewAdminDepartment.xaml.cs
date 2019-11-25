@@ -1,4 +1,5 @@
 ﻿using MahApps.Metro.Controls;
+using MahApps.Metro.Controls.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -87,52 +88,101 @@ namespace ExamEvaluationSystem
             SideMenuState = FlyoutState.Add;
         }
 
-        private void TileDeleteClick(object sender, RoutedEventArgs e)
+        private async void TileDeleteClick(object sender, RoutedEventArgs e)
         {
+            var dataToDelete = new List<EISDepartment>();
+            foreach (var item in Grid.Items)
+            {
+                var x = ((DataGridTemplateColumn)Grid.Columns[0]).GetCellContent(item).FindChild<CheckBox>("Check");
+                if (x.IsChecked == true)
+                    dataToDelete.Add((EISDepartment)item);
+            }
 
+            if (dataToDelete.Count == 0)
+            {
+                ParentObject.NotifyWarning("Silmek istediğiniz verileri tablodan seçin");
+                return;
+            }
+
+            var result = await ParentObject.ShowMessageAsync("Uyarı", $"{ dataToDelete.Count } bölüm bilgisi silinecek (bağıntılı olan öğrenciler ve sınavlar vb. dahil).\nEmin misiniz?", MessageDialogStyle.AffirmativeAndNegative);
+            if (result == MessageDialogResult.Affirmative)
+            {
+                foreach (var data in dataToDelete) // for each data selected
+                {
+                    Grid.Items.Remove(data);            // Remove from grid
+                    EISSystem.Departments.Remove(data); // Remove from system in memory
+                    data.Delete(EISSystem.Connection);  // Remove from database
+                }
+                ParentObject.NotifyInformation($"{ dataToDelete.Count } bölüm bilgisi silindi.");
+            }
+            else
+            {
+                Grid.SelectedIndex = -1;
+                ParentObject.NotifyInformation("Silme işlemi iptal edildi.");
+            }
         }
 
         private void TileFlyoutDoneClick(object sender, RoutedEventArgs e)
         {
-            /*if (!txtFacultyID.Value.HasValue)
+            if (!txtDepartmentID.Value.HasValue)
             {
-                ParentObject.NotifyWarning("Fakülte kodu alanı boş burakılamaz!");
+                ParentObject.NotifyWarning("Bölüm kodu alanı boş burakılamaz!");
+                return;
+            }
+            
+            txtDepartmentName.Text = txtDepartmentName.Text.Trim();
+            if (string.IsNullOrEmpty(txtDepartmentName.Text))
+            {
+                ParentObject.NotifyWarning("Bölüm ismi alanı boş bırakılamaz!");
                 return;
             }
 
-            txtFacultyName.Text = txtFacultyName.Text.Trim();
-            if (string.IsNullOrEmpty(txtFacultyName.Text))
+            if (selectorDepartmentFaculty.SelectedData == null)
             {
-                ParentObject.NotifyWarning("Fakülte ismi alanı boş bırakılamaz!");
+                ParentObject.NotifyWarning("Fakülte alanı boş bırakılamaz!");
                 return;
             }
 
-            // Flyout is in add mode
+            if (selectorDepartmentEarnings.SelectedData == null)
+            {
+                ParentObject.NotifyWarning("Hiç kazanım seçilmedi!");
+                return;
+            }
+
+            var earnings = (List<EISEarning>)selectorDepartmentEarnings.SelectedData;
+            if (earnings.Count == 0)
+            {
+                ParentObject.NotifyWarning("Hiç kazanım seçilmedi!");
+                return;
+            }
+
             if (SideMenuState == FlyoutState.Add)
             {
-                var fac = new EISFaculty((int)txtFacultyID.Value.Value, txtFacultyName.Text);
-                var result = fac.Insert(EISSystem.Connection);
+                var dep = new EISDepartment((int)txtDepartmentID.Value.Value, txtDepartmentName.Text, (EISFaculty)selectorDepartmentFaculty.SelectedData, earnings);
+                var result = dep.Insert(EISSystem.Connection);
                 if (result == -1)
                 {
-                    ParentObject.NotifyError("Fakülte isim çakışması, başka isim belirtin.");
+                    ParentObject.NotifyError("Bölüm isim çakışması, başka isim belirtin.");
                     return;
                 }
                 else if (result == -2)
                 {
-                    ParentObject.NotifyError("Fakülte kodu çakışması, başka kod belirtin.");
+                    ParentObject.NotifyError("Bölüm kodu çakışması, başka kod belirtin.");
                     return;
                 }
+                
+                dep.InsertEarnings(EISSystem.Connection);
 
-                EISSystem.Faculties.Add(fac);
-                Grid.Items.Add(fac);
-                ParentObject.NotifySuccess("Fakülte ekleme başarılı!");
+                EISSystem.Departments.Add(dep);
+                Grid.Items.Add(dep);
+                ParentObject.NotifySuccess("Bölüm ekleme başarılı!");
 
                 sideFlyout.IsOpen = false;
             }
             // Flyout is in edit mode
             else
             {
-                if (itemToEdit == null)
+                /*if (itemToEdit == null)
                     return; // somehow??
 
                 var elem = (TextBlock)Grid.Columns[1].GetCellContent(itemToEdit);
@@ -147,8 +197,8 @@ namespace ExamEvaluationSystem
                 elem.Text = txtFacultyName.Text; // Edit the datagrid cell
 
                 ParentObject.NotifySuccess("Düzenleme başarılı!");
-                sideFlyout.IsOpen = false;
-            }*/
+                sideFlyout.IsOpen = false;*/
+            }
         }
     }
 }

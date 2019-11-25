@@ -122,14 +122,44 @@ namespace ExamEvaluationSystem
         {
             var cmd = new EISUpdateCommand("Departments", $"ID = { ID }");
             var sqlcmd = cmd.Create(connection, "Name", $"'{ Name }'", "FacultyID", Faculty.ID.ToString());
-            return sqlcmd.ExecuteNonQuery();
+            try
+            {
+                return sqlcmd.ExecuteNonQuery();
+            }
+            catch (SQLiteException e)
+            {
+                return -1;
+            }
         }
 
         public override int Insert(SQLiteConnection connection)
         {
             var cmd = new EISInsertCommand("Departments");
-            var sqlcmd = cmd.Create(connection, "Name", $"'{ Name }'", "FacultyID", Faculty.ID.ToString());
-            return sqlcmd.ExecuteNonQuery();
+            var sqlcmd = cmd.Create(connection, "ID", ID.ToString(), "Name", Name.EncapsulateQuote(), "FacultyID", Faculty.ID.ToString());
+            try
+            {
+                return sqlcmd.ExecuteNonQuery();
+            }
+            catch (SQLiteException e)
+            {
+                if (e.Message.Contains(".Name"))
+                    return -1;
+                return -2;
+            }
+        }
+
+        public void InsertEarnings(SQLiteConnection connection)
+        {
+            var del = new EISDeleteCommand("DepartmentEarnings", Where.Equals("DepartmentID", ID.ToString()));
+            var delcmd = del.Create(connection);
+            delcmd.ExecuteNonQuery();
+
+            foreach (var e in Earnings)
+            {
+                var cmd = new EISInsertCommand("DepartmentEarnings");
+                var sqlcmd = cmd.Create(connection, "DepartmentID", ID.ToString(), "EarningID", e.ID.ToString());
+                sqlcmd.ExecuteNonQuery();
+            }
         }
 
         public override int Delete(SQLiteConnection connection)

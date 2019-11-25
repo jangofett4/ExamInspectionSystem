@@ -27,26 +27,7 @@ namespace ExamEvaluationSystem
                 while (rd.Read())
                     EISSystem.Faculties.Add(new EISFaculty(rd.GetInt32(0), rd.GetString(1)));
             }
-
-            using (var rd = new EISDepartment(-1).SelectAll(EISSystem.Connection))
-            {
-                EISSystem.Departments = new List<EISDepartment>();
-                while (rd.Read())
-                {
-                    var dep = new EISDepartment(rd.GetInt32(0));
-                    dep.Name = rd.GetString(2);
-                    dep.Faculty = EISSystem.GetFaculty(rd.GetInt32(1));
-                    var cmd = new EISSelectCommand("DepartmentEarnings", $"DepartmentID = { dep.ID }");
-
-                    using (var sql = cmd.Create(EISSystem.Connection).ExecuteReader())
-                    {
-                        while (sql.Read())
-                            dep.Earnings.Add(EISSystem.GetEarning(sql.GetInt32(1)));
-                    }
-                    EISSystem.Departments.Add(dep);
-                }
-            }
-
+            
             using (var rd = new EISEarning(-1).SelectAll(EISSystem.Connection))
             {
                 EISSystem.Earnings = new List<EISEarning>();
@@ -64,6 +45,25 @@ namespace ExamEvaluationSystem
                         EISSystem.LectureEarnings.Add(e);
 
                     EISSystem.Earnings.Add(e);
+                }
+            }
+
+            using (var rd = new EISDepartment(-1).SelectAll(EISSystem.Connection))
+            {
+                EISSystem.Departments = new List<EISDepartment>();
+                while (rd.Read())
+                {
+                    var dep = new EISDepartment(rd.GetInt32(0));
+                    dep.Name = rd.GetString(2);
+                    dep.Faculty = EISSystem.GetFaculty(rd.GetInt32(1));
+                    var cmd = new EISSelectCommand("DepartmentEarnings", $"DepartmentID = { dep.ID }");
+
+                    using (var sql = cmd.Create(EISSystem.Connection).ExecuteReader())
+                    {
+                        while (sql.Read())
+                            dep.Earnings.Add(EISSystem.GetEarning(sql.GetInt32(1)));
+                    }
+                    EISSystem.Departments.Add(dep);
                 }
             }
 
