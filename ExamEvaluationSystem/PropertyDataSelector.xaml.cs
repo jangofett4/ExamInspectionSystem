@@ -18,7 +18,7 @@ namespace ExamEvaluationSystem
     public partial class PropertyDataSelector
     {
         public object SelectedData;
-        
+
         public PropertyDataSelector(string title)
         {
             InitializeComponent();
@@ -54,6 +54,13 @@ namespace ExamEvaluationSystem
             BuildDataGrid(Form.dgSelector);
             BuildColumns(Form.dgSelector);
             BuildData(Form.dgSelector);
+        }
+
+        public void BuildAll(Predicate<T> predicate)
+        {
+            BuildDataGrid(Form.dgSelector);
+            BuildColumns(Form.dgSelector);
+            BuildData(Form.dgSelector, predicate);
         }
 
         public void BuildDataGrid(DataGrid grid)
@@ -97,6 +104,13 @@ namespace ExamEvaluationSystem
         public void BuildData(DataGrid grid)
         {
             foreach (var d in Data)
+                grid.Items.Add(d);
+        }
+
+        public void BuildData(DataGrid grid, Predicate<T> predicate)
+        {
+            foreach (var d in Data)
+                if (predicate(d))
                     grid.Items.Add(d);
         }
 

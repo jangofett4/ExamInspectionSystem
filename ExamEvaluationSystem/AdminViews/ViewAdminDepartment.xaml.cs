@@ -18,6 +18,8 @@ namespace ExamEvaluationSystem
         public AdminPanel ParentObject { get; set; }
         public FlyoutState SideMenuState { get; set; }
 
+        private EISDepartment itemToEdit;
+
         public ViewAdminDepartment(AdminPanel parent)
         {
             InitializeComponent();
@@ -28,7 +30,7 @@ namespace ExamEvaluationSystem
             {
                 var s = new PropertyDataSelector("Fakülte Seç");
                 var builder = new SingleDataSelectorBuilder<EISFaculty>(EISSystem.Faculties, s, "ID", ("Name", "Fakülte Adı"), ("ID", "Fakülte Kodu"));
-                builder.BuildAll();
+                builder.BuildAll((EISFaculty f) => f.ID >= 10);
                 
                 if (selectorDepartmentFaculty.SelectedData != null)
                 {
@@ -122,6 +124,26 @@ namespace ExamEvaluationSystem
             }
         }
 
+        private void GridDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (Grid.SelectedItem == null)
+                return;
+
+            var item = (EISDepartment)Grid.SelectedItem;
+            itemToEdit = item;
+            txtDepartmentName.Text = item.Name;
+            txtDepartmentID.Value = item.ID;
+            txtDepartmentID.IsReadOnly = true; // cannot change this, lots of foreign key erors
+            selectorDepartmentEarnings.SelectedData = item.Earnings;
+            selectorDepartmentEarnings.Text = $"[{ item.Earnings.Count } bölüm kazanımı]";
+            selectorDepartmentFaculty.SelectedData = item.Faculty;
+            selectorDepartmentFaculty.Text = item.Faculty.Name;
+
+            sideFlyout.Header = "Düzenle";
+            sideFlyout.IsOpen = true;
+            SideMenuState = FlyoutState.Edit;
+        }
+
         private void TileFlyoutDoneClick(object sender, RoutedEventArgs e)
         {
             if (!txtDepartmentID.Value.HasValue)
@@ -182,22 +204,28 @@ namespace ExamEvaluationSystem
             // Flyout is in edit mode
             else
             {
-                /*if (itemToEdit == null)
+                if (itemToEdit == null)
                     return; // somehow??
 
                 var elem = (TextBlock)Grid.Columns[1].GetCellContent(itemToEdit);
-                itemToEdit.Name = txtFacultyName.Text;
+                var elem1 = (TextBlock)Grid.Columns[3].GetCellContent(itemToEdit);
+                itemToEdit.Name = txtDepartmentName.Text;
+                itemToEdit.Earnings = (List<EISEarning>)selectorDepartmentEarnings.SelectedData;
+                itemToEdit.Faculty = (EISFaculty)selectorDepartmentFaculty.SelectedData;
+
                 var result = itemToEdit.Update(EISSystem.Connection);
                 if (result == -1)
                 {
-                    ParentObject.NotifyError("Fakülte isim çakışması, başka isim belirtin.");
+                    ParentObject.NotifyError("Bölüm isim çakışması, başka isim belirtin.");
                     return;
                 }
 
-                elem.Text = txtFacultyName.Text; // Edit the datagrid cell
+                elem.Text = itemToEdit.Name; // Edit the datagrid cell
+                elem1.Text = itemToEdit.Faculty.Name;
+                itemToEdit.InsertEarnings(EISSystem.Connection);
 
                 ParentObject.NotifySuccess("Düzenleme başarılı!");
-                sideFlyout.IsOpen = false;*/
+                sideFlyout.IsOpen = false;
             }
         }
     }
