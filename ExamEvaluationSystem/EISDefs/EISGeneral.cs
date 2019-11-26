@@ -108,6 +108,39 @@ namespace ExamEvaluationSystem
         public abstract SQLiteCommand Create(SQLiteConnection connection, params string[] args);
     }
 
+    public class EISTransaction : EISBaseCommand
+    {
+        private static int transactionID = 0;
+
+        public int TransactionID { get; }
+
+        public EISTransaction() 
+        {
+            transactionID++;
+            TransactionID = transactionID;
+        }
+
+        public override SQLiteCommand Create(SQLiteConnection connection, params string[] args)
+        {
+            return new SQLiteCommand();
+        }
+
+        public int Begin(SQLiteConnection connection)
+        {
+            return new SQLiteCommand($"BEGIN", connection).ExecuteNonQuery();
+        }
+
+        public int Commit(SQLiteConnection connection)
+        {
+            return new SQLiteCommand($"COMMIT", connection).ExecuteNonQuery();
+        }
+
+        public int Rollback(SQLiteConnection connection)
+        {
+            return new SQLiteCommand($"ROLLBACK", connection).ExecuteNonQuery();
+        }
+    }
+
     /// <summary>
     /// SQL update command
     /// </summary>

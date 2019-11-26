@@ -24,5 +24,30 @@ namespace ExamEvaluationSystem
         public FlyoutState SideMenuState { get; set; }
 
         private EISDepartment itemToEdit;
+
+        private void GridDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+
+        }
+
+        private void TileAddClick(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void TileDeleteClick(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void TileSearchClick(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void TileFlyoutDoneClick(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

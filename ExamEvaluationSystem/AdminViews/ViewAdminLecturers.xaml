@@ -20,7 +20,7 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTextColumn Width="20" Header="ID" Visibility="Hidden" Binding="{Binding Path=ID}"/>
+                    <DataGridTextColumn Width="128" Header="Sicil NO" Binding="{Binding Path=ID}"/>
                     <DataGridTextColumn Width="200" Header="İsim" Binding="{Binding Path=Name}"/>
                     <DataGridTextColumn Width="200" Header="Soyisim" Binding="{Binding Path=Surname}"/>
                     <DataGridTextColumn Width="250" Header="Fakülte Adı" Binding="{Binding Path=FacultyName}"/>
@@ -30,7 +30,7 @@
             <Controls:Tile Margin="0,115,10,0" Height="100" Width="100" Content="{iconPacks:FontAwesome Kind=MinusCircleSolid, Height=50, Width=30}" HorizontalAlignment="Right" VerticalAlignment="Top" Click="TileDeleteClick" TabIndex="1"/>
             <Controls:Tile Margin="0,330,10,10" Height="100" Width="100" Content="{iconPacks:FontAwesome Kind=SearchSolid, Height=50, Width=30}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="TileSearchClick" TabIndex="2"/>
             <Controls:FlyoutsControl>
-                <Controls:Flyout Header="$FlyoutName" Position="Right" Width="300" Name="sideFlyout" >
+                <Controls:Flyout Header="$FlyoutName" Position="Right" Width="300" Name="sideFlyout">
                     <Grid>
                         <Label Content="İsim:" HorizontalContentAlignment="Right" Margin="10,10,0,0" Height="26" HorizontalAlignment="Left" Width="91" VerticalAlignment="Top"/>
                         <TextBox Height="23" Margin="106,10,10,0" TextWrapping="Wrap" Text="" TabIndex="0" Name="txtLecturerName" VerticalAlignment="Top"/>
@@ -39,7 +39,7 @@
                         <Label Content="Fakülteler:" HorizontalContentAlignment="Right" Height="26" Margin="10,72,0,0" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Left" Width="91" VerticalAlignment="Top"/>
                         <local:DataSelector Margin="106,72,10,0" x:Name="selectorLecturerFaculty" VerticalAlignment="Top" TabIndex="2"/>
                         <Label Content="Sicil No:" Margin="48,103,0,0" Height="26" VerticalAlignment="Top" HorizontalAlignment="Left" Width="53" />
-                        <Controls:NumericUpDown Margin="106,103,10,0" Height="26" HideUpDownButtons="True" TabIndex="3"  HorizontalContentAlignment="Left" Name="txtLecturerID" VerticalAlignment="Top" Minimum=""/>
+                        <Controls:NumericUpDown Margin="106,103,10,0" Height="26" HideUpDownButtons="True" TabIndex="3"  HorizontalContentAlignment="Left" Name="txtLecturerID" VerticalAlignment="Top" Value="123456789" Minimum="100000000" Maximum="999999999"/>
                         <Label Content="Kullanıcı Adı" HorizontalAlignment="Left" Margin="26,134,0,0" VerticalAlignment="Top"/>
                         <TextBox Margin="106,134,10,0" Height="26"  TabIndex="4"  HorizontalContentAlignment="Left" x:Name="txtLecturerUsername" VerticalAlignment="Top"/>
                         <Label Content="Şifre" HorizontalAlignment="Left" Margin="63,165,0,0" VerticalAlignment="Top"/>

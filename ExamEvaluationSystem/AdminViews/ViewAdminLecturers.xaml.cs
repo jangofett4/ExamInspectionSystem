@@ -18,7 +18,10 @@ namespace ExamEvaluationSystem
     {
         public AdminPanel ParentObject { get; set; }
         public FlyoutState SideMenuState { get; set; }
+        
         private EISLecturer itemToEdit;
+        private EISUserLoginInfo loginToEdit;
+
         public ViewAdminLecturers(AdminPanel parent)
         {
             InitializeComponent();
@@ -53,7 +56,7 @@ namespace ExamEvaluationSystem
         public void RefreshDataGrid()
         {
             foreach (var data in EISSystem.Lecturers)
-                if (data.ID < 10)
+                if (data.ID > 0)
                     Grid.Items.Add(data);
         }
         private void TileAddClick(object sender, RoutedEventArgs e)
@@ -102,13 +105,15 @@ namespace ExamEvaluationSystem
                 return;
 
             var item = (EISLecturer)Grid.SelectedItem;
+            
             itemToEdit = item;
+            loginToEdit = new EISUserLoginInfo(-1).SelectT(EISSystem.Connection, Where.Equals("UserID", itemToEdit.ID.ToString()));
+
             txtLecturerName.Text = item.Name;
             txtLecturerID.Value = item.ID;
             txtLecturerSurname.Text = item.Surname;
-            //txtLecturerUsername.Text = zıkkım.Username;
-            //txtLecturerPassword.Password = zıkkım.Password;
-            txtLecturerID.IsReadOnly = true; // cannot change this, lots of foreign key erors
+            txtLecturerUsername.Text = loginToEdit.Username;
+            txtLecturerPassword.Password = loginToEdit.Password;
             selectorLecturerFaculty.SelectedData = item.Faculty;
             selectorLecturerFaculty.Text = item.Faculty.Name;
 
@@ -125,9 +130,18 @@ namespace ExamEvaluationSystem
             }
 
             txtLecturerName.Text = txtLecturerName.Text.Trim();
-            if (string.IsNullOrEmpty(txtLecturerName.Text))
+            txtLecturerSurname.Text = txtLecturerSurname.Text.Trim();
+            txtLecturerUsername.Text = txtLecturerUsername.Text.Trim();
+            txtLecturerPassword.Password = txtLecturerPassword.Password.Trim();
+            if (string.IsNullOrEmpty(txtLecturerName.Text) || string.IsNullOrEmpty(txtLecturerSurname.Text))
             {
-                ParentObject.NotifyWarning("İsim alanı boş bırakılamaz!");
+                ParentObject.NotifyWarning("İsim/Soyisim alanı boş bırakılamaz!");
+                return;
+            }
+
+            if (string.IsNullOrEmpty(txtLecturerUsername.Text) || string.IsNullOrEmpty(txtLecturerPassword.Password))
+            {
+                ParentObject.NotifyWarning("Kullanıcı adı / Şifre alanı boş bırakılamaz!");
                 return;
             }
 
@@ -139,25 +153,26 @@ namespace ExamEvaluationSystem
 
             if (SideMenuState == FlyoutState.Add)
             {
+                var trn = new EISTransaction();
+                trn.Begin(EISSystem.Connection);
+
                 var lec = new EISLecturer((int)txtLecturerID.Value.Value, txtLecturerName.Text,txtLecturerSurname.Text, (EISFaculty)selectorLecturerFaculty.SelectedData);
                 var result = lec.Insert(EISSystem.Connection);
                 if (result == -1)
                 {
+                    trn.Rollback(EISSystem.Connection);
                     ParentObject.NotifyError("Sicil numarası çakışması, başka numara belirtin.");
                     return;
                 }
-                var cmd = new EISInsertCommand("UserLoginInfo");
-                var sqlcmd = cmd.Create(EISSystem.Connection, "Username", $"'{ txtLecturerUsername.Text }'", "Password", txtLecturerPassword.Password.EncapsulateQuote(),"UserID",lec.ID.ToString(),"MemberPrivilege","1"); 
-                /*try
+                var inf = new EISUserLoginInfo(-1, txtLecturerUsername.Text, txtLecturerPassword.Password, lec.ID, 1);
+                var result2 = inf.Insert(EISSystem.Connection);
+                if (result2 == -1)
                 {
-                    sqlcmd.ExecuteNonQuery();
+                    trn.Rollback(EISSystem.Connection);
+                    ParentObject.NotifyError("Aynı kullanıcı adına sahip öğretim üyesi sistemde mevcut, başka kullanıcı adı belirleyin.");
+                    return;
                 }
-                catch (SQLiteException e)
-                {
-                    if (e.Message.Contains(".Name"))
-
-                      
-                }*/
+                trn.Commit(EISSystem.Connection);
 
                 EISSystem.Lecturers.Add(lec);
                 Grid.Items.Add(lec);
@@ -168,28 +183,104 @@ namespace ExamEvaluationSystem
             // Flyout is in edit mode
             else
             {
-                /* if (itemToEdit == null)
+                if (itemToEdit == null)
                     return; // somehow??
 
                 var elem = (TextBlock)Grid.Columns[1].GetCellContent(itemToEdit);
-                var elem1 = (TextBlock)Grid.Columns[3].GetCellContent(itemToEdit);
-                itemToEdit.Name = txtLecturerName.Text;
-                
-                itemToEdit.Faculty = (EISFaculty)selectorLecturerFaculty.SelectedData;
+                var elem1 = (TextBlock)Grid.Columns[2].GetCellContent(itemToEdit);
+                var elem2 = (TextBlock)Grid.Columns[3].GetCellContent(itemToEdit);
+                var elem3 = (TextBlock)Grid.Columns[4].GetCellContent(itemToEdit);
 
-                var result = itemToEdit.Update(EISSystem.Connection);
-                if (result == -1)
+                int id = itemToEdit.ID;
+                itemToEdit.Store();
+
+                if ((int)txtLecturerID.Value.Value == id) // ID is NOT changed
                 {
-                    ParentObject.NotifyError("Bölüm isim çakışması, başka isim belirtin.");
-                    return;
+                    var trn = new EISTransaction();
+                    trn.Begin(EISSystem.Connection);
+
+                    itemToEdit.Name = txtLecturerName.Text;
+                    itemToEdit.Surname = txtLecturerSurname.Text;
+                    itemToEdit.Faculty = (EISFaculty)selectorLecturerFaculty.SelectedData;
+
+                    var result = itemToEdit.Update(EISSystem.Connection);
+                    if (result == -1)
+                    {
+                        ParentObject.NotifyError("Sicil numarası çakışması, başka numara belirtin.");
+                        itemToEdit.Restore();
+                        trn.Rollback(EISSystem.Connection);
+                        return;
+                    }
+
+                    // Edit the datagrid cells
+                    elem1.Text = itemToEdit.Name;
+                    elem2.Text = itemToEdit.Surname;
+                    elem3.Text = itemToEdit.Faculty.Name;
+
+                    loginToEdit.Store();
+                    loginToEdit.Username = txtLecturerUsername.Text;
+                    loginToEdit.Password = txtLecturerPassword.Password;
+
+                    result = loginToEdit.Update(EISSystem.Connection);
+                    if (result == -1)
+                    {
+                        ParentObject.NotifyError("Aynı kullanıcı adına sahip öğretim üyesi sistemde mevcut, başka kullanıcı adı belirleyin.");
+                        loginToEdit.Restore();
+                        itemToEdit.Restore();
+                        trn.Rollback(EISSystem.Connection);
+                        return;
+                    }
+
+                    trn.Commit(EISSystem.Connection);
+                    // TODO: might add associated lectures
+
+                    ParentObject.NotifySuccess("Düzenleme başarılı!");
+                    sideFlyout.IsOpen = false;
                 }
+                else
+                {
+                    var trn = new EISTransaction();
+                    trn.Begin(EISSystem.Connection);
 
-                elem.Text = itemToEdit.Name; // Edit the datagrid cell
-                elem1.Text = itemToEdit.Faculty.Name;
-                itemToEdit.InsertEarnings(EISSystem.Connection);
+                    itemToEdit.ID = (int)txtLecturerID.Value.Value;
+                    itemToEdit.Name = txtLecturerName.Text;
+                    itemToEdit.Surname = txtLecturerSurname.Text;
+                    itemToEdit.Faculty = (EISFaculty)selectorLecturerFaculty.SelectedData;
 
-                ParentObject.NotifySuccess("Düzenleme başarılı!");
-                sideFlyout.IsOpen = false; */
+                    var result = itemToEdit.UpdateWhere(EISSystem.Connection, Where.Equals("ID", id.ToString()));
+                    if (result == -1)
+                    {
+                        ParentObject.NotifyError("Sicil numarası çakışması, başka numara belirtin.");
+                        itemToEdit.Restore();
+                        trn.Rollback(EISSystem.Connection);
+                        return;
+                    }
+
+                    loginToEdit.Store();
+                    loginToEdit.UserID = itemToEdit.ID;
+                    loginToEdit.Username = txtLecturerUsername.Text;
+                    loginToEdit.Password = txtLecturerPassword.Password;
+
+                    result = loginToEdit.Update(EISSystem.Connection);
+                    if (result == -1)
+                    {
+                        ParentObject.NotifyError("Aynı kullanıcı adına sahip öğretim üyesi sistemde mevcut, başka kullanıcı adı belirleyin.");
+                        loginToEdit.Restore();
+                        itemToEdit.Restore();
+                        trn.Rollback(EISSystem.Connection);
+                        return;
+                    }
+
+                    trn.Commit(EISSystem.Connection);
+                    // Edit the datagrid cell
+                    elem.Text = itemToEdit.ID.ToString(); 
+                    elem1.Text = itemToEdit.Name;
+                    elem2.Text = itemToEdit.Surname;
+                    elem3.Text = itemToEdit.Faculty.Name;
+
+                    ParentObject.NotifySuccess("Düzenleme başarılı!");
+                    sideFlyout.IsOpen = false;
+                }
             }
         }
         private void TileSearchClick(object sender, RoutedEventArgs e)

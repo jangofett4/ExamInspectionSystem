@@ -20,7 +20,9 @@ namespace ExamEvaluationSystem
 
         public static List<EISPeriod> Periods;
         public static List<EISLecture> Lectures;
+        
         public static List<EISLecturer> Lecturers;
+
         public static List<EISExamType> ExamTypes;
 
         public static EISPeriod ActivePeriod;

@@ -9,7 +9,7 @@ namespace ExamEvaluationSystem
 {
     public class EISLecturer : EISDataPoint<EISLecturer>
     {
-        public int ID { get; private set; }
+        public int ID { get; set; }
         public string Name { get; set; }
         public string Surname { get; set; }
         public EISFaculty Faculty { get; set; }
@@ -67,11 +67,32 @@ namespace ExamEvaluationSystem
             return sql.ExecuteNonQuery();
         }
 
+        public override int UpdateWhere(SQLiteConnection connection, string where = "")
+        {
+            var cmd = new EISUpdateCommand("Lecturers", where);
+            var sql = cmd.Create(connection, "ID", ID.ToString(), "Name", $"'{ Name }'", "Surname", $"'{ Surname }'", "FacultyID", Faculty.ID.ToString());
+            try
+            {
+                return sql.ExecuteNonQuery();
+            }
+            catch (SQLiteException)
+            {
+                return -1;
+            }
+        }
+
         public override int Insert(SQLiteConnection connection)
         {
             var cmd = new EISInsertCommand("Lecturers");
-            var sql = cmd.Create(connection, "Name", $"'{ Name }'", "Surname", $"'{ Surname }'", "FacultyID", Faculty.ID.ToString());
-            return sql.ExecuteNonQuery();
+            var sql = cmd.Create(connection, "ID", ID.ToString(), "Name", $"'{ Name }'", "Surname", $"'{ Surname }'", "FacultyID", Faculty.ID.ToString());
+            try
+            {
+                return sql.ExecuteNonQuery(); ;
+            }
+            catch (SQLiteException)
+            {
+                return -1;
+            }
         }
 
         public override int Delete(SQLiteConnection connection)
