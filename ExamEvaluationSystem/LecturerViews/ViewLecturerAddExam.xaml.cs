@@ -20,12 +20,9 @@ namespace ExamEvaluationSystem
     /// </summary>
     public partial class ViewLecturerAddExam : Page
     {
-        public List<int> EditedIndices;
+        public AdminPanel ParentObject { get; set; }
+        public FlyoutState SideMenuState { get; set; }
 
-        public ViewLecturerAddExam()
-        {
-            InitializeComponent();
-            EditedIndices = new List<int>();
-        }
+        private EISDepartment itemToEdit;
     }
 }

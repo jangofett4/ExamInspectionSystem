@@ -30,7 +30,7 @@
             <Controls:Tile Margin="0,115,10,0" Height="100" Width="100" Content="{iconPacks:FontAwesome Kind=MinusCircleSolid, Height=50, Width=30}" HorizontalAlignment="Right" VerticalAlignment="Top" Click="TileDeleteClick" TabIndex="1"/>
             <Controls:Tile Margin="0,330,10,10" Height="100" Width="100" Content="{iconPacks:FontAwesome Kind=SearchSolid, Height=50, Width=30}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="TileSearchClick" TabIndex="2"/>
             <Controls:FlyoutsControl>
-                <Controls:Flyout Header="$FlyoutName" Position="Right" Width="300" Name="sideFlyout" IsOpen="True">
+                <Controls:Flyout Header="$FlyoutName" Position="Right" Width="300" Name="sideFlyout" >
                     <Grid>
                         <Label Content="İsim:" HorizontalContentAlignment="Right" Margin="10,10,0,0" Height="26" HorizontalAlignment="Left" Width="91" VerticalAlignment="Top"/>
                         <TextBox Height="23" Margin="106,10,10,0" TextWrapping="Wrap" Text="" TabIndex="0" Name="txtLecturerName" VerticalAlignment="Top"/>

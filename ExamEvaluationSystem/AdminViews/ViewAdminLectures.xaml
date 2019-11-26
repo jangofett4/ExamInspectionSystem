@@ -34,7 +34,6 @@
                     <Label Content="Ders Kredisi:" HorizontalContentAlignment="Right" Height="26" Margin="10,41,0,0" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Left" Width="91" VerticalAlignment="Top"/>
                     <TextBox Height="23" Margin="106,10,10,0" TextWrapping="Wrap" Text="" TabIndex="0" Name="txtLecturesName" VerticalAlignment="Top"/>
                     <Label Content="Ders Adı:" HorizontalContentAlignment="Right" Margin="10,10,0,0" Height="26" HorizontalAlignment="Left" Width="91" VerticalAlignment="Top"/>
-
                     <Label Content="Kazanımlar:" HorizontalContentAlignment="Right" Height="26" Margin="10,72,0,0" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Left" Width="91" VerticalAlignment="Top"/>
                     <local:DataSelector Margin="106,72,10,0" x:Name="selectorLectureEarnings" VerticalAlignment="Top" TabIndex="2"/>
                     <Controls:NumericUpDown Margin="106,41,10,0" Height="26" HideUpDownButtons="True" TabIndex="1" Minimum="2" Maximum="60" Value="2" HorizontalContentAlignment="Left" Name="txtLecturesCredit" VerticalAlignment="Top"/>

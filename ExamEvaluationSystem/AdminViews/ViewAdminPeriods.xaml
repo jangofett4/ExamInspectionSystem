@@ -32,7 +32,7 @@
                 <Grid>
                     <TextBox Height="23" Margin="106,10,10,0" TextWrapping="Wrap" Text="" TabIndex="0" Name="txtPeriodsName" VerticalAlignment="Top"/>
                     <Label Content="Dönem Adı:" HorizontalContentAlignment="Right" Margin="10,10,0,0" Height="26" HorizontalAlignment="Left" Width="91" VerticalAlignment="Top"/>
-                    <Controls:Tile Margin="10,0,10,10" Height="50" Width="Auto" Content="{iconPacks:FontAwesome Kind=CheckSolid, Height=50, Width=30}" Click="TileFlyoutDoneClick" VerticalAlignment="Bottom" TabIndex="2"/>
+                    <Controls:Tile Margin="10,0,10,10" Height="50" Width="Auto" Content="{iconPacks:FontAwesome Kind=CheckSolid, Height=50, Width=30}" Click="TileFlyoutDoneClick" VerticalAlignment="Bottom" TabIndex="1"/>
                 </Grid>
             </Controls:Flyout>
         </Controls:FlyoutsControl>
