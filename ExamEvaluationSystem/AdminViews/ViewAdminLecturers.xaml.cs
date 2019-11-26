@@ -53,7 +53,8 @@ namespace ExamEvaluationSystem
         public void RefreshDataGrid()
         {
             foreach (var data in EISSystem.Lecturers)
-                Grid.Items.Add(data);
+                if (data.ID < 10)
+                    Grid.Items.Add(data);
         }
         private void TileAddClick(object sender, RoutedEventArgs e)
         {

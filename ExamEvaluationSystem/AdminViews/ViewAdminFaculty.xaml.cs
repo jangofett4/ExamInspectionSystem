@@ -59,7 +59,7 @@ namespace ExamEvaluationSystem
 
             if (dataToDelete.Count == 0)
             {
-                ParentObject.NotifyWarning("Silmek istediğiniz verileri tablodan seçin (çoklu seçim için Control ya da Shift kullanın)");
+                ParentObject.NotifyWarning("Silmek istediğiniz verileri tablodan seçin");
                 return;
             }
 

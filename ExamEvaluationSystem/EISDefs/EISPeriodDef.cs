@@ -64,9 +64,12 @@ namespace ExamEvaluationSystem
             var cmd = new EISInsertCommand("Periods");
             var sql = cmd.Create(connection, "Name", $"'{ Name }'");
             var res = sql.ExecuteNonQuery();
-            var last = new EISSelectLastCommand("Periods", "ID");
-            sql = last.Create(connection, "ID");
-            ID = (int)(long)sql.ExecuteScalar();
+
+            sql = new SQLiteCommand("SELECT * FROM Periods ORDER BY ID DESC LIMIT 1", connection);
+            var id = (int)(long)sql.ExecuteScalar();
+
+            ID = id;
+
             return res;
         }
 
