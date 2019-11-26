@@ -165,6 +165,8 @@ namespace ExamEvaluationSystem
                 foreach (var item in grid.Items)
                 {
                     var x = ((DataGridTemplateColumn)grid.Columns[0]).GetCellContent(item).FindChild<CheckBox>("Check");
+                    if (x == null)
+                        continue;
                     if (x.IsChecked == true)
                         SelectedData.Add((T)item);
                 }

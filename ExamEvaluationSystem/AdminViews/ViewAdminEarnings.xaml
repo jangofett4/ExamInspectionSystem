@@ -10,7 +10,7 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Title="ViewEarnings">
     <Grid>
-        <DataGrid Margin="10,10,119,10" Name="Grid" IsReadOnly="True">
+        <DataGrid Margin="10,10,119,10" Name="Grid" IsReadOnly="True" MouseDoubleClick="GridDoubleClick">
             <DataGrid.Columns>
                 <DataGridTemplateColumn>
                     <DataGridTemplateColumn.CellTemplate>
@@ -28,10 +28,10 @@
         <Controls:Tile Margin="0,115,10,0" Height="100" Width="100" Content="{iconPacks:FontAwesome Kind=MinusCircleSolid, Height=50, Width=30}" HorizontalAlignment="Right" VerticalAlignment="Top" Click="TileDeleteClick" TabIndex="1"/>
         <Controls:Tile Margin="0,330,10,10" Height="100" Width="100" Content="{iconPacks:FontAwesome Kind=SearchSolid, Height=50, Width=30}" HorizontalAlignment="Right" VerticalAlignment="Bottom" TabIndex="2"/>
         <Controls:FlyoutsControl>
-            <Controls:Flyout Header="$FlyoutName" Position="Right" Width="300" Name="sideFlyout" IsOpen="True">
+            <Controls:Flyout Header="$FlyoutName" Position="Right" Width="300" Name="sideFlyout">
                 <Grid>
                     <Label Content="Kazanım Açıklaması / Adı:" HorizontalContentAlignment="Right" Margin="10,10,0,0" Height="26" HorizontalAlignment="Left" Width="147" VerticalAlignment="Top"/>
-                    <TextBox HorizontalAlignment="Left" Height="96" Margin="10,41,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="280" HorizontalScrollBarVisibility="Visible" TabIndex="0" Name="txtEarningName"/>
+                    <TextBox AcceptsReturn="True" HorizontalAlignment="Left" Height="96" Margin="10,41,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="280" HorizontalScrollBarVisibility="Visible" TabIndex="0" Name="txtEarningName"/>
                     <Label Content="Kazanım Türü:" HorizontalContentAlignment="Right" Margin="10,142,0,0" Height="26" HorizontalAlignment="Left" Width="91" VerticalAlignment="Top"/>
                     <ComboBox HorizontalAlignment="Left" Margin="106,142,0,0" VerticalAlignment="Top" Width="184" SelectedIndex="0" TabIndex="1" Name="comboEarningType">
                         <ComboBox.Items>

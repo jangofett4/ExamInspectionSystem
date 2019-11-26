@@ -93,6 +93,7 @@
     <Compile Include="CustomControls\DataSelector.xaml.cs">
       <DependentUpon>DataSelector.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EISDefs\EISUserLoginInfo.cs" />
     <Compile Include="HelperClasses\FlyoutState.cs" />
     <Compile Include="HelperClasses\IChildObject.cs" />
     <Compile Include="HelperClasses\PropertyCallAdapter.cs" />

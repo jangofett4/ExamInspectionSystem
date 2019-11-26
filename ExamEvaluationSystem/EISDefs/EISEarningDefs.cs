@@ -39,7 +39,6 @@ namespace ExamEvaluationSystem
         private int id;
         private string name;
         private EISEarningType type;
-
         public override void Store()
         {
             id = ID;
@@ -65,7 +64,14 @@ namespace ExamEvaluationSystem
         {
             var cmd = new EISInsertCommand("Earnings");
             var sql = cmd.Create(connection, "Name", $"'{ Name }'", "EarningType", ((int)EarningType).ToString());
-            return sql.ExecuteNonQuery();
+            var res = sql.ExecuteNonQuery();
+
+            sql = new SQLiteCommand("SELECT * FROM Earnings ORDER BY ID DESC LIMIT 1", connection);
+            var id = (int)(long)sql.ExecuteScalar();
+
+            ID = id;
+
+            return res;
         }
 
         public override int Delete(SQLiteConnection connection)
