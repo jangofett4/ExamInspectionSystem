@@ -48,13 +48,13 @@ namespace ExamEvaluationSystem
         {
             var cmd = new EISUpdateCommand("Periods", $"ID = { ID }");
             var sql = cmd.Create(connection, "Name", $"'{ Name }'");
+
             try
             {
                 return sql.ExecuteNonQuery();
             }
             catch (SQLiteException)
             {
-
                 return -1;
             }
         }
@@ -63,7 +63,16 @@ namespace ExamEvaluationSystem
         {
             var cmd = new EISInsertCommand("Periods");
             var sql = cmd.Create(connection, "Name", $"'{ Name }'");
-            var res = sql.ExecuteNonQuery();
+            int res = 0;
+
+            try
+            {
+                res = sql.ExecuteNonQuery();
+            }
+            catch (SQLiteException)
+            {
+                return -1;
+            }
 
             sql = new SQLiteCommand("SELECT * FROM Periods ORDER BY ID DESC LIMIT 1", connection);
             var id = (int)(long)sql.ExecuteScalar();

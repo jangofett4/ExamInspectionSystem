@@ -13,6 +13,7 @@ namespace ExamEvaluationSystem
         public string Name { get; set; }
         public string Surname { get; set; }
         public EISFaculty Faculty { get; set; }
+        public List<EISLecture> Associated { get; set; }
 
         public string FacultyName { get { return Faculty.Name; } }
 
@@ -22,6 +23,7 @@ namespace ExamEvaluationSystem
             Name = name;
             Surname = surname;
             Faculty = faculty;
+            Associated = new List<EISLecture>();
         }
 
         public EISLecturer(string name, string surname, EISFaculty faculty)
@@ -30,6 +32,7 @@ namespace ExamEvaluationSystem
             Name = name;
             Surname = surname;
             Faculty = faculty;
+            Associated = new List<EISLecture>();
         }
 
         public EISLecturer(int id)
@@ -38,6 +41,7 @@ namespace ExamEvaluationSystem
             Name = "";
             Surname = "";
             Faculty = null;
+            Associated = new List<EISLecture>();
         }
 
         private int id;
@@ -95,6 +99,20 @@ namespace ExamEvaluationSystem
             }
         }
 
+        public void InsertAssociated(SQLiteConnection connection, EISPeriod period)
+        {
+            var del = new EISDeleteCommand("AssociatedLecturers", Where.Equals("LecturerID", ID.ToString()));
+            var delcmd = del.Create(connection);
+            delcmd.ExecuteNonQuery();
+
+            foreach (var l in Associated)
+            {
+                var cmd = new EISInsertCommand("AssociatedLecturers");
+                var sqlcmd = cmd.Create(connection, "LecturerID", ID.ToString(), "PeriodID", period.ID.ToString(), "LectureID", l.ID.ToString());
+                sqlcmd.ExecuteNonQuery();
+            }
+        }
+
         public override int Delete(SQLiteConnection connection)
         {
             var cmd = new EISDeleteCommand("Lecturers", $"ID = { ID }");
@@ -105,6 +123,14 @@ namespace ExamEvaluationSystem
         public override SQLiteDataReader Select(SQLiteConnection connection, string where = "")
         {
             var cmd = new EISSelectCommand("Lecturers", where == "" ? $"ID = { ID }" : where);
+            var sql = cmd.Create(connection);
+            return sql.ExecuteReader();
+        }
+
+        public SQLiteDataReader SelectAssociated(SQLiteConnection connection, EISPeriod period)
+        {
+            Associated.Clear();
+            var cmd = new EISSelectCommand("AssociatedLecturers", Where.And(Where.Equals("LecturerID", ID.ToString()), Where.Equals("PeriodID", period.ID.ToString())));
             var sql = cmd.Create(connection);
             return sql.ExecuteReader();
         }

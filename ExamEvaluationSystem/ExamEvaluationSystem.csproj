@@ -130,8 +130,8 @@
     <Compile Include="LecturerViews\ViewLecturerAddExam.xaml.cs">
       <DependentUpon>ViewLecturerAddExam.xaml</DependentUpon>
     </Compile>
-    <Compile Include="AdminViews\ViewAdminStudents.xaml.cs">
-      <DependentUpon>ViewAdminStudents.xaml</DependentUpon>
+    <Compile Include="AdminViews\ViewAdminLectureAssociate.xaml.cs">
+      <DependentUpon>ViewAdminLectureAssociate.xaml</DependentUpon>
     </Compile>
     <Page Include="AdminPanel.xaml">
       <SubType>Designer</SubType>
@@ -210,7 +210,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="AdminViews\ViewAdminStudents.xaml">
+    <Page Include="AdminViews\ViewAdminLectureAssociate.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

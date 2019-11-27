@@ -26,7 +26,7 @@ namespace ExamEvaluationSystem
         public ViewAdminLecturers ViewAdminLecturers;
         public ViewAdminLectures ViewAdminLectures;
         public ViewAdminPeriods ViewAdminPeriods;
-        public ViewAdminStudents ViewAdminStudents;
+        public ViewAdminLectureAssociate ViewAdminLectureAssociate;
 
         private Notifier Notifier;
 
@@ -42,7 +42,7 @@ namespace ExamEvaluationSystem
             ViewAdminLecturers = new ViewAdminLecturers(this);
             ViewAdminLectures = new ViewAdminLectures(this);
             ViewAdminPeriods = new ViewAdminPeriods(this);
-            ViewAdminStudents = new ViewAdminStudents(this);
+            ViewAdminLectureAssociate = new ViewAdminLectureAssociate(this);
             /**/
 
             Notifier = new Notifier(cfg =>
@@ -130,7 +130,7 @@ namespace ExamEvaluationSystem
                     AdminHamburgerMenuFrame.Content = ViewAdminEarnings;
                     break;
                 case "8":
-                    AdminHamburgerMenuFrame.Content = ViewAdminStudents;
+                    AdminHamburgerMenuFrame.Content = ViewAdminLectureAssociate;
                     break;
                 default:
                     // impossible?

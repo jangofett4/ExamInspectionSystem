@@ -108,8 +108,23 @@ namespace ExamEvaluationSystem
             {
                 if (!rd.Read())
                 {
-                    int y = DateTime.Now.Year;
-                    string newperiod = y + "-" + (y + 1) + " Dönemi";
+                    var date = DateTime.Now;
+                    string newperiod = "";
+                    if (date.Month > 9 || date.Month <= 2)
+                    {
+                        if (date.Month <= 2)
+                        {
+                            newperiod = $"{date.Year - 1}-{ date.Year } Güz Yarıyılı";
+                        }
+                        else
+                        {
+                            newperiod = $"{ date.Year }-{ date.Year + 1 } Güz Yarıyılı";
+                        }
+                    }
+                    else
+                    {
+                        newperiod = $"{ date.Year - 1 }-{ date.Year } Bahar Yarıyılı";
+                    }
                     var result = MessageBox.Show(
                         "Sistemde aktif dönem bulunamadı, bu sistemin ilk defa çalıştığı anlamına gelebilir.\n" +
                         "Yeni aktif dönem oluşturmak için 'OK/Evet' seçeneğini, uygulamadan çıkmak için 'Cancel/İptal' seçeneğini kullanın.\n" +
@@ -130,6 +145,7 @@ namespace ExamEvaluationSystem
                     }
 
                     new EISInsertCommand("System").Create(EISSystem.Connection, "ActivePeriod", per.ID.ToString()).ExecuteNonQuery();
+                    EISSystem.Periods.Add(per);
                     EISSystem.ActivePeriod = per;
                 }
                 else
@@ -140,7 +156,15 @@ namespace ExamEvaluationSystem
             {
                 EISSystem.Lecturers = new List<EISLecturer>();
                 while (rd.Read())
-                    EISSystem.Lecturers.Add(new EISLecturer(rd.GetInt32(0), rd.GetString(1), rd.GetString(2), EISSystem.GetFaculty(rd.GetInt32(3))));
+                {
+                    var lec = new EISLecturer(rd.GetInt32(0), rd.GetString(1), rd.GetString(2), EISSystem.GetFaculty(rd.GetInt32(3)));
+                    using (var asrd = lec.SelectAssociated(EISSystem.Connection, EISSystem.ActivePeriod))
+                    {
+                        while (asrd.Read())
+                            lec.Associated.Add(EISSystem.GetLecture(asrd.GetInt32(3)));
+                        EISSystem.Lecturers.Add(lec);
+                    }
+                }
             }
         }
 

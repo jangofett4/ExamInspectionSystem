@@ -53,12 +53,14 @@ namespace ExamEvaluationSystem
             };
             
         }
+
         public void RefreshDataGrid()
         {
             foreach (var data in EISSystem.Lecturers)
                 if (data.ID > 0)
                     Grid.Items.Add(data);
         }
+
         private void TileAddClick(object sender, RoutedEventArgs e)
         {
             sideFlyout.Header = "Ekle";
@@ -66,6 +68,7 @@ namespace ExamEvaluationSystem
             //txtDepartmentID.IsReadOnly = false; // might be artifact from edit mode
             SideMenuState = FlyoutState.Add;
         }
+
         private async void TileDeleteClick(object sender, RoutedEventArgs e)
         {
             var dataToDelete = new List<EISLecturer>();
@@ -99,6 +102,7 @@ namespace ExamEvaluationSystem
                 ParentObject.NotifyInformation("Silme işlemi iptal edildi.");
             }
         }
+
         private void GridDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             if (Grid.SelectedItem == null)
@@ -121,6 +125,7 @@ namespace ExamEvaluationSystem
             sideFlyout.IsOpen = true;
             SideMenuState = FlyoutState.Edit;
         }
+
         private void TileFlyoutDoneClick(object sender, RoutedEventArgs e)
         {
             if (!txtLecturerID.Value.HasValue)
@@ -283,6 +288,7 @@ namespace ExamEvaluationSystem
                 }
             }
         }
+
         private void TileSearchClick(object sender, RoutedEventArgs e)
         {
 

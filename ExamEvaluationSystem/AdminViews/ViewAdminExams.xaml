@@ -9,24 +9,35 @@
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="ViewExams">
-
     <Grid>
-
-
-        <DataGrid Margin="10,10,119,10">
+        <DataGrid Margin="10,10,119,10" Name="Grid" IsReadOnly="True" MouseDoubleClick="GridDoubleClick">
             <DataGrid.Columns>
-                <DataGridTextColumn Width="95" Header="Sınav Kodu" IsReadOnly="True"/>
-                <DataGridTextColumn Width="170" Header="Ders"/>
-                <DataGridTextColumn Width="100" Header="Dönem"/>
-                <DataGridTextColumn Width="100" Header="Sınav Türü"/>
-                <DataGridTextColumn Width="100" Header="Cevaplar"/>
-
+                <DataGridTextColumn Width="95" Header="Sınav Kodu" IsReadOnly="True" Binding="{Binding Path=ID}"/>
+                <DataGridTextColumn Width="170" Header="Ders" Binding="{Binding Path=LectureName}"/>
+                <DataGridTextColumn Width="100" Header="Dönem" Binding="{Binding Path=PeriodName}"/>
+                <DataGridTextColumn Width="100" Header="Sınav Türü" Binding="{Binding Path=ExamType}"/>
+                <DataGridHyperlinkColumn Width="100" Header="Cevaplar" Binding="{Binding Path=Answers}"/>
             </DataGrid.Columns>
         </DataGrid>
-        <Controls:Tile Margin="0,10,10,0" Height="100" Width="100" Content="{iconPacks:FontAwesome Kind=PlusCircleSolid, Height=50, Width=30}" HorizontalAlignment="Right" VerticalAlignment="Top">
-        </Controls:Tile>
-        <Controls:Tile Margin="0,115,10,0" Height="100" Width="100" Content="{iconPacks:FontAwesome Kind=MinusCircleSolid, Height=50, Width=30}" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-        <Controls:Tile Margin="0,225,10,0" Height="100" Width="100" Content="{iconPacks:FontAwesome Kind=SaveSolid, Height=50, Width=30}" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-        <Controls:Tile Margin="0,335,10,0" Height="100" Width="100" Content="{iconPacks:FontAwesome Kind=SearchSolid, Height=50, Width=30}" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+        <Controls:Tile Margin="0,10,10,0" Height="100" Width="100" Content="{iconPacks:FontAwesome Kind=PlusCircleSolid, Height=50, Width=30}" HorizontalAlignment="Right" VerticalAlignment="Top" Click="TileAddClick" TabIndex="0"/>
+        <Controls:Tile Margin="0,115,10,0" Height="100" Width="100" Content="{iconPacks:FontAwesome Kind=MinusCircleSolid, Height=50, Width=30}" HorizontalAlignment="Right" VerticalAlignment="Top" Click="TileDeleteClick" TabIndex="1"/>
+        <Controls:Tile Margin="0,330,10,10" Height="100" Width="100" Content="{iconPacks:FontAwesome Kind=SearchSolid, Height=50, Width=30}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="TileSearchClick" TabIndex="2"/>
+        <Controls:FlyoutsControl>
+            <Controls:Flyout Header="$FlyoutName" Position="Right" Width="300" Name="sideFlyout" IsOpen="True" Margin="0,6,0,-6">
+                <Grid>
+                    <Label Content="Ders:" HorizontalContentAlignment="Right" Margin="10,10,0,0" Height="26" HorizontalAlignment="Left" Width="91" VerticalAlignment="Top"/>
+                    <local:DataSelector Margin="106,10,10,0" x:Name="selectorExamLectures" VerticalAlignment="Top" TabIndex="0"/>
+                    <Label Content="Dönem:" HorizontalContentAlignment="Right" Height="26" Margin="10,41,0,0" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Left" Width="91" VerticalAlignment="Top"/>
+                    <local:DataSelector Margin="106,41,10,0" x:Name="selectorExamPeriods" VerticalAlignment="Top" TabIndex="1"/>
+                    <Label Content="Sınav Türü:" HorizontalAlignment="Left" Margin="36,72,0,0" VerticalAlignment="Top"/>
+                    <local:DataSelector Margin="106,72,10,0" x:Name="selectorExamTypes" VerticalAlignment="Top" TabIndex="2"/>
+                    <Label Content="Cevap Anahtarı:" Margin="11,103,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" Width="93"/>
+                    <local:DataSelector Margin="106,103,10,0" x:Name="selectorExamAnswers" VerticalAlignment="Top" TabIndex="3"/>
+                    <Label Content="Optik:" Margin="59,134,0,0" RenderTransformOrigin="0.53,0.618" HorizontalAlignment="Left" Width="42" Height="26" VerticalAlignment="Top"/>
+                    <local:DataSelector Margin="106,134,10,0" x:Name="selectorExamOptics" VerticalAlignment="Top" TabIndex="4"/>
+                    <Controls:Tile Margin="10,0,10,10" Height="50" Width="Auto" Content="{iconPacks:FontAwesome Kind=CheckSolid, Height=50, Width=30}" Click="TileFlyoutDoneClick" VerticalAlignment="Bottom" TabIndex="5"/>
+                </Grid>
+            </Controls:Flyout>
+        </Controls:FlyoutsControl>
     </Grid>
 </Page>

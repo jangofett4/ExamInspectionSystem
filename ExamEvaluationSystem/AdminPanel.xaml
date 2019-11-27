@@ -7,7 +7,7 @@
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         mc:Ignorable="d"
-        Title="AdminPanel" Height="450" Width="800" WindowState="Maximized" WindowStartupLocation="CenterScreen">
+        Title="Yönetici Paneli" Height="651" Width="860" WindowState="Maximized" WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <DataTemplate x:Key="AdminHamburger">
             <Grid Height="48">
@@ -27,8 +27,8 @@
     <Grid>
         <Controls:HamburgerMenu 
             ItemTemplate="{StaticResource AdminHamburger}"
-            OptionsItemTemplate="{StaticResource AdminHamburger}" ItemClick="HamburgerMenu_ItemClick"> 
-         
+            OptionsItemTemplate="{StaticResource AdminHamburger}" ItemClick="HamburgerMenu_ItemClick">
+
             <Controls:HamburgerMenu.Content>
                 <Frame x:Name="AdminHamburgerMenuFrame" NavigationUIVisibility="Hidden"/>
             </Controls:HamburgerMenu.Content>
@@ -49,7 +49,7 @@
 
                     </Controls:HamburgerMenuIconItem>
                     <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=UserTieSolid}" Label="Öğretim Görevlileri" Tag="4">
-                        
+
                     </Controls:HamburgerMenuIconItem>
                     <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=BookSolid}" Label="Dersler" Tag="5">
 
@@ -60,7 +60,7 @@
                     <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=StarSolid}" Label="Kazanımlar" Tag="7">
 
                     </Controls:HamburgerMenuIconItem>
-                    <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=UsersSolid}" Label="Öğrenciler" Tag="8">
+                    <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=AddressBookSolid}" Label="Ders Atama" Tag="8">
 
                     </Controls:HamburgerMenuIconItem>
                 </Controls:HamburgerMenuItemCollection>
@@ -69,12 +69,12 @@
             <!--  Options  -->
             <Controls:HamburgerMenu.OptionsItemsSource>
                 <Controls:HamburgerMenuItemCollection>
-                    <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=UserSolid}" Label="MASTER ADMİN">
+                    <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=UserSolid}" Label="Sistem Yöneticisi">
                         <!--<Controls:HamburgerMenuIconItem.Tag>
                             Yes
                         </Controls:HamburgerMenuIconItem.Tag>-->
                     </Controls:HamburgerMenuIconItem>
-                    
+
                 </Controls:HamburgerMenuItemCollection>
             </Controls:HamburgerMenu.OptionsItemsSource>
         </Controls:HamburgerMenu>

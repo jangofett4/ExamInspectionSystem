@@ -18,6 +18,7 @@ namespace ExamEvaluationSystem
     public partial class PropertyDataSelector
     {
         public object SelectedData;
+        public Action OnShow;
 
         public PropertyDataSelector(string title)
         {
@@ -170,6 +171,13 @@ namespace ExamEvaluationSystem
                     if (x.IsChecked == true)
                         SelectedData.Add((T)item);
                 }
+                
+                /*if (SelectedData.Count == 0) // no checkboxes are used
+                {
+                    foreach (var v in grid.SelectedItems)
+                        SelectedData.Add((T)v);
+                }*/
+
                 Form.Close();
             };
         }
@@ -196,7 +204,10 @@ namespace ExamEvaluationSystem
             {
                 grid.SelectedItems.Clear();
                 for (int i = 0; i < lst.Count; i++)
+                { 
+                    // var x = ((DataGridTemplateColumn)grid.Columns[0]).GetCellContent(lst[i]);
                     grid.SelectedItems.Add(lst[i]);
+                }
             }
             else
             {

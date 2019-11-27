@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace ExamEvaluationSystem
 {
@@ -21,6 +22,31 @@ namespace ExamEvaluationSystem
         {
             InitializeComponent();
             ParentObject = parent;
+        }
+
+        private void GridDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+
+        }
+
+        private void TileAddClick(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void TileDeleteClick(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void TileSearchClick(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void TileFlyoutDoneClick(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

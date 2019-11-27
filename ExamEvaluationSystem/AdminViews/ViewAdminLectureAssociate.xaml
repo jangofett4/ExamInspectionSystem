@@ -1,0 +1,50 @@
+﻿<Page x:Class="ExamEvaluationSystem.ViewAdminLectureAssociate"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+      xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+      xmlns:local="clr-namespace:ExamEvaluationSystem"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="ViewStudents">
+
+    <Grid>
+        <DataGrid Margin="10" Name="Grid" IsReadOnly="True" MouseDoubleClick="GridDoubleClick">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox Name="Check" IsChecked="False"></CheckBox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTextColumn Width="128" Header="Sicil NO" Binding="{Binding Path=ID}"/>
+                <DataGridTextColumn Width="200" Header="İsim" Binding="{Binding Path=Name}"/>
+                <DataGridTextColumn Width="200" Header="Soyisim" Binding="{Binding Path=Surname}"/>
+                <DataGridTextColumn Width="250" Header="Fakülte Adı" Binding="{Binding Path=FacultyName}"/>
+            </DataGrid.Columns>
+        </DataGrid>
+        <!--
+        <Controls:Tile Margin="0,10,10,0" Height="100" Width="100" Content="{iconPacks:FontAwesome Kind=PlusCircleSolid, Height=50, Width=30}" HorizontalAlignment="Right" VerticalAlignment="Top" Click="TileAddClick" TabIndex="0"/>
+        <Controls:Tile Margin="0,115,10,0" Height="100" Width="100" Content="{iconPacks:FontAwesome Kind=MinusCircleSolid, Height=50, Width=30}" HorizontalAlignment="Right" VerticalAlignment="Top" Click="TileDeleteClick" TabIndex="1"/>
+        <Controls:Tile Margin="0,330,10,10" Height="100" Width="100" Content="{iconPacks:FontAwesome Kind=SearchSolid, Height=50, Width=30}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="TileSearchClick" TabIndex="2"/>
+        -->
+        <Controls:FlyoutsControl>
+            <Controls:Flyout Header="$FlyoutName" Position="Right" Width="300" Name="sideFlyout">
+                <Grid>
+                    <Label Content="Öğretim Görevlisi:" HorizontalContentAlignment="Right" Margin="10,10,0,0" Height="26" HorizontalAlignment="Left" Width="110" VerticalAlignment="Top"/>
+                    <TextBox Height="23" Margin="125,10,10,0" TextWrapping="Wrap" Text="" TabIndex="0" Name="txtLecturerName" VerticalAlignment="Top" IsReadOnly="True"/>
+                    <Label Content="Atanan Dersler:" HorizontalContentAlignment="Right" Height="26" Margin="29,103,0,0" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Left" Width="91" VerticalAlignment="Top"/>
+                    <local:DataSelector Margin="125,103,10,0" x:Name="selectorLecturerFaculty" VerticalAlignment="Top" TabIndex="2"/>
+                    <Label Content="Sicil No:" Margin="67,41,0,0" Height="26" VerticalAlignment="Top" HorizontalAlignment="Left" Width="53" />
+                    <Controls:NumericUpDown Margin="125,41,10,0" Height="26" HideUpDownButtons="True" TabIndex="3"  HorizontalContentAlignment="Left" Name="txtLecturerID" VerticalAlignment="Top" Value="123456789" Minimum="100000000" Maximum="999999999" IsReadOnly="True"/>
+                    <Label Content="Dönem:" HorizontalContentAlignment="Right" Height="26" Margin="29,72,0,0" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Left" Width="91" VerticalAlignment="Top"/>
+                    <TextBox Height="23" Margin="125,72,10,0" TextWrapping="Wrap" Text="" TabIndex="0" x:Name="txtPeriod" VerticalAlignment="Top" IsReadOnly="True"/>
+                    <Controls:Tile Margin="10,0,10,10" Height="50" Width="Auto" Content="{iconPacks:FontAwesome Kind=CheckSolid, Height=50, Width=30}" Click="TileFlyoutDoneClick" VerticalAlignment="Bottom" TabIndex="6"/>
+                </Grid>
+            </Controls:Flyout>
+        </Controls:FlyoutsControl>
+    </Grid>
+</Page>

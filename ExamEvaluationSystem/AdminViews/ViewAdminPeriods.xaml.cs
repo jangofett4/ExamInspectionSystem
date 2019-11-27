@@ -25,18 +25,39 @@ namespace ExamEvaluationSystem
             ParentObject = parent;
             RefreshDataGrid();
         }
+
         public void RefreshDataGrid()
         {
             Grid.Items.Clear();
             foreach (var p in EISSystem.Periods)
                     Grid.Items.Add(p);
         }
+
         private void TileAddClick(object sender, RoutedEventArgs e)
         {
             sideFlyout.Header = "Ekle";
             sideFlyout.IsOpen = true;
+
+            var date = DateTime.Now;
+            if (date.Month > 9 || date.Month <= 2)
+            {
+                if (date.Month <= 2)
+                {
+                    txtPeriodsName.Text = $"{date.Year - 1}-{ date.Year } Güz Yarıyılı";
+                }
+                else
+                {
+                    txtPeriodsName.Text = $"{ date.Year }-{ date.Year + 1 } Güz Yarıyılı";
+                }
+            }
+            else
+            {
+                txtPeriodsName.Text = $"{ date.Year - 1 }-{ date.Year } Bahar Yarıyılı";
+            }
+
             SideMenuState = FlyoutState.Add;
         }
+
         private async void TileDeleteClick(object sender, RoutedEventArgs e)
         {
             var dataToDelete = new List<EISPeriod>();
@@ -53,7 +74,7 @@ namespace ExamEvaluationSystem
                 return;
             }
 
-            var result = await ParentObject.ShowMessageAsync("Uyarı", $"{ dataToDelete.Count } dönem bilgisi silinecek (bağıntılı olan dersler ve alt bilgiler dahil).\nEmin misiniz?", MessageDialogStyle.AffirmativeAndNegative);
+            var result = await ParentObject.ShowMessageAsync("Uyarı", $"{ dataToDelete.Count } dönem bilgisi silinecek (bağıntılı olan dersler ve alt bilgiler dahil).\nSistem olan en güncel dönemi aktif edecektir.\nEmin misiniz?", MessageDialogStyle.AffirmativeAndNegative);
             if (result == MessageDialogResult.Affirmative)
             {
                 foreach (var data in dataToDelete) // for each data selected
@@ -63,6 +84,26 @@ namespace ExamEvaluationSystem
                     data.Delete(EISSystem.Connection);  // Remove from database
                 }
                 ParentObject.NotifyInformation($"{ dataToDelete.Count } dönem bilgisi silindi.");
+                var id = new EISSelectLastCommand("System", "ActivePeriod").Create(EISSystem.Connection).ExecuteScalar();
+                if (id != null) // if there is more periods left
+                {
+                    EISSystem.ActivePeriod = new EISPeriod((int)((long)id)).SelectT(EISSystem.Connection);
+                }
+                else
+                {
+                    EISSystem.ActivePeriod = null;
+                    ParentObject.NotifyWarning("Sistemde başka dönem kaldığından dolayı aktif dönem belirlenemedi. Sistem bu durumda karasız çalışabilir. Programı tekrar açmayı ya da yeni dönem eklemeyi deneyin.");
+                }
+
+                if (EISSystem.ActivePeriod != null)
+                    foreach (var lec in EISSystem.Lecturers)
+                    {
+                        using (var asrd = lec.SelectAssociated(EISSystem.Connection, EISSystem.ActivePeriod))
+                        {
+                            while (asrd.Read())
+                                lec.Associated.Add(EISSystem.GetLecture(asrd.GetInt32(3)));
+                        }
+                    }
             }
             else
             {
@@ -70,6 +111,7 @@ namespace ExamEvaluationSystem
                 ParentObject.NotifyInformation("Silme işlemi iptal edildi.");
             }
         }
+
         private void GridDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             if (Grid.SelectedItem == null)
@@ -83,10 +125,9 @@ namespace ExamEvaluationSystem
             sideFlyout.IsOpen = true;
             SideMenuState = FlyoutState.Edit;
         }
-        private void TileFlyoutDoneClick(object sender, RoutedEventArgs e)
-        {
-            
 
+        private async void TileFlyoutDoneClick(object sender, RoutedEventArgs e)
+        {
             txtPeriodsName.Text = txtPeriodsName.Text.Trim();
             if (string.IsNullOrEmpty(txtPeriodsName.Text))
             {
@@ -97,6 +138,13 @@ namespace ExamEvaluationSystem
             // Flyout is in add mode
             if (SideMenuState == FlyoutState.Add)
             {
+                var dialogresult = await ParentObject.ShowMessageAsync("Uyarı", "Yeni eklenecek dönem sistemin aktif dönemi olarak belirlenecek ve sınav düzenlemek mümkün olmayacak.\nEski sınavlar arşiv amacıyla silinmeyecektir.\nEmin misiniz?", MessageDialogStyle.AffirmativeAndNegative);
+                if (dialogresult == MessageDialogResult.Negative)
+                {
+                    ParentObject.NotifyInformation("Dönem ekleme iptal edildi.");
+                    return;
+                }
+
                 var per = new EISPeriod(txtPeriodsName.Text);
                 var result = per.Insert(EISSystem.Connection);
                 if (result == -1)
@@ -107,7 +155,21 @@ namespace ExamEvaluationSystem
                
                 EISSystem.Periods.Add(per);
                 Grid.Items.Add(per);
-                ParentObject.NotifySuccess("Dönem ekleme başarılı!");
+                ParentObject.NotifySuccess("Sistem yeni dönem için güncellendi!");
+
+                
+                EISSystem.ActivePeriod = per; // change active period
+                
+                foreach (var lec in EISSystem.Lecturers)
+                {
+                    using (var asrd = lec.SelectAssociated(EISSystem.Connection, EISSystem.ActivePeriod))
+                    {
+                        while (asrd.Read())
+                            lec.Associated.Add(EISSystem.GetLecture(asrd.GetInt32(3)));
+                    }
+                }
+                
+                new EISInsertCommand("System").Create(EISSystem.Connection, "ActivePeriod", per.ID.ToString()).ExecuteNonQuery(); // change active period in database
 
                 sideFlyout.IsOpen = false;
             }
