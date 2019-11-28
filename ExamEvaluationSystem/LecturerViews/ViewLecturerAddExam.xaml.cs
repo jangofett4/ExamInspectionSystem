@@ -20,10 +20,16 @@ namespace ExamEvaluationSystem
     /// </summary>
     public partial class ViewLecturerAddExam : Page
     {
-        public AdminPanel ParentObject { get; set; }
+        public UserPanel ParentObject { get; set; }
         public FlyoutState SideMenuState { get; set; }
 
         private EISDepartment itemToEdit;
+        public ViewLecturerAddExam(UserPanel parent)
+        {
+            InitializeComponent();
+            ParentObject = parent;
+            //RefreshDataGrid();
+        }
 
         private void GridDoubleClick(object sender, MouseButtonEventArgs e)
         {
