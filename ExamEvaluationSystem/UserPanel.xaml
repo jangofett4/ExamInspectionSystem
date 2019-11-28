@@ -59,8 +59,7 @@
             </Controls:HamburgerMenu.Content>
             <Controls:HamburgerMenu.ItemsSource>
                 <Controls:HamburgerMenuItemCollection>
-                    <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=GlassesSolid}" Label="Private" Tag="1"></Controls:HamburgerMenuIconItem>
-                    <Controls:HamburgerMenuIconItem  Icon="{iconPacks:FontAwesome Kind=CogSolid}" Label="Settings" Tag="2"></Controls:HamburgerMenuIconItem>
+                    <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=BookOpenSolid}" Label="Sınavlar" Tag="1"></Controls:HamburgerMenuIconItem>
                 </Controls:HamburgerMenuItemCollection>
             </Controls:HamburgerMenu.ItemsSource>
 

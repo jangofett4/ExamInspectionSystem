@@ -34,14 +34,14 @@ namespace ExamEvaluationSystem
             builder.BuildAll();
             s.ShowDialog();
             */
-
+            ExamView = new ViewLecturerAddExam(this);
             Lecturer = lec;
             Resources.Add("CurrentLecturerID", lec.ID.ToString());
             Resources.Add("CurrentLecturerName", lec.Name + " " + lec.Surname);
             // UserHamburgerMenuFrame.Navigate(new Uri("ViewLecturerAddExam.xaml", UriKind.RelativeOrAbsolute));
 
             /* Initialize views */
-            ExamView = new ViewLecturerAddExam();
+            ExamView = new ViewLecturerAddExam(this);
             /* End of view initialization */
             
             
@@ -51,6 +51,14 @@ namespace ExamEvaluationSystem
         private void HamburgerItemClick(object sender, MahApps.Metro.Controls.ItemClickEventArgs e)
         {
             var tag = ((MahApps.Metro.Controls.HamburgerMenuItem)e.ClickedItem).Tag.ToString();
+            switch (tag)
+            {
+                case "1":
+                     UserHamburgerMenuFrame.Content = ExamView;
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }
