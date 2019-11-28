@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using System.Data.SQLite;
+using System.ComponentModel;
 
 namespace ExamEvaluationSystem
 {
@@ -325,9 +326,31 @@ namespace ExamEvaluationSystem
     /// <summary>
     /// SQL data point. Must implement base functions.
     /// </summary>
-    public abstract class EISDataPoint<T>
+    public abstract class EISDataPoint<T> : INotifyPropertyChanged
     {
-        public bool Checked { get; set; }
+        private bool _checked;
+        public bool Checked { 
+            get
+            {
+                return _checked;
+            }
+            set 
+            {
+                _checked = value;
+                OnPropertyChanged("Checked");
+            } 
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void OnPropertyChanged(string propertyName)
+        {
+            var propertyChanged = PropertyChanged;
+            if (propertyChanged != null)
+            {
+                propertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
 
         public abstract int Update(SQLiteConnection connection);
         public virtual int UpdateWhere(SQLiteConnection connection, string where = "")

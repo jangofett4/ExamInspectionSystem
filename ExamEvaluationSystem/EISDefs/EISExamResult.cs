@@ -99,6 +99,17 @@ namespace ExamEvaluationSystem
             return sql.ExecuteReader();
         }
 
+        public List<EISExamResult> SelectList(SQLiteConnection connection, string where = "")
+        {
+            var cmd = new EISSelectCommand("ExamResults", where == "" ? $"ID = { ID }" : where);
+            var sql = cmd.Create(connection);
+            var rd = sql.ExecuteReader();
+            var res = new List<EISExamResult>();
+            while (rd.Read())
+                res.Add(new EISExamResult(rd.GetInt32(0), EISSystem.GetStudent(rd.GetInt32(1).ToString()), EISSystem.GetExam(rd.GetInt32(2)), rd.GetString(3)));
+            return res;
+        }
+
         public override SQLiteDataReader SelectAll(SQLiteConnection connection)
         {
             var cmd = new EISSelectCommand("ExamResults");
