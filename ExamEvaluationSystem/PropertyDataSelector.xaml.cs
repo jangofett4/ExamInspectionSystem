@@ -37,6 +37,11 @@ namespace ExamEvaluationSystem
         public List<T> Data;
         public T SelectedData;
 
+        public bool DisableDoubleClickBehaviour { get; set; } = false;
+        public bool CloseAfterSelection { get; set; } = true;
+        public Action DataDoubleClickCallback { get; set; } = null;
+        public bool DisableMenu { get; set; } = false;
+
         public PropertyDataSelector Form;
 
         public string Select;
@@ -48,6 +53,8 @@ namespace ExamEvaluationSystem
             Data = data;
             Select = select;
             Show = show;
+            DisableDoubleClickBehaviour = false;
+            DisableMenu = false;
         }
 
         public void BuildAll()
@@ -70,29 +77,40 @@ namespace ExamEvaluationSystem
             grid.IsReadOnly = true;                             // Restrict editing
             grid.SelectionMode = DataGridSelectionMode.Single;  // Restrict multiple selection
 
-            grid.MouseDoubleClick += (object sender, System.Windows.Input.MouseButtonEventArgs e) =>
-            {
-                if (SelectedData != null && ReferenceEquals(SelectedData, grid.SelectedItem)) // If someone already set data
+            if (!DisableDoubleClickBehaviour)
+                grid.MouseDoubleClick += (object sender, System.Windows.Input.MouseButtonEventArgs e) =>
                 {
-                    Form.Close(); // Just use it
-                    return;
-                }
+                    if (SelectedData != null && ReferenceEquals(SelectedData, grid.SelectedItem)) // If someone already set data
+                    {
+                        DataDoubleClickCallback?.Invoke();
+                        if (CloseAfterSelection)
+                            Form.Close(); // Just use it
+                        return;
+                    }
 
-                SelectedData = (T)grid.SelectedItem; // Set data
-                Form.Close();
-            };
+                    SelectedData = (T)grid.SelectedItem; // Set data
+                    DataDoubleClickCallback?.Invoke();
+                    if (CloseAfterSelection)
+                        Form.Close();
+                };
 
-            Form.MenuSelectButton.Click += (object sender, RoutedEventArgs e) =>
-            {
-                if (SelectedData != null && ReferenceEquals(SelectedData, grid.SelectedItem)) // If someone already set data
+            if (!DisableMenu)
+                Form.MenuSelectButton.Click += (object sender, RoutedEventArgs e) =>
                 {
-                    Form.Close(); // Just use it
-                    return;
-                }
-
-                SelectedData = (T)grid.SelectedItem; // Set data
-                Form.Close();
-            };
+                    if (SelectedData != null && ReferenceEquals(SelectedData, grid.SelectedItem)) // If someone already set data
+                    {
+                        DataDoubleClickCallback?.Invoke();
+                        if (CloseAfterSelection)
+                            Form.Close(); // Just use it
+                        return;
+                    }
+                    DataDoubleClickCallback?.Invoke();
+                    if (CloseAfterSelection)
+                        SelectedData = (T)grid.SelectedItem; // Set data
+                    Form.Close();
+                };
+            else
+                Form.MainMenu.Visibility = Visibility.Hidden;
         }
 
         public void BuildColumns(DataGrid grid)

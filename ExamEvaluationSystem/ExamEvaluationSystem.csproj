@@ -93,10 +93,19 @@
     <Compile Include="CustomControls\DataSelector.xaml.cs">
       <DependentUpon>DataSelector.xaml</DependentUpon>
     </Compile>
+    <Compile Include="EISDefs\EISExamResult.cs" />
     <Compile Include="EISDefs\EISUserLoginInfo.cs" />
+    <Compile Include="EISDefs\EISSingleQuestion.cs" />
+    <Compile Include="AdminViews\ExamEditPanel.xaml.cs">
+      <DependentUpon>ExamEditPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="AdminViews\ExamStudentPanel.xaml.cs">
+      <DependentUpon>ExamStudentPanel.xaml</DependentUpon>
+    </Compile>
     <Compile Include="HelperClasses\FlyoutState.cs" />
     <Compile Include="HelperClasses\IChildObject.cs" />
     <Compile Include="HelperClasses\PropertyCallAdapter.cs" />
+    <Compile Include="HelperClasses\IHasNotifiers.cs" />
     <Compile Include="LecturerDialogs\DialogLecturerAddExam.xaml.cs">
       <DependentUpon>DialogLecturerAddExam.xaml</DependentUpon>
     </Compile>
@@ -138,6 +147,14 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="CustomControls\DataSelector.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AdminViews\ExamEditPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AdminViews\ExamStudentPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

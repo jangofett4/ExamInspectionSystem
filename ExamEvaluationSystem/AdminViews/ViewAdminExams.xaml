@@ -12,11 +12,18 @@
     <Grid>
         <DataGrid Margin="10,10,119,10" Name="Grid" IsReadOnly="True" MouseDoubleClick="GridDoubleClick">
             <DataGrid.Columns>
+                <DataGridTemplateColumn>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <CheckBox Name="Check" IsChecked="False"></CheckBox>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
                 <DataGridTextColumn Width="95" Header="Sınav Kodu" IsReadOnly="True" Binding="{Binding Path=ID}"/>
                 <DataGridTextColumn Width="170" Header="Ders" Binding="{Binding Path=LectureName}"/>
                 <DataGridTextColumn Width="100" Header="Dönem" Binding="{Binding Path=PeriodName}"/>
                 <DataGridTextColumn Width="100" Header="Sınav Türü" Binding="{Binding Path=ExamType}"/>
-                <DataGridHyperlinkColumn Width="100" Header="Cevaplar" Binding="{Binding Path=Answers}"/>
+                <!-- <DataGridHyperlinkColumn Width="100" Header="Cevaplar" Binding="{Binding Path=Answers}"/> -->
             </DataGrid.Columns>
         </DataGrid>
         <Controls:Tile Margin="0,10,10,0" Height="100" Width="100" Content="{iconPacks:FontAwesome Kind=PlusCircleSolid, Height=50, Width=30}" HorizontalAlignment="Right" VerticalAlignment="Top" Click="TileAddClick" TabIndex="0"/>

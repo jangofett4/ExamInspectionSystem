@@ -87,7 +87,6 @@ namespace ExamEvaluationSystem
         {
             sideFlyout.Header = "Ekle";
             sideFlyout.IsOpen = true;
-            txtDepartmentID.IsReadOnly = false; // might be artifact from edit mode
             SideMenuState = FlyoutState.Add;
         }
 

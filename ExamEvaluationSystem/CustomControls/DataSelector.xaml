@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:ExamEvaluationSystem"
              mc:Ignorable="d">
     <Grid>
-        <TextBox Height="24" TextWrapping="Wrap" Text="" Margin="0,0,26,0" VerticalAlignment="Top" Name="txtData"/>
+        <TextBox Height="24" IsReadOnly="True" Text="" Margin="0,0,26,0" VerticalAlignment="Top" Name="txtData"/>
         <Button Content="..." HorizontalAlignment="Right" Width="26" Height="26" VerticalAlignment="Top" Name="btnDataSelect"/>
     </Grid>
 </UserControl>

@@ -1,0 +1,71 @@
+﻿<Controls:MetroWindow x:Class="ExamEvaluationSystem.ExamStudentPanel"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        xmlns:local="clr-namespace:ExamEvaluationSystem"
+        mc:Ignorable="d"
+        Title="ExamStudentPanel" Height="487.212" Width="683.5">
+    <Grid>
+        <DockPanel>
+            <Grid>
+                <Menu DockPanel.Dock="Top" Name="MainMenu" Margin="0,0,0,398">
+                    <MenuItem Header="Onayla" Name="MenuSelectButton" Click="MenuCheckClick"/>
+                </Menu>
+                <DataGrid Margin="10,33,143,10" Name="dgStudents" IsReadOnly="True">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Header="No" Width="100">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Controls:NumericUpDown Value="{Binding No, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HideUpDownButtons="True" Maximum="999999999" Name="NumNo"></Controls:NumericUpDown>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="İsim" Width="*">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBox Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Soy isim" Width="*">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBox Text="{Binding Surname, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></TextBox>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="Grup" Width="55">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ComboBox Text="{Binding Group, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" ItemsSource="{DynamicResource GroupItemSource}"></ComboBox>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTemplateColumn Header="" Width="50">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Click="DataGridButtonClick" Content="..."></Button>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+                <DataGrid Margin="0,33,10,44" x:Name="dgAnswers" IsReadOnly="True" HorizontalAlignment="Right" Width="128">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Header="Cevap" Width="*">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBox Text="{Binding Answer, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Name="Text"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+                <Controls:Tile Margin="0,0,10,10" Height="29" Width="128" Content="{iconPacks:FontAwesome Height=30, Kind=CheckSolid, Width=15}" TabIndex="0" Click="TileCheckClick" VerticalAlignment="Bottom" HorizontalAlignment="Right"/>
+            </Grid>
+        </DockPanel>
+    </Grid>
+</Controls:MetroWindow>

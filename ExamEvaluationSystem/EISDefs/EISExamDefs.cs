@@ -20,6 +20,15 @@ namespace ExamEvaluationSystem
         public string LectureName { get { return Lecture.Name; } }
         public string PeriodName { get { return Period.Name; } }
         public string ExamType { get { return Type.Name; } }
+        public List<char> Groups { 
+            get
+            {
+                List<char> g = new List<char>();
+                foreach (var q in Questions)
+                    g.Add(q.Group[0]);
+                return g;
+            } 
+        }
 
         public EISExam(int id)
         {
@@ -74,14 +83,14 @@ namespace ExamEvaluationSystem
         public override int Update(SQLiteConnection connection)
         {
             var cmd = new EISUpdateCommand("Exams", $"ID = { ID }");
-            var sql = cmd.Create(connection, "LectureID", Lecture.ID.ToString(), "PeriodID", Period.ID.ToString(), "TypeID", Type.ID.ToString(), "Questions", JsonConvert.SerializeObject(Questions));
+            var sql = cmd.Create(connection, "LectureID", Lecture.ID.ToString(), "PeriodID", Period.ID.ToString(), "TypeID", Type.ID.ToString(), "Questions", JsonConvert.SerializeObject(Questions).EncapsulateQuote());
             return sql.ExecuteNonQuery();
         }
 
         public override int Insert(SQLiteConnection connection)
         {
             var cmd = new EISInsertCommand("Exams");
-            var sql = cmd.Create(connection, "LectureID", Lecture.ID.ToString(), "PeriodID", Period.ID.ToString(), "TypeID", Type.ID.ToString(), "Questions", JsonConvert.SerializeObject(Questions));
+            var sql = cmd.Create(connection, "LectureID", Lecture.ID.ToString(), "PeriodID", Period.ID.ToString(), "TypeID", Type.ID.ToString(), "Questions", JsonConvert.SerializeObject(Questions).EncapsulateQuote());
             var res = sql.ExecuteNonQuery();
 
             sql = new SQLiteCommand("SELECT * FROM Exams ORDER BY ID DESC LIMIT 1", connection);
@@ -132,6 +141,30 @@ namespace ExamEvaluationSystem
 
                 return exam;
             }
+        }
+
+        public static List<EISQuestion> ParseAnswers(string content)
+        {
+            var split = content.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            var lst = new List<EISQuestion>();
+            foreach (var line in split)
+            {
+                var group = "";
+                int i = 0;
+                while (i < line.Length && !char.IsWhiteSpace(line[i]))
+                    group += line[i++];
+                if (i >= line.Length)
+                    return null;
+                while (i < line.Length && (char.IsWhiteSpace(line[i]) || line[i] == ';'))
+                    i++;
+                if (i >= line.Length)
+                    return null;
+                var ans = "";
+                while (i < line.Length && (!char.IsWhiteSpace(line[i]) && char.IsLetter(line[i])))
+                    ans += line[i++];
+                lst.Add(new EISQuestion(ans) { Group = group });
+            }
+            return lst;
         }
     }
 
@@ -208,12 +241,53 @@ namespace ExamEvaluationSystem
     public class EISQuestion
     {
         public string Answer { get; set; }
-        public List<EISEarning> Earnings { get; set; }
+        public string Group { get; set; }
+        public List<List<int>> Earnings { get; set; }
+
+
+        [JsonIgnore]
+        public List<List<EISEarning>> EarningsWithType { get; set; }
+
+        [JsonIgnore]
+        public string FriendlyEarnings { get { return $"[{ EarningsWithType.Count } soru kazanımı]"; } }
 
         public EISQuestion(string answer)
         {
             Answer = answer;
-            Earnings = new List<EISEarning>();
+            Earnings = new List<List<int>>();
+            EarningsWithType = new List<List<EISEarning>>();
+            for (int i = 0; i < Answer.Length; i++)
+                Earnings.Add(new List<int>());
+        }
+
+        public void ConvertEarnings(List<EISSingleQuestion> questions)
+        {
+            EarningsWithType.Clear();
+            Earnings.Clear();
+
+            List<List<int>> lst = new List<List<int>>();
+            foreach (var q in questions)
+            {
+                var l = new List<int>();
+                foreach (var e in q.Earnings)
+                    l.Add(e.ID);
+                lst.Add(l);
+            }
+
+            Earnings = lst;
+            ConvertEarnings();
+        }
+
+        public void ConvertEarnings()
+        {
+            EarningsWithType.Clear();
+            foreach (var e in Earnings)
+            {
+                var lst = new List<EISEarning>();
+                foreach (var ee in e)
+                    lst.Add(EISSystem.GetEarning(ee));
+                EarningsWithType.Add(lst);
+            }
         }
     }
 }

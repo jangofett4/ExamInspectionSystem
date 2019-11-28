@@ -9,10 +9,9 @@
         mc:Ignorable="d" Height="393" Width="530.182" WindowStartupLocation="CenterOwner">
     <Grid>
         <DockPanel>
-            <Menu DockPanel.Dock="Top">
+            <Menu DockPanel.Dock="Top" Name="MainMenu">
                 <MenuItem Header="Seç" Name="MenuSelectButton"/>
             </Menu>
-            <StackPanel></StackPanel>
             <DataGrid Margin="10,5,10,10" Name="dgSelector">
                 <DataGrid.Columns>
                     <DataGridTemplateColumn>

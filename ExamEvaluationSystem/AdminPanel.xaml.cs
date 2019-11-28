@@ -17,7 +17,7 @@ namespace ExamEvaluationSystem
     /// <summary>
     /// AdminPanel.xaml etkileşim mantığı
     /// </summary>
-    public partial class AdminPanel : IDisposable
+    public partial class AdminPanel : IDisposable, IHasNotifiers
     {
         public ViewAdminDepartment ViewAdminDepartment;
         public ViewAdminEarnings ViewAdminEarnings;

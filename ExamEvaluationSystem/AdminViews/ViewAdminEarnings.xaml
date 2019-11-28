@@ -20,7 +20,7 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
                 <DataGridTextColumn Width="50" Header="ID" Visibility="Hidden" Binding="{Binding Path=ID}"/>
-                <DataGridTextColumn Width="300" Header="Kazanım Adı" Binding="{Binding Path=Name}"/>
+                <DataGridTextColumn Width="*" Header="Kazanım Adı" Binding="{Binding Path=Name}"/>
                 <DataGridTextColumn Width="100" Header="Kazanım Tipi" Binding="{Binding Path=FriendlyEarningTypeName}"/>
             </DataGrid.Columns>
         </DataGrid>

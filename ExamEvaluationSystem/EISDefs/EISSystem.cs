@@ -23,6 +23,7 @@ namespace ExamEvaluationSystem
         
         public static List<EISLecturer> Lecturers;
 
+        public static List<EISExam> Exams;
         public static List<EISExamType> ExamTypes;
 
         public static EISPeriod ActivePeriod;
@@ -73,6 +74,13 @@ namespace ExamEvaluationSystem
         {
             foreach (var e in ExamTypes)
                 if (e.ID == ETID) return e;
+            return null;
+        }
+
+        public static EISExam GetExam(int EXID)
+        {
+            foreach (var e in Exams)
+                if (e.ID == EXID) return e;
             return null;
         }
     }

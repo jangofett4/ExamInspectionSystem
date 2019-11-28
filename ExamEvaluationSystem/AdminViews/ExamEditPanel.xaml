@@ -1,0 +1,61 @@
+﻿<Controls:MetroWindow x:Class="ExamEvaluationSystem.ExamEditPanel"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        xmlns:local="clr-namespace:ExamEvaluationSystem"
+        mc:Ignorable="d"
+        Title="Sınav Düzenleme Paneli" Height="500" Width="800">
+    <Grid>
+        <DockPanel>
+            <Grid>
+                <Menu DockPanel.Dock="Top" Name="MainMenu" Margin="0,0,0,440">
+                    <MenuItem Header="Onayla" Name="MenuSelectButton" Click="MenuCheckClick"/>
+                </Menu>
+                <!--
+            <DataGrid Margin="10,5,10,10" Name="dgSelector">
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn>
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox Name="Check" IsChecked="False"></CheckBox>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+            -->
+                <DataGrid Margin="10,34,0,10" HorizontalAlignment="Left" Width="265" Name="dgGroups" MouseDoubleClick="DataGridDoubleClickGroup" IsReadOnly="True">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Tür" Width="50" Binding="{Binding Path=Group}"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Cevaplar" Width="*" Binding="{Binding Path=Answer}"></DataGridTextColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+                <DataGrid Margin="280,34,0,10" HorizontalAlignment="Left" Width="206" Name="dgSingleAnswers" MouseDoubleClick="DataGridDoubleClickAnswers" IsReadOnly="True">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="-" Width="26" Binding="{Binding Path=Nth}"/>
+                        <DataGridTextColumn Header="Şık" Width="50" Binding="{Binding Path=Answer}"/>
+                        <DataGridTextColumn Header="Kazanım" Width="*" Binding="{Binding Path=FriendlyEarnings}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+                <DataGrid Margin="491,34,10,44" Name="dgEarnings" IsReadOnly="True">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn>
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <CheckBox Name="Check" IsChecked="False"></CheckBox>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="Kazanım" Width="*" Binding="{Binding Name}"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+                <Controls:Tile Margin="491,0,10,10" Height="29" Width="Auto" Content="{iconPacks:FontAwesome Kind=CheckSolid, Height=30, Width=15}" TabIndex="0" VerticalAlignment="Bottom" Click="TileCheckClick"/>
+                <Label Content="Seçilen Soru Yok" HorizontalAlignment="Right" Margin="0,33,10,0" VerticalAlignment="Top" Width="144" Name="lblSelectedQuestion"/>
+                <Label Content="$lecture" HorizontalContentAlignment="Right" HorizontalAlignment="Right" Margin="0,2,10,0" VerticalAlignment="Top" Width="210" Name="lblLecture"/>
+            </Grid>
+        </DockPanel>
+    </Grid>
+</Controls:MetroWindow>

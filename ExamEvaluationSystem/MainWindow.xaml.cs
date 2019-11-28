@@ -1,5 +1,5 @@
 ﻿using MahApps.Metro.Controls;
-
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
@@ -7,6 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.IO;
+using Newtonsoft.Json;
+using System.Runtime.InteropServices;
 
 namespace ExamEvaluationSystem
 {
@@ -15,8 +18,26 @@ namespace ExamEvaluationSystem
     /// </summary>
     public partial class MainWindow
     {
+        [DllImport("Kernel32")]
+        public static extern void AllocConsole();
+
+        [DllImport("Kernel32")]
+        public static extern void FreeConsole();
+
         public MainWindow()
         {
+            /*AllocConsole();
+
+            var dlg = new OpenFileDialog();
+            dlg.Title = "Cevap Dosyası Seçin";
+            dlg.Filter = "Cevap Dosyası|*.txt";
+            dlg.FileName = "*.txt";
+            dlg.ShowDialog();
+            var file = dlg.FileName;
+            EISExamResult.ParseResults(File.ReadAllText(file, Encoding.UTF8));
+
+            FreeConsole();*/
+
             InitializeComponent();
             EISSystem.Connection = new SQLiteConnection($"Data Source=./data.db; Version=3;");
             EISSystem.Connection.Open();
@@ -164,6 +185,19 @@ namespace ExamEvaluationSystem
                             lec.Associated.Add(EISSystem.GetLecture(asrd.GetInt32(3)));
                         EISSystem.Lecturers.Add(lec);
                     }
+                }
+            }
+
+            using (var rd = new EISSelectCommand("Exams").Create(EISSystem.Connection).ExecuteReader())
+            {
+                EISSystem.Exams = new List<EISExam>();
+                while (rd.Read())
+                {
+                    var ex = new EISExam(rd.GetInt32(0), EISSystem.GetLecture(rd.GetInt32(1)), EISSystem.GetPeriod(rd.GetInt32(2)), EISSystem.GetExamType(rd.GetInt32(3)), new List<EISQuestion>());
+                    ex.Questions = JsonConvert.DeserializeObject<List<EISQuestion>>(rd.GetString(4));
+                    foreach (var q in ex.Questions)
+                        q.ConvertEarnings();
+                    EISSystem.Exams.Add(ex);
                 }
             }
         }

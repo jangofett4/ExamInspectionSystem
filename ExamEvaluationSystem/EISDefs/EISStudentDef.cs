@@ -9,12 +9,12 @@ namespace ExamEvaluationSystem
 {
     public class EISStudent : EISDataPoint<EISStudent>
     {
-        public int ID { get; private set; }
+        public string ID { get; set; }
         public string Name { get; set; }
         public string Surname { get; set; }
         public EISDepartment Department { get; set; }
 
-        public EISStudent(int id, string name, string surname, EISDepartment department)
+        public EISStudent(string id, string name, string surname, EISDepartment department)
         {
             ID = id;
             Name = name;
@@ -24,21 +24,21 @@ namespace ExamEvaluationSystem
 
         public EISStudent(string name, string surname, EISDepartment department)
         {
-            ID = -1;
+            ID = "";
             Name = name;
             Surname = surname;
             Department = department;
         }
 
-        public EISStudent(int id)
+        public EISStudent(string id)
         {
-            ID = id;
+            ID = "";
             Name = "";
             Surname = "";
             Department = null;
         }
 
-        private int id;
+        private string id;
         private string name, surname;
         private EISDepartment dep;
         public override void Store()
@@ -60,15 +60,36 @@ namespace ExamEvaluationSystem
         public override int Update(SQLiteConnection connection)
         {
             var cmd = new EISUpdateCommand("Students", $"ID = { ID }");
-            var sql = cmd.Create(connection, "Name", $"'{ Name }'", "Surname", $"'{ Surname }'", "Department", Department.ID.ToString());
+            var sql = cmd.Create(connection, "Name", $"'{ Name }'", "Surname", $"'{ Surname }'", "DepartmentID", Department.ID.ToString());
             return sql.ExecuteNonQuery();
+        }
+
+        public override int UpdateWhere(SQLiteConnection connection, string where = "")
+        {
+            var cmd = new EISUpdateCommand("Students", where);
+            var sql = cmd.Create(connection, "ID", ID, "Name", $"'{ Name }'", "Surname", $"'{ Surname }'", "DepartmentID", Department.ID.ToString());
+            try
+            {
+                return sql.ExecuteNonQuery();
+            }
+            catch (SQLiteException)
+            {
+                return -1;
+            }
         }
 
         public override int Insert(SQLiteConnection connection)
         {
             var cmd = new EISInsertCommand("Students");
-            var sql = cmd.Create(connection, "Name", $"'{ Name }'", "Surname", $"'{ Surname }'", "Department", Department.ID.ToString());
-            return sql.ExecuteNonQuery();
+            var sql = cmd.Create(connection, "ID", ID, "Name", $"'{ Name }'", "Surname", $"'{ Surname }'", "DepartmentID", Department.ID.ToString());
+            try
+            {
+                return sql.ExecuteNonQuery();
+            }
+            catch (SQLiteException)
+            {
+                return -1;
+            }
         }
 
         public override int Delete(SQLiteConnection connection)
