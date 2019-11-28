@@ -200,6 +200,16 @@ namespace ExamEvaluationSystem
                     EISSystem.Exams.Add(ex);
                 }
             }
+
+            using (var rd = new EISSelectCommand("Students").Create(EISSystem.Connection).ExecuteReader())
+            {
+                EISSystem.Students = new List<EISStudent>();
+                while (rd.Read())
+                {
+                    var st = new EISStudent(rd.GetInt32(0).ToString(), rd.GetString(1), rd.GetString(2), EISSystem.GetDepartment(rd.GetInt32(3)));
+                    EISSystem.Students.Add(st);
+                }
+            }
         }
 
         private void ClickLoginButton(object sender, RoutedEventArgs e)

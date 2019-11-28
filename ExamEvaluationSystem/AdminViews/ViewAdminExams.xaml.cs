@@ -3,6 +3,7 @@ using MahApps.Metro.Controls.Dialogs;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -265,7 +266,30 @@ namespace ExamEvaluationSystem
 
         private void TileExportClick(object sender, RoutedEventArgs e)
         {
-            
+            var sel = GetSelectedExams();
+            if (sel.Count == 0)
+            {
+                ParentObject.NotifyWarning("Listeden sınav seçin!");
+                return;
+            }
+            if (sel.Count > 1)
+            {
+                ParentObject.NotifyWarning("Birden fazla sınav seçildi, ilk seçim kullanılacak.");
+            }
+
+            var ex = sel[0];
+            var res = new EISExamResult(-1).SelectList(EISSystem.Connection, Where.Equals("ExamID", ex.ID.ToString()));
+            var lmao = EISStatistics.InternalExam.FromExam(ex, res);
+        }
+
+
+        private void UpdateCheckBoxChecked(object sender, RoutedEventArgs e)
+        {
+            ((CheckBox)sender).GetBindingExpression(CheckBox.IsCheckedProperty).UpdateTarget();
+        }
+        private void UpdateCheckBoxUnchecked(object sender, RoutedEventArgs e)
+        {
+            ((CheckBox)sender).GetBindingExpression(CheckBox.IsCheckedProperty).UpdateTarget();
         }
 
         private void TileFlyoutDoneClick(object sender, RoutedEventArgs e)

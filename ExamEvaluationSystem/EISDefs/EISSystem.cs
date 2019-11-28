@@ -26,6 +26,8 @@ namespace ExamEvaluationSystem
         public static List<EISExam> Exams;
         public static List<EISExamType> ExamTypes;
 
+        public static List<EISStudent> Students;
+
         public static EISPeriod ActivePeriod;
 
         public static EISDepartment GetDepartment(int DID)
@@ -81,6 +83,13 @@ namespace ExamEvaluationSystem
         {
             foreach (var e in Exams)
                 if (e.ID == EXID) return e;
+            return null;
+        }
+
+        public static EISStudent GetStudent(string SID)
+        {
+            foreach (var e in Students)
+                if (e.ID == SID) return e;
             return null;
         }
     }
