@@ -32,7 +32,7 @@ namespace ExamEvaluationSystem
         }
     }
 
-    public class SingleDataSelectorBuilder<T>
+    public class SingleDataSelectorBuilder<T> where T:EISDataPoint<T>
     {
         public List<T> Data;
         public T SelectedData;
@@ -55,6 +55,31 @@ namespace ExamEvaluationSystem
             Show = show;
             DisableDoubleClickBehaviour = false;
             DisableMenu = false;
+        }
+
+        public void ClearSelected()
+        {
+            foreach (var data in Form.dgSelector.Items)
+            {
+                var x = ((T)data);
+                if (x.Checked)
+                    x.Checked = false;
+            }
+        }
+
+        private List<T> GetSelectedPeriods()
+        {
+            var lst = new List<T>();
+            foreach (var data in Form.dgSelector.Items)
+            {
+                var x = ((T)data);
+                if (x.Checked)
+                {
+                    x.Checked = false;
+                    lst.Add(x);
+                }
+            }
+            return lst;
         }
 
         public void BuildAll()

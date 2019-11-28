@@ -27,6 +27,31 @@ namespace ExamEvaluationSystem
             RefreshDataGrid();
         }
 
+        public void ClearSelected()
+        {
+            foreach (var data in Grid.Items)
+            {
+                var x = ((EISEarning)data);
+                if (x.Checked)
+                    x.Checked = false;
+            }
+        }
+
+        private List<EISEarning> GetSelectedEarnings()
+        {
+            var lst = new List<EISEarning>();
+            foreach (var data in Grid.Items)
+            {
+                var x = ((EISEarning)data);
+                if (x.Checked)
+                {
+                    x.Checked = false;
+                    lst.Add(x);
+                }
+            }
+            return lst;
+        }
+
         public void RefreshDataGrid()
         {
             Grid.Items.Clear();

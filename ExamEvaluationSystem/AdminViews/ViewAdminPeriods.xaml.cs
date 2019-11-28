@@ -26,6 +26,31 @@ namespace ExamEvaluationSystem
             RefreshDataGrid();
         }
 
+        public void ClearSelected()
+        {
+            foreach (var data in Grid.Items)
+            {
+                var x = ((EISPeriod)data);
+                if (x.Checked)
+                    x.Checked = false;
+            }
+        }
+
+        private List<EISPeriod> GetSelectedPeriods()
+        {
+            var lst = new List<EISPeriod>();
+            foreach (var data in Grid.Items)
+            {
+                var x = ((EISPeriod)data);
+                if (x.Checked)
+                {
+                    x.Checked = false;
+                    lst.Add(x);
+                }
+            }
+            return lst;
+        }
+
         public void RefreshDataGrid()
         {
             Grid.Items.Clear();

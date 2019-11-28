@@ -49,6 +49,32 @@ namespace ExamEvaluationSystem
                 selectorLectureEarnings.Text = $"[{ builder.SelectedData.Count } ders kazanımı]";
             };
         }
+
+        public void ClearSelected()
+        {
+            foreach (var data in Grid.Items)
+            {
+                var x = ((EISLecture)data);
+                if (x.Checked)
+                    x.Checked = false;
+            }
+        }
+
+        private List<EISLecture> GetSelectedLectures()
+        {
+            var lst = new List<EISLecture>();
+            foreach (var data in Grid.Items)
+            {
+                var x = ((EISLecture)data);
+                if (x.Checked)
+                {
+                    x.Checked = false;
+                    lst.Add(x);
+                }
+            }
+            return lst;
+        }
+
         public void RefreshDataGrid()
         {
             Grid.Items.Clear();

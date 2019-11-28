@@ -42,6 +42,31 @@ namespace ExamEvaluationSystem
             throw new NotImplementedException();
         }
 
+        public void ClearSelected()
+        {
+            foreach (var data in dgEarnings.Items)
+            {
+                var x = ((EISEarning)data);
+                if (x.Checked)
+                    x.Checked = false;
+            }
+        }
+
+        private List<EISEarning> GetSelectedEarnings()
+        {
+            var lst = new List<EISEarning>();
+            foreach (var data in dgEarnings.Items)
+            {
+                var x = ((EISEarning)data);
+                if (x.Checked)
+                {
+                    x.Checked = false;
+                    lst.Add(x);
+                }
+            }
+            return lst;
+        }
+
         public void RefreshDataGroups()
         {
             AllQuestions = new List<List<EISSingleQuestion>>();

@@ -75,6 +75,31 @@ namespace ExamEvaluationSystem
             };
         }
 
+        public void ClearSelected()
+        {
+            foreach (var data in Grid.Items)
+            {
+                var x = ((EISDepartment)data);
+                if (x.Checked)
+                    x.Checked = false;
+            }
+        }
+
+        private List<EISDepartment> GetSelectedDepartments()
+        {
+            var lst = new List<EISDepartment>();
+            foreach (var data in Grid.Items)
+            {
+                var x = ((EISDepartment)data);
+                if (x.Checked)
+                {
+                    x.Checked = false;
+                    lst.Add(x);
+                }
+            }
+            return lst;
+        }
+
         public void RefreshDataGrid()
         {
             Grid.Items.Clear();

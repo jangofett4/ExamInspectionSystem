@@ -110,27 +110,35 @@ namespace ExamEvaluationSystem
             {
                 case "1":
                     AdminHamburgerMenuFrame.Content = ViewAdminFaculty;
+                    ViewAdminFaculty.ClearSelected();
                     break;
                 case "2":
                     AdminHamburgerMenuFrame.Content = ViewAdminDepartment;
+                    ViewAdminDepartment.ClearSelected();
                     break;
                 case "3":
                     AdminHamburgerMenuFrame.Content = ViewAdminPeriods;
+                    ViewAdminPeriods.ClearSelected();
                     break;
                 case "4":
                     AdminHamburgerMenuFrame.Content = ViewAdminLecturers;
+                    ViewAdminLecturers.ClearSelected();
                     break;
                 case "5":
                     AdminHamburgerMenuFrame.Content = ViewAdminLectures;
+                    ViewAdminLectures.ClearSelected();
                     break;
                 case "6":
                     AdminHamburgerMenuFrame.Content = ViewAdminExams;
+                    //ViewAdminExams.ClearSelected();
                     break;
                 case "7":
                     AdminHamburgerMenuFrame.Content = ViewAdminEarnings;
+                    ViewAdminEarnings.ClearSelected();
                     break;
                 case "8":
                     AdminHamburgerMenuFrame.Content = ViewAdminLectureAssociate;
+                    ViewAdminLectureAssociate.ClearSelected();
                     break;
                 default:
                     // impossible?
