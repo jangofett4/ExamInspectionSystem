@@ -248,9 +248,24 @@ namespace ExamEvaluationSystem
             }
         }
 
-        private void TileSearchClick(object sender, RoutedEventArgs e)
+        private List<EISExam> GetSelectedExams()
         {
+            var lst = new List<EISExam>();
+            foreach (var data in Grid.Items)
+            {
+                var x = ((EISExam)data);
+                if (x.Checked)
+                {
+                    x.Checked = false;
+                    lst.Add(x);
+                }
+            }
+            return lst;
+        }
 
+        private void TileExportClick(object sender, RoutedEventArgs e)
+        {
+            
         }
 
         private void TileFlyoutDoneClick(object sender, RoutedEventArgs e)

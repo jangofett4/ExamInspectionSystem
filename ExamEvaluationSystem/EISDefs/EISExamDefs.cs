@@ -147,6 +147,7 @@ namespace ExamEvaluationSystem
         {
             var split = content.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
             var lst = new List<EISQuestion>();
+            int len = -1;
             foreach (var line in split)
             {
                 var group = "";
@@ -162,6 +163,9 @@ namespace ExamEvaluationSystem
                 var ans = "";
                 while (i < line.Length && (!char.IsWhiteSpace(line[i]) && char.IsLetter(line[i])))
                     ans += line[i++];
+                if (len != -1 && ans.Length != len)
+                    return null;
+                len = ans.Length;
                 lst.Add(new EISQuestion(ans) { Group = group });
             }
             return lst;

@@ -327,6 +327,8 @@ namespace ExamEvaluationSystem
     /// </summary>
     public abstract class EISDataPoint<T>
     {
+        public bool Checked { get; set; }
+
         public abstract int Update(SQLiteConnection connection);
         public virtual int UpdateWhere(SQLiteConnection connection, string where = "")
         {
