@@ -73,7 +73,7 @@ namespace ExamEvaluationSystem
             {
                 return sql.ExecuteNonQuery();
             }
-            catch (SQLiteException e)
+            catch (SQLiteException)
             {
                 return -1;
             }
@@ -89,7 +89,7 @@ namespace ExamEvaluationSystem
             {
                 res = sql.ExecuteNonQuery();
             }
-            catch (SQLiteException e)
+            catch (SQLiteException)
             {
                 return -1;
             }

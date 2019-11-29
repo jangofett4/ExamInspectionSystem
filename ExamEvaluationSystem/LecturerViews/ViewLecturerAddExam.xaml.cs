@@ -23,7 +23,7 @@ namespace ExamEvaluationSystem
         public UserPanel ParentObject { get; set; }
         public FlyoutState SideMenuState { get; set; }
 
-        private EISDepartment itemToEdit;
+        
         public ViewLecturerAddExam(UserPanel parent)
         {
             InitializeComponent();

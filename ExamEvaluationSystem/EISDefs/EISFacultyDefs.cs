@@ -59,7 +59,7 @@ namespace ExamEvaluationSystem
             try
             {
                 return sqlcmd.ExecuteNonQuery();
-            } catch (SQLiteException e)
+            } catch (SQLiteException)
             {
                 return -1; // cant update name anyway
             }
