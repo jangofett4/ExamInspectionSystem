@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NPOI.XSSF.UserModel;
+using NPOI.SS.UserModel;
+using NPOI.HSSF.UserModel;
 
 namespace ExamEvaluationSystem
 {
@@ -11,7 +15,205 @@ namespace ExamEvaluationSystem
         public class InternalExam
         {
             public List<InternalGroup> Groups;
+            public float PointPerQuestion { get { return 100f / Groups[0].Answers.Length; } }
 
+            public void ExportStatistics(string file, string file2)
+            {
+                XSSFWorkbook wb_1 = new XSSFWorkbook();
+                XSSFWorkbook wb_2 = new XSSFWorkbook();
+
+                var sheet_results = wb_1.CreateSheet("Soru Bazlı Değerlendirme");         // first sheet
+                var sheet_success = wb_1.CreateSheet("Sorular için Ortalama ve Başarım"); // second sheet
+                var sheet_earning = wb_2.CreateSheet("Kazanım için Ortalama ve Başarım"); // first sheet of second workbook
+
+                int i1 = 0; // first sheet
+                int i2 = 0; // second sheet
+                int i3 = 0; // third sheet
+
+                // create font style
+                XSSFFont headersfnt = (XSSFFont)wb_1.CreateFont();
+                headersfnt.FontHeightInPoints = 10;
+                headersfnt.FontName = "Arial";
+                headersfnt.IsBold = true;
+
+                XSSFFont defaultfnt = (XSSFFont)wb_1.CreateFont();
+                defaultfnt.FontHeightInPoints = 10;
+                defaultfnt.FontName = "Arial";
+
+                // create font style for second workbook
+                XSSFFont headersfnt2 = (XSSFFont)wb_2.CreateFont();
+                headersfnt2.FontHeightInPoints = 10;
+                headersfnt2.FontName = "Arial";
+                headersfnt2.IsBold = true;
+
+                XSSFFont defaultfnt2 = (XSSFFont)wb_2.CreateFont();
+                defaultfnt2.FontHeightInPoints = 10;
+                defaultfnt2.FontName = "Arial";
+
+                // create bordered cell style
+                XSSFCellStyle borderedHeaderStyle = (XSSFCellStyle)wb_1.CreateCellStyle();
+                borderedHeaderStyle.SetFont(headersfnt);
+                borderedHeaderStyle.BorderLeft = BorderStyle.Thin;
+                borderedHeaderStyle.BorderTop = BorderStyle.Thin;
+                borderedHeaderStyle.BorderRight = BorderStyle.Thin;
+                borderedHeaderStyle.BorderBottom = BorderStyle.Thin;
+                borderedHeaderStyle.Alignment = HorizontalAlignment.Center;
+
+                XSSFCellStyle borderedStyle = (XSSFCellStyle)wb_1.CreateCellStyle();
+                borderedStyle.SetFont(defaultfnt);
+                borderedStyle.BorderLeft = BorderStyle.Thin;
+                borderedStyle.BorderTop = BorderStyle.Thin;
+                borderedStyle.BorderRight = BorderStyle.Thin;
+                borderedStyle.BorderBottom = BorderStyle.Thin;
+                borderedStyle.Alignment = HorizontalAlignment.Left;
+
+                // create bordered cell style for second workbook
+                XSSFCellStyle borderedHeaderStyle2 = (XSSFCellStyle)wb_2.CreateCellStyle();
+                borderedHeaderStyle2.SetFont(headersfnt2);
+                borderedHeaderStyle2.BorderLeft = BorderStyle.Thin;
+                borderedHeaderStyle2.BorderTop = BorderStyle.Thin;
+                borderedHeaderStyle2.BorderRight = BorderStyle.Thin;
+                borderedHeaderStyle2.BorderBottom = BorderStyle.Thin;
+                borderedHeaderStyle2.Alignment = HorizontalAlignment.Center;
+
+                XSSFCellStyle borderedStyle2 = (XSSFCellStyle)wb_2.CreateCellStyle();
+                borderedStyle2.SetFont(defaultfnt2);
+                borderedStyle2.BorderLeft = BorderStyle.Thin;
+                borderedStyle2.BorderTop = BorderStyle.Thin;
+                borderedStyle2.BorderRight = BorderStyle.Thin;
+                borderedStyle2.BorderBottom = BorderStyle.Thin;
+                borderedStyle2.Alignment = HorizontalAlignment.Left;
+
+                for (int gg = 0; gg < Groups.Count; gg++)
+                {
+                    var g = Groups[gg];
+                    
+                    var st_qres = g.GetResultsForQuestions();       // Get results
+                    // First sheet
+                    {
+                        var col_row = sheet_results.CreateRow(i1++);
+                        var avg_start = i1 + 1;
+                        int j = 0;
+                        var _1 = col_row.CreateCell(j++); _1.SetCellValue("Öğrenci No"); _1.CellStyle = borderedHeaderStyle;
+                        var _2 = col_row.CreateCell(j++); _2.SetCellValue("Adı / Soyadı"); _2.CellStyle = borderedHeaderStyle;
+                        for (int q = 0; q < g.Answers.Length; q++)
+                        {
+                            var _3 = col_row.CreateCell(j++); _3.SetCellValue($"Soru { q + 1 }"); _3.CellStyle = borderedHeaderStyle;
+                        }
+                        for (int k = 0; k < g.Students.Count; k++)
+                        {
+                            var q_row = sheet_results.CreateRow(i1++);
+                            var st = g.Students[k];
+                            int l = 0;
+                            var __1 = q_row.CreateCell(l++); __1.SetCellValue(st.No); __1.CellStyle = borderedStyle;
+                            var __2 = q_row.CreateCell(l++); __2.SetCellValue(st.Name + " " + st.Surname); __2.CellStyle = borderedStyle;
+
+                            for (int q = 0; q < st.Answers.Length; q++)
+                            {
+                                var __3 = q_row.CreateCell(l++); __3.SetCellValue(st_qres[q][k]); __3.CellStyle = borderedStyle;
+                            }
+
+                            var prow = q_row.CreateCell(l++);
+                            prow.CellStyle = borderedStyle;
+                            prow.SetCellType(NPOI.SS.UserModel.CellType.Formula);
+                            prow.SetCellFormula($"SUM({ ColumnIndexToColumnLetter(3) }{ i1 }:{ ColumnIndexToColumnLetter(l - 1) }{ i1 })");
+
+                        }
+                        var _4 = col_row.CreateCell(j++); _4.SetCellValue("Puan"); _4.CellStyle = borderedHeaderStyle;
+                        int avg_end = i1;
+                        var a_row = sheet_results.CreateRow(i1++);
+                        int a = 0;
+                        var _5 = a_row.CreateCell(a++); _5.SetCellValue("ORTALAMA"); _5.CellStyle = borderedHeaderStyle;
+                        var __4 = a_row.CreateCell(a++); __4.CellStyle = borderedStyle;
+                        for (int q = 0; q < g.Answers.Length + 1; q++)
+                        {
+                            var avgcell = a_row.CreateCell(a++);
+                            avgcell.CellStyle = borderedStyle;
+                            avgcell.SetCellType(NPOI.SS.UserModel.CellType.Formula);
+                            avgcell.SetCellFormula($"SUM({ ColumnIndexToColumnLetter(a) }{ avg_start }:{ ColumnIndexToColumnLetter(a)}{ avg_end })/{ g.Students.Count }");
+                        }
+                        i1++;
+                    }
+                    {
+                        var col_row = sheet_success.CreateRow(i2++);
+                        int j = 0;
+                        var _1 = col_row.CreateCell(j++); _1.SetCellValue("Soru Numarası"); _1.CellStyle = borderedHeaderStyle;
+                        var _2 = col_row.CreateCell(j++); _2.SetCellValue("Ortalaması (Puan)"); _2.CellStyle = borderedHeaderStyle;
+                        var _3 = col_row.CreateCell(j++); _3.SetCellValue("Başarımı (%)"); _3.CellStyle = borderedHeaderStyle;
+                        var avgs = g.GetAveragesForQuestions(st_qres);  // Get averages
+                        var percs = g.GetPercentageForQuestions(avgs);  // Get percentages
+                        for (int q = 0; q < g.Answers.Length; q++)
+                        {
+                            var q_row = sheet_success.CreateRow(i2++);
+                            int l = 0;
+                            var _4 = q_row.CreateCell(l++); _4.SetCellValue($"Soru { q + 1 }"); _4.CellStyle = borderedStyle;
+                            var _5 = q_row.CreateCell(l++); _5.SetCellValue(avgs[q]); _5.CellStyle = borderedStyle;
+                            var _6 = q_row.CreateCell(l++); _6.SetCellValue("%" + percs[q].ToString()); _6.CellStyle = borderedStyle;
+                        }
+                        i2++;
+                    }
+                    {
+                        g.GetDistinctEarnings();
+                        var col_row = sheet_earning.CreateRow(i3++);
+                        int j = 0;
+                        var _1 = col_row.CreateCell(j++); _1.SetCellValue("Kazanım Numarası"); _1.CellStyle = borderedHeaderStyle2;
+                        var _2 = col_row.CreateCell(j++); _2.SetCellValue("Ortalaması (Puan)"); _2.CellStyle = borderedHeaderStyle2;
+                        var _3 = col_row.CreateCell(j++); _3.SetCellValue("Başarımı (%)"); _3.CellStyle = borderedHeaderStyle2;
+                        var _4 = col_row.CreateCell(j++); _4.CellStyle = borderedHeaderStyle2;
+                        var _5 = col_row.CreateCell(j++); _5.SetCellValue("Kazanım Açıklaması"); _5.CellStyle = borderedHeaderStyle2;
+                        var avgs = g.GetAveragesForQuestions(st_qres);  // Get averages
+                        var e_avgs = g.GetAverageEarningPoints(avgs);
+                        var percs = g.GetPercentageEarningPoints(e_avgs);
+                        for (int q = 0; q < g.DisticntEarningList.Count; q++)
+                        {
+                            var q_row = sheet_earning.CreateRow(i3++);
+                            int l = 0;
+                            var _6 = q_row.CreateCell(l++); _6.SetCellValue($"K-{ q + 1 }"); _6.CellStyle = borderedStyle2;
+                            var _7 = q_row.CreateCell(l++); _7.SetCellValue(e_avgs[q]); _7.CellStyle = borderedStyle2;
+                            var _8 = q_row.CreateCell(l++); _8.SetCellValue("%" + percs[q].ToString()); _8.CellStyle = borderedStyle2;
+                            var _9 = q_row.CreateCell(l++); _9.CellStyle = borderedStyle2;
+                            var _10 = q_row.CreateCell(l++); _10.SetCellValue(g.DisticntEarningList.ElementAt(q).Key); _10.CellStyle = borderedStyle2;
+                        }
+                        i3++;
+                    }
+                }
+
+                sheet_results.AutoSizeColumn(0);
+                sheet_results.AutoSizeColumn(1);
+
+                sheet_success.AutoSizeColumn(0);
+                sheet_success.AutoSizeColumn(1);
+                sheet_success.AutoSizeColumn(2);
+
+                sheet_earning.AutoSizeColumn(0);
+                sheet_earning.AutoSizeColumn(1);
+                sheet_earning.AutoSizeColumn(2);
+                sheet_earning.AutoSizeColumn(4);
+
+                XSSFFormulaEvaluator.EvaluateAllFormulaCells(wb_1);
+                using (var wbfile = new FileStream(file, FileMode.OpenOrCreate))
+                    wb_1.Write(wbfile);
+                using (var wbfile = new FileStream(file2, FileMode.OpenOrCreate))
+                    wb_2.Write(wbfile);
+            }
+
+            // Numaradan Excel sütun ismini bulur, örn 100 => CV
+            public static string ColumnIndexToColumnLetter(int colIndex)
+            {
+                int div = colIndex;
+                string colLetter = String.Empty;
+                int mod = 0;
+
+                while (div > 0)
+                {
+                    mod = (div - 1) % 26;
+                    colLetter = (char)(65 + mod) + colLetter;
+                    div = (div - mod) / 26;
+                }
+                return colLetter;
+            }
+
+            // Sınavdan istatistik iç türlerine dönüşüm sağlar
             public static InternalExam FromExam(EISExam e, List<EISExamResult> res)
             {
                 Dictionary<char, InternalGroup> groupsdict = new Dictionary<char, InternalGroup>();
@@ -58,6 +260,7 @@ namespace ExamEvaluationSystem
             public string Group;
             public string Answers;
             public List<List<string>> Earnings;
+            public Dictionary<string, List<int>> DisticntEarningList;
             public List<InternalStudent> Students;
             public InternalExam ParentObject { get; set; }
 
@@ -67,6 +270,105 @@ namespace ExamEvaluationSystem
                 Answers = answers;
                 ParentObject = null;
                 Students = new List<InternalStudent>();
+                DisticntEarningList = new Dictionary<string, List<int>>();
+                Earnings = new List<List<string>>();
+            }
+
+            // Ortamala kazanım puanlarını hesaplar
+            public float[] GetAverageEarningPoints(float[] avgs)
+            {
+                float pts = 100f / DisticntEarningList.Count;
+                var a = new float[DisticntEarningList.Count];
+                for (int i = 0; i < DisticntEarningList.Count; i++)
+                {
+                    var de = DisticntEarningList.ElementAt(i);
+                    var lst = de.Value;
+                    var acc = 0f;
+                    foreach (var q in lst)
+                        acc += avgs[q];
+                    acc = acc / lst.Count;
+                    a[i] = acc;
+                }
+                return a;
+            }
+
+            // Yüzde kazanım puanlarını hesaplar
+            public float[] GetPercentageEarningPoints(float[] avgs)
+            {
+                float pts = 100f / DisticntEarningList.Count;
+                var a = new float[DisticntEarningList.Count];
+                for (int i = 0; i < DisticntEarningList.Count; i++)
+                    a[i] = (avgs[i] / pts) * 100;
+                return a;
+            }
+
+            // Tüm soruların sonuçlarını hesaplar
+            public float[][] GetResultsForQuestions()
+            { 
+                var m = new float[Answers.Length][];
+                float pts = 100f / Answers.Length;
+                for (int i = 0; i < Answers.Length; i++)
+                {
+                    m[i] = new float[Students.Count];
+                    for (int j = 0; j < Students.Count; j++)
+                        m[i][j] = (Students[j].Answers[i] == Answers[i]) ? pts : 0;
+                }
+                return m;
+            }
+
+            // Tek soru için ortalama puanı hesaplar
+            public float GetAverageForQuestion(int q, float[][] m)
+            {
+                float acc = 0;
+                for (int i = 0; i < Students.Count; i++)
+                    acc += m[q][i];
+                return acc / Students.Count;
+            }
+
+            // Tüm sorular için ortalama puanı hesaplar
+            public float[] GetAveragesForQuestions(float[][] m)
+            {
+                var a = new float[Answers.Length];
+                for (int i = 0; i < Answers.Length; i++)
+                    a[i] = GetAverageForQuestion(i, m);
+                return a;
+            }
+
+            // Tüm sorular için yüzdeleri hesaplar
+            public float[] GetPercentageForQuestions(float[] avgs)
+            {
+                float pts = 100f / Answers.Length;
+                var a = new float[Answers.Length];
+                for (int i = 0; i < Answers.Length; i++)
+                    a[i] = (avgs[i] / pts) * 100;
+                return a;
+            }
+
+            // Birbirinden farklı kazanımları açığa çıkarır
+            public void GetDistinctEarnings()
+            {
+                var lst = new Dictionary<string, List<int>>();
+                for (int i = 0; i < Earnings.Count; i++) // Question
+                {
+                    var q = Earnings[i];
+                    for (int j = 0; j < q.Count; j++) // Earning
+                    {
+                        var e = Earnings[i][j];
+                        if (!lst.ContainsKey(e))
+                        {
+                            var lst2 = new List<int>();
+                            lst2.Add(i);
+                            lst.Add(e, lst2);
+                        }
+                        else
+                        {
+                            var ee = lst[e];
+                            if (!ee.Contains(i))
+                                ee.Add(i);
+                        }
+                    }
+                }
+                DisticntEarningList = lst;
             }
 
             public void AddStudent(InternalStudent s)

@@ -89,16 +89,25 @@ namespace ExamEvaluationSystem
 
         public override int Insert(SQLiteConnection connection)
         {
-            var cmd = new EISInsertCommand("Exams");
-            var sql = cmd.Create(connection, "LectureID", Lecture.ID.ToString(), "PeriodID", Period.ID.ToString(), "TypeID", Type.ID.ToString(), "Questions", JsonConvert.SerializeObject(Questions).EncapsulateQuote());
-            var res = sql.ExecuteNonQuery();
+            {
+                var cmd = new EISSelectCommand("Exams", Where.Equals("LectureID", Lecture.ID.ToString(), "PeriodID", Period.ID.ToString(), "TypeID", Type.ID.ToString()));
+                var sql = cmd.Create(connection);
+                var res = sql.ExecuteScalar();
+                if (res != null)
+                    return -1;
+            }
+            {
+                var cmd = new EISInsertCommand("Exams");
+                var sql = cmd.Create(connection, "LectureID", Lecture.ID.ToString(), "PeriodID", Period.ID.ToString(), "TypeID", Type.ID.ToString(), "Questions", JsonConvert.SerializeObject(Questions).EncapsulateQuote());
+                var res = sql.ExecuteNonQuery();
 
-            sql = new SQLiteCommand("SELECT * FROM Exams ORDER BY ID DESC LIMIT 1", connection);
-            var id = (int)(long)sql.ExecuteScalar();
+                sql = new SQLiteCommand("SELECT * FROM Exams ORDER BY ID DESC LIMIT 1", connection);
+                var id = (int)(long)sql.ExecuteScalar();
 
-            ID = id;
+                ID = id;
 
-            return res;
+                return res;
+            }
         }
 
         public override int Delete(SQLiteConnection connection)

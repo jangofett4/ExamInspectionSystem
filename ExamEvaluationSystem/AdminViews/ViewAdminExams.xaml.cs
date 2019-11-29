@@ -277,19 +277,41 @@ namespace ExamEvaluationSystem
                 ParentObject.NotifyWarning("Birden fazla sınav seçildi, ilk seçim kullanılacak.");
             }
 
-            var ex = sel[0];
-            var res = new EISExamResult(-1).SelectList(EISSystem.Connection, Where.Equals("ExamID", ex.ID.ToString()));
-            var lmao = EISStatistics.InternalExam.FromExam(ex, res);
+            using (var dlg = new System.Windows.Forms.FolderBrowserDialog())
+            {
+                if (dlg.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                {
+                    ParentObject.NotifyWarning("Çıktı için klasör belirlenmedi!");
+                    return;
+                }
+
+                var ex = sel[0];
+                var res = new EISExamResult(-1).SelectList(EISSystem.Connection, Where.Equals("ExamID", ex.ID.ToString()));
+                var exam = EISStatistics.InternalExam.FromExam(ex, res);
+
+                try
+                {
+                    exam.ExportStatistics($"{ dlg.SelectedPath }/{ GetNonLocalizedFilename(ex.Period.Name) }_{ GetNonLocalizedFilename(ex.Type.Name) }_{ GetNonLocalizedFilename(ex.Lecture.Name) }_Soru_Bazli_Degerlendirme.xlsx", $"{ dlg.SelectedPath }/{ GetNonLocalizedFilename(ex.Period.Name) }_{ GetNonLocalizedFilename(ex.Type.Name) }_{ GetNonLocalizedFilename(ex.Lecture.Name) }_Kazanim_Bazli_Degerlendirme.xlsx");
+                }
+                catch (Exception)
+                {
+                    ParentObject.NotifyWarning("Değerlendirme çıktısı oluşturma başarısız. Dosya kullanımda olabilir mi?");
+                    return;
+                }
+                ParentObject.NotifySuccess("Değerlendirme çıktısı kaydedildi!");
+            }
         }
 
-
-        private void UpdateCheckBoxChecked(object sender, RoutedEventArgs e)
+        private static string GetNonLocalizedFilename(string file)
         {
-            ((CheckBox)sender).GetBindingExpression(CheckBox.IsCheckedProperty).UpdateTarget();
-        }
-        private void UpdateCheckBoxUnchecked(object sender, RoutedEventArgs e)
-        {
-            ((CheckBox)sender).GetBindingExpression(CheckBox.IsCheckedProperty).UpdateTarget();
+            return file.Replace(' ', '_')
+                .Replace('İ', 'I')
+                .Replace('ı', 'i')
+                .Replace('ş', 's').Replace('Ş', 'S')
+                .Replace('ç', 'c').Replace('Ç', 'C')
+                .Replace('ö', 'o').Replace('Ö', 'O')
+                .Replace('ğ', 'g').Replace('Ğ', 'G')
+                .Replace('ü', 'u').Replace('Ü', 'u');
         }
 
         private void TileFlyoutDoneClick(object sender, RoutedEventArgs e)
@@ -331,16 +353,28 @@ namespace ExamEvaluationSystem
             );
             var result = ex.Insert(EISSystem.Connection);
 
+            if (result == -1)
+            {
+                ParentObject.NotifyError($"Sistemde { ex.Lecture.Name } için { ex.Type.Name } sınavı zaten mevcut!");
+                trn.Rollback(EISSystem.Connection);
+                return;
+            }
+
             var dict = (Dictionary<EISStudent, EISExamResult>)selectorExamOptics.SelectedData;
             if (dict == null)
             {
                 ParentObject.NotifyError("Sonuç belgesi seçilmedi!");
+                trn.Rollback(EISSystem.Connection);
                 return;
             }
             foreach (var v in dict)
             {
                 if (v.Key.Insert(EISSystem.Connection) == -1)
+                {
                     v.Key.Update(EISSystem.Connection);
+                    if (EISSystem.GetStudent(v.Key.ID) == null)
+                        EISSystem.Students.Add(v.Key);
+                }
                 v.Value.Exam = ex;
                 v.Value.Insert(EISSystem.Connection);
             }
