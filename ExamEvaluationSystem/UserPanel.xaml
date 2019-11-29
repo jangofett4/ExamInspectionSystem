@@ -7,7 +7,7 @@
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         mc:Ignorable="d"
-        Title="UserPanel" Height="450" Width="800">
+        Title="UserPanel" Height="450" Width="800" WindowState="Maximized">
     <Window.Resources>
         <DataTemplate x:Key="UserHamburger">
             <Grid Height="48">
@@ -59,7 +59,8 @@
             </Controls:HamburgerMenu.Content>
             <Controls:HamburgerMenu.ItemsSource>
                 <Controls:HamburgerMenuItemCollection>
-                    <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=BookOpenSolid}" Label="Sınavlar" Tag="1"></Controls:HamburgerMenuIconItem>
+                    <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=BookOpenSolid}" Label="Sınav Ekle/Sil" Tag="1"></Controls:HamburgerMenuIconItem>
+                    <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=SearchSolid}" Label="Sınav İncele" Tag="2"></Controls:HamburgerMenuIconItem>
                 </Controls:HamburgerMenuItemCollection>
             </Controls:HamburgerMenu.ItemsSource>
 

@@ -1,0 +1,26 @@
+﻿<Controls:MetroWindow x:Class="ExamEvaluationSystem.WindowLecturerInpectExam"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ExamEvaluationSystem"
+        xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
+        xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+        mc:Ignorable="d"
+        Title="Sınav İncele" Height="409.091" Width="434">
+    <Grid>
+        <DockPanel>
+            <Menu DockPanel.Dock="Top" Name="MainMenu">
+                <MenuItem Header="Detaylı Excel Çıktısı Al" Click="MenuSelectButton"/>
+            </Menu>
+            <DataGrid Margin="10,5,10,10" IsReadOnly="True" Name="Grid">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Width="100" Header="No" Binding="{Binding No}"/>
+                    <DataGridTextColumn Width="*" Header="Ad" Binding="{Binding Name}"/>
+                    <DataGridTextColumn Width="*" Header="Soyad" Binding="{Binding Surname}"/>
+                    <DataGridTextColumn Width="*" Header="Not" Binding="{Binding Result}"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </DockPanel>
+    </Grid>
+</Controls:MetroWindow>

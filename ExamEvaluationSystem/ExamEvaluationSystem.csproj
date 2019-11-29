@@ -37,6 +37,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Assets\books.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="ControlzEx, Version=3.0.2.4, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ControlzEx.3.0.2.4\lib\net45\ControlzEx.dll</HintPath>
@@ -123,8 +126,8 @@
     <Compile Include="HelperClasses\IChildObject.cs" />
     <Compile Include="HelperClasses\PropertyCallAdapter.cs" />
     <Compile Include="HelperClasses\IHasNotifiers.cs" />
-    <Compile Include="LecturerDialogs\DialogLecturerAddExam.xaml.cs">
-      <DependentUpon>DialogLecturerAddExam.xaml</DependentUpon>
+    <Compile Include="LecturerViews\ViewLectuerViewExam.xaml.cs">
+      <DependentUpon>ViewLectuerViewExam.xaml</DependentUpon>
     </Compile>
     <Compile Include="PropertyDataSelector.xaml.cs">
       <DependentUpon>PropertyDataSelector.xaml</DependentUpon>
@@ -159,6 +162,12 @@
     <Compile Include="AdminViews\ViewAdminLectureAssociate.xaml.cs">
       <DependentUpon>ViewAdminLectureAssociate.xaml</DependentUpon>
     </Compile>
+    <Compile Include="LecturerViews\WindowLecturerInpectExam.xaml.cs">
+      <DependentUpon>WindowLecturerInpectExam.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="AdminViews\ViewAdminInspectExam.xaml.cs">
+      <DependentUpon>ViewAdminInspectExam.xaml</DependentUpon>
+    </Compile>
     <Page Include="AdminPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -175,7 +184,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="LecturerDialogs\DialogLecturerAddExam.xaml">
+    <Page Include="LecturerViews\ViewLectuerViewExam.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -248,6 +257,14 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="LecturerViews\WindowLecturerInpectExam.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="AdminViews\ViewAdminInspectExam.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -279,7 +296,9 @@
   <ItemGroup>
     <Resource Include="Assets\koulogo.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Resource Include="Assets\books.ico" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\System.Data.SQLite.Core.1.0.111.0\build\net46\System.Data.SQLite.Core.targets" Condition="Exists('..\packages\System.Data.SQLite.Core.1.0.111.0\build\net46\System.Data.SQLite.Core.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

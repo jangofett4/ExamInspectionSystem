@@ -174,13 +174,7 @@ namespace ExamEvaluationSystem
         }
         private async void TileDeleteClick(object sender, RoutedEventArgs e)
         {
-            var dataToDelete = new List<EISLecture>();
-            foreach (var item in Grid.Items)
-            {
-                var x = ((DataGridTemplateColumn)Grid.Columns[0]).GetCellContent(item).FindChild<CheckBox>("Check");
-                if (x.IsChecked == true)
-                    dataToDelete.Add((EISLecture)item);
-            }
+            var dataToDelete = GetSelectedLectures();
 
             if (dataToDelete.Count == 0)
             {

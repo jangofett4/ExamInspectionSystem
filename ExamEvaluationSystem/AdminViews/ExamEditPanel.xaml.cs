@@ -35,6 +35,8 @@ namespace ExamEvaluationSystem
             ParentObject = parent;
             InitializeComponent();
             AllQuestions = new List<List<EISSingleQuestion>>();
+
+            Closing += (sender, e) => { ClearSelected(); };
         }
 
         private void ExamEditPanel_Loaded(object sender, RoutedEventArgs e)
@@ -104,11 +106,7 @@ namespace ExamEvaluationSystem
 
             RefreshDataSingleQuestions(dgGroups.SelectedIndex);
             group = ((EISQuestion)dgGroups.SelectedItem).Group;
-            foreach (var er in dgEarnings.Items)
-            {
-                ((DataGridTemplateColumn)dgEarnings.Columns[0]).GetCellContent(er).FindChild<CheckBox>("Check").IsChecked = false;
-                dgEarnings.SelectedItems.Clear();
-            }
+            ClearSelected();
         }
 
         private void DataGridDoubleClickAnswers(object sender, MouseButtonEventArgs e)
@@ -119,10 +117,7 @@ namespace ExamEvaluationSystem
             current = (EISSingleQuestion)dgSingleAnswers.SelectedItem;
             dgEarnings.SelectedItems.Clear();
             foreach (var er in current.Earnings)
-            {
-                dgEarnings.SelectedItems.Add(er);
-                ((DataGridTemplateColumn)dgEarnings.Columns[0]).GetCellContent(er).FindChild<CheckBox>("Check").IsChecked = true;
-            }
+                er.Checked = true;
             lblSelectedQuestion.Content = $"Grup: { group }, Soru: { current.Nth }, { current.Answer }";
         }
 
@@ -177,16 +172,7 @@ namespace ExamEvaluationSystem
                 return;
             }
 
-            var selected = new List<EISEarning>();
-            foreach (var item in dgEarnings.Items)
-            {
-                var x = ((DataGridTemplateColumn)dgEarnings.Columns[0]).GetCellContent(item).FindChild<CheckBox>("Check");
-                if (x == null)
-                    continue;
-                if (x.IsChecked == true)
-                    selected.Add((EISEarning)item);
-                x.IsChecked = false;
-            }
+            var selected = GetSelectedEarnings();
             current.Earnings = selected;
             ((TextBlock)(dgSingleAnswers.Columns[2].GetCellContent(current))).Text = current.FriendlyEarnings;
             ParentObject.NotifyInformation("Onaylandı!");
@@ -197,10 +183,7 @@ namespace ExamEvaluationSystem
                 dgSingleAnswers.SelectedItem = current;
                 dgEarnings.SelectedItems.Clear();
                 foreach (var er in current.Earnings)
-                {
-                    dgEarnings.SelectedItems.Add(er);
-                    ((DataGridTemplateColumn)dgEarnings.Columns[0]).GetCellContent(er).FindChild<CheckBox>("Check").IsChecked = true;
-                }
+                    er.Checked = true;
             }
             else
             {

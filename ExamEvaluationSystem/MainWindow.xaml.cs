@@ -232,8 +232,7 @@ namespace ExamEvaluationSystem
                 // Lecturer
                 if (privilege == 1)
                 {
-                    var lec = new EISLecturer(uid);
-                    lec = lec.SelectT(EISSystem.Connection);
+                    var lec = EISSystem.GetLecturer(uid);
                     var panel = new UserPanel(lec);
                     panel.Show();
                     Close();

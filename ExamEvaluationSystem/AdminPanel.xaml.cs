@@ -27,6 +27,7 @@ namespace ExamEvaluationSystem
         public ViewAdminLectures ViewAdminLectures;
         public ViewAdminPeriods ViewAdminPeriods;
         public ViewAdminLectureAssociate ViewAdminLectureAssociate;
+        public ViewAdminInspectExam ViewAdminInspectExam;
 
         private Notifier Notifier;
 
@@ -43,6 +44,7 @@ namespace ExamEvaluationSystem
             ViewAdminLectures = new ViewAdminLectures(this);
             ViewAdminPeriods = new ViewAdminPeriods(this);
             ViewAdminLectureAssociate = new ViewAdminLectureAssociate(this);
+            ViewAdminInspectExam = new ViewAdminInspectExam(GenerateExamTriple(), this);
             /**/
 
             Notifier = new Notifier(cfg =>
@@ -63,6 +65,39 @@ namespace ExamEvaluationSystem
             });
 
             AdminHamburgerMenuFrame.Content = ViewAdminFaculty;
+        }
+
+        public List<EISExamTriple> GenerateExamTriple()
+        {
+            var distinctex = new List<EISExam>();
+            foreach (var de in EISSystem.Exams)
+            {
+                bool found = false;
+                foreach (var disc in distinctex)
+                {
+                    if (disc.LectureName == de.LectureName)
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                    distinctex.Add(de);
+            }
+
+            var lst = new List<EISExamTriple>();
+            foreach (var e in distinctex)
+            {
+                lst.Add(new EISExamTriple()
+                {
+                    Lecture = e.Lecture,
+                    Period = e.Period,
+                    Visa = EISSystem.GetExam(e.Lecture, e.Period, 1),
+                    Final = EISSystem.GetExam(e.Lecture, e.Period, 2),
+                    Complement = EISSystem.GetExam(e.Lecture, e.Period, 3),
+                });
+            }
+            return lst;
         }
 
         public void HandleUpdate(string part)
@@ -105,7 +140,8 @@ namespace ExamEvaluationSystem
         // Hamburger menu switcher
         private void HamburgerMenu_ItemClick(object sender, MahApps.Metro.Controls.ItemClickEventArgs e)
         {
-            var tag = ((MahApps.Metro.Controls.HamburgerMenuItem)e.ClickedItem).Tag.ToString();
+            if (e.ClickedItem == null) return;
+            var tag = ((HamburgerMenuItem)e.ClickedItem).Tag.ToString();
             switch (tag)
             {
                 case "1":
@@ -130,7 +166,10 @@ namespace ExamEvaluationSystem
                     break;
                 case "6":
                     AdminHamburgerMenuFrame.Content = ViewAdminExams;
-                    //ViewAdminExams.ClearSelected();
+                    ViewAdminExams.ClearSelected();
+                    break;
+                case "9":
+                    AdminHamburgerMenuFrame.Content = ViewAdminInspectExam;
                     break;
                 case "7":
                     AdminHamburgerMenuFrame.Content = ViewAdminEarnings;
@@ -138,7 +177,6 @@ namespace ExamEvaluationSystem
                     break;
                 case "8":
                     AdminHamburgerMenuFrame.Content = ViewAdminLectureAssociate;
-                    ViewAdminLectureAssociate.ClearSelected();
                     break;
                 default:
                     // impossible?

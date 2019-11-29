@@ -13,13 +13,6 @@
     <Grid>
         <DataGrid Margin="10" Name="Grid" IsReadOnly="True" MouseDoubleClick="GridDoubleClick">
             <DataGrid.Columns>
-                <DataGridTemplateColumn>
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <CheckBox Name="Check" IsChecked="{Binding Checked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></CheckBox>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
                 <DataGridTextColumn Width="128" Header="Sicil NO" Binding="{Binding Path=ID}"/>
                 <DataGridTextColumn Width="200" Header="İsim" Binding="{Binding Path=Name}"/>
                 <DataGridTextColumn Width="200" Header="Soyisim" Binding="{Binding Path=Surname}"/>

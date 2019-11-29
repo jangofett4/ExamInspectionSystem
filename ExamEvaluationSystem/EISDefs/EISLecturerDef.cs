@@ -48,12 +48,14 @@ namespace ExamEvaluationSystem
         private string name;
         private string surname;
         private EISFaculty faculty;
+        private List<EISLecture> associated;
         public override void Store()
         {
             id = ID;
             name = Name;
             surname = Surname;
             faculty = Faculty;
+            associated = Associated;
         }
 
         public override void Restore()
@@ -62,6 +64,7 @@ namespace ExamEvaluationSystem
             Name = name;
             Surname = surname;
             Faculty = faculty;
+            Associated = associated;
         }
 
         public override int Update(SQLiteConnection connection)

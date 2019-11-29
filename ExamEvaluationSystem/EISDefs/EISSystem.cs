@@ -79,6 +79,14 @@ namespace ExamEvaluationSystem
             return null;
         }
 
+        public static EISExam GetExam(EISLecture lecture, EISPeriod period, int type)
+        {
+            foreach (var e in Exams)
+                if (e.Lecture.ID == lecture.ID && e.Period.ID == period.ID && e.Type.ID == type)
+                    return e;
+            return null;
+        }
+
         public static EISExam GetExam(int EXID)
         {
             foreach (var e in Exams)

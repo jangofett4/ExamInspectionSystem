@@ -334,6 +334,19 @@ namespace ExamEvaluationSystem
                 return a;
             }
 
+            public float[] GetPointSumsForQuestions(float[][] m)
+            {
+                var a = new float[Students.Count];
+                for (int i = 0; i < Students.Count; i++)
+                {
+                    var acc = 0f;
+                    for (int j = 0; j < Answers.Length; j++)
+                        acc += m[j][i];
+                    a[i] = acc;
+                }
+                return a;
+            }
+
             // Tüm sorular için yüzdeleri hesaplar
             public float[] GetPercentageForQuestions(float[] avgs)
             {

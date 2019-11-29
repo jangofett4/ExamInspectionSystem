@@ -52,9 +52,11 @@ namespace ExamEvaluationSystem
                 selectorExamLectures.Text = builder.SelectedData.Name;
             };
 
+            selectorExamPeriods.SelectedData = EISSystem.ActivePeriod;
+            selectorExamPeriods.Text = EISSystem.ActivePeriod.Name;
             selectorExamPeriods.ClickCallback = () =>
             {
-                var s = new PropertyDataSelector("Dönem Seç");
+                /*var s = new PropertyDataSelector("Dönem Seç");
                 var builder = new SingleDataSelectorBuilder<EISPeriod>(EISSystem.Periods, s, "ID", ("Name", "Dönem"));
                 builder.BuildAll();
 
@@ -73,7 +75,7 @@ namespace ExamEvaluationSystem
                 }
 
                 selectorExamPeriods.SelectedData = builder.SelectedData;
-                selectorExamPeriods.Text = builder.SelectedData.Name;
+                selectorExamPeriods.Text = builder.SelectedData.Name;*/
             };
 
             selectorExamTypes.ClickCallback = () =>
@@ -210,6 +212,8 @@ namespace ExamEvaluationSystem
 
         private void TileAddClick(object sender, RoutedEventArgs e)
         {
+            selectorExamPeriods.SelectedData = EISSystem.ActivePeriod;
+            selectorExamPeriods.Text = EISSystem.ActivePeriod.Name;
             sideFlyout.Header = "Ekle";
             sideFlyout.IsOpen = true;
             SideMenuState = FlyoutState.Add;
@@ -217,13 +221,7 @@ namespace ExamEvaluationSystem
 
         private async void TileDeleteClick(object sender, RoutedEventArgs e)
         {
-            var dataToDelete = new List<EISExam>();
-            foreach (var item in Grid.Items)
-            {
-                var x = ((DataGridTemplateColumn)Grid.Columns[0]).GetCellContent(item).FindChild<CheckBox>("Check");
-                if (x.IsChecked == true)
-                    dataToDelete.Add((EISExam)item);
-            }
+            var dataToDelete = GetSelectedExams();
 
             if (dataToDelete.Count == 0)
             {
@@ -234,18 +232,39 @@ namespace ExamEvaluationSystem
             var result = await ParentObject.ShowMessageAsync("Uyarı", $"{ dataToDelete.Count } sınav bilgisi silinecek (bağıntılı olan sınav sonuçları dahil).\nEmin misiniz?", MessageDialogStyle.AffirmativeAndNegative);
             if (result == MessageDialogResult.Affirmative)
             {
+                foreach (var data in dataToDelete)
+                {
+                    if (data.Period.ID != EISSystem.ActivePeriod.ID)
+                    {
+                        ParentObject.NotifyWarning("Geçmiş dönem sınavları arşivlendiği için silinemez!");
+                        return;
+                    }
+                }
+
                 foreach (var data in dataToDelete) // for each data selected
                 {
                     Grid.Items.Remove(data);            // Remove from grid
                     EISSystem.Exams.Remove(data);       // Remove from system in memory
                     data.Delete(EISSystem.Connection);  // Remove from database
                 }
+                ParentObject.ViewAdminInspectExam.Exams = ParentObject.GenerateExamTriple();
+                ParentObject.ViewAdminInspectExam.RefreshData();
                 ParentObject.NotifyInformation($"{ dataToDelete.Count } sınav bilgisi silindi.");
             }
             else
             {
                 Grid.SelectedIndex = -1;
                 ParentObject.NotifyInformation("Silme işlemi iptal edildi.");
+            }
+        }
+
+        public void ClearSelected()
+        {
+            foreach (var data in Grid.Items)
+            {
+                var x = ((EISExam)data);
+                if (x.Checked)
+                    x.Checked = false;
             }
         }
 
@@ -384,6 +403,8 @@ namespace ExamEvaluationSystem
 
             EISSystem.Exams.Add(ex);
             Grid.Items.Add(ex);
+            ParentObject.ViewAdminInspectExam.Exams = ParentObject.GenerateExamTriple();
+            ParentObject.ViewAdminInspectExam.RefreshData();
             ParentObject.NotifySuccess("Sınav ekleme başarılı!");
 
             sideFlyout.IsOpen = false;

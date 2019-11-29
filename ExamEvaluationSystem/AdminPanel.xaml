@@ -57,6 +57,9 @@
                     <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=BookOpenSolid}" Label="Sınavlar" Tag="6">
 
                     </Controls:HamburgerMenuIconItem>
+                    <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=SearchSolid}" Label="Sınav İncele" Tag="9">
+
+                    </Controls:HamburgerMenuIconItem>
                     <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=StarSolid}" Label="Kazanımlar" Tag="7">
 
                     </Controls:HamburgerMenuIconItem>

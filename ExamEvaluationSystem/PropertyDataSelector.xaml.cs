@@ -55,6 +55,11 @@ namespace ExamEvaluationSystem
             Show = show;
             DisableDoubleClickBehaviour = false;
             DisableMenu = false;
+
+            Form.Closing += (sender, e) =>
+            {
+                ClearSelected();
+            };
         }
 
         public void ClearSelected()
@@ -160,11 +165,12 @@ namespace ExamEvaluationSystem
 
         public void GridSelect(DataGrid grid, object data)
         {
+            ((T)data).Checked = true;
             grid.SelectedItem = data; // developer takes full reponsibility on this one
         }
     }
 
-    public class MultiDataSelectorBuilder<T>
+    public class MultiDataSelectorBuilder<T> where T : EISDataPoint<T>
     {
         public List<T> Data;
         public List<T> SelectedData;
@@ -180,6 +186,31 @@ namespace ExamEvaluationSystem
             Data = data;
             Select = select;
             Show = show;
+        }
+
+        public void ClearSelected()
+        {
+            foreach (var data in Form.dgSelector.Items)
+            {
+                var x = ((T)data);
+                if (x.Checked)
+                    x.Checked = false;
+            }
+        }
+
+        private List<T> GetSelected()
+        {
+            var lst = new List<T>();
+            foreach (var data in Form.dgSelector.Items)
+            {
+                var x = ((T)data);
+                if (x.Checked)
+                {
+                    x.Checked = false;
+                    lst.Add(x);
+                }
+            }
+            return lst;
         }
 
         public void BuildAll()
@@ -205,15 +236,7 @@ namespace ExamEvaluationSystem
                 }
                 */
 
-                SelectedData = new List<T>();
-                foreach (var item in grid.Items)
-                {
-                    var x = ((DataGridTemplateColumn)grid.Columns[0]).GetCellContent(item).FindChild<CheckBox>("Check");
-                    if (x == null)
-                        continue;
-                    if (x.IsChecked == true)
-                        SelectedData.Add((T)item);
-                }
+                SelectedData = GetSelected();
                 
                 /*if (SelectedData.Count == 0) // no checkboxes are used
                 {
@@ -245,21 +268,11 @@ namespace ExamEvaluationSystem
             var lst = data as IList;
             if (lst != null)
             {
-                grid.SelectedItems.Clear();
-                for (int i = 0; i < lst.Count; i++)
-                { 
-                    // var x = ((DataGridTemplateColumn)grid.Columns[0]).GetCellContent(lst[i]);
-                    grid.SelectedItems.Add(lst[i]);
-                }
+                foreach (var i in lst)
+                    ((T)i).Checked = true;
             }
             else
             {
-                // If some moron decides to send single data
-                grid.SelectedItem = data;
-                /*
-                var x = ((DataGridTemplateColumn)grid.Columns[0]).GetCellContent(data).FindChild<CheckBox>("Check");
-                x.IsChecked = true;
-                */
             }
         }
     }

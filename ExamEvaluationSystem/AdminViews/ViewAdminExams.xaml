@@ -19,20 +19,19 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn Width="95" Header="Sınav Kodu" IsReadOnly="True" Binding="{Binding Path=ID}"/>
-                <DataGridTextColumn Width="170" Header="Ders" Binding="{Binding Path=LectureName}"/>
-                <DataGridTextColumn Width="100" Header="Dönem" Binding="{Binding Path=PeriodName}"/>
-                <DataGridTextColumn Width="100" Header="Sınav Türü" Binding="{Binding Path=ExamType}"/>
+                <DataGridTextColumn Width="200" Header="Ders" Binding="{Binding Path=LectureName}"/>
+                <DataGridTextColumn Width="150" Header="Dönem" Binding="{Binding Path=PeriodName}"/>
+                <DataGridTextColumn Width="120" Header="Sınav Türü" Binding="{Binding Path=ExamType}"/>
                 <!-- <DataGridHyperlinkColumn Width="100" Header="Cevaplar" Binding="{Binding Path=Answers}"/> -->
             </DataGrid.Columns>
         </DataGrid>
         <Controls:Tile Margin="0,10,10,0" Height="100" Width="100" Content="{iconPacks:FontAwesome Kind=PlusCircleSolid, Height=50, Width=30}" HorizontalAlignment="Right" VerticalAlignment="Top" Click="TileAddClick" TabIndex="0"/>
         <Controls:Tile Margin="0,115,10,0" Height="100" Width="100" Content="{iconPacks:FontAwesome Kind=MinusCircleSolid, Height=50, Width=30}" HorizontalAlignment="Right" VerticalAlignment="Top" Click="TileDeleteClick" TabIndex="1"/>
-        <Controls:Tile Margin="0,0,10,130" Height="100" Width="100" Content="{iconPacks:FontAwesome Kind=FileAltSolid, Height=50, Width=30}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="TileExportClick" TabIndex="2"/>
+        <Controls:Tile Margin="0,220,10,0" Height="100" Width="100" Content="{iconPacks:FontAwesome Kind=FileAltSolid, Height=50, Width=30}" HorizontalAlignment="Right" Click="TileExportClick" TabIndex="2" VerticalAlignment="Top"/>
         <!-- <Controls:Tile Margin="0,330,10,10" Height="100" Width="100" Content="{iconPacks:FontAwesome Kind=SearchSolid, Height=50, Width=30}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="TileSearchClick" TabIndex="2"/> -->
 
         <Controls:FlyoutsControl>
-            <Controls:Flyout Header="$FlyoutName" Position="Right" Width="300" Name="sideFlyout" IsOpen="True" Margin="0,6,0,-6">
+            <Controls:Flyout Header="$FlyoutName" Position="Right" Width="300" Name="sideFlyout" Margin="0,6,0,-6">
                 <Grid>
                     <Label Content="Ders:" HorizontalContentAlignment="Right" Margin="10,10,0,0" Height="26" HorizontalAlignment="Left" Width="91" VerticalAlignment="Top"/>
                     <local:DataSelector Margin="106,10,10,0" x:Name="selectorExamLectures" VerticalAlignment="Top" TabIndex="0"/>

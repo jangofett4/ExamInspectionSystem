@@ -96,13 +96,7 @@ namespace ExamEvaluationSystem
 
         private async void TileDeleteClick(object sender, RoutedEventArgs e)
         {
-            var dataToDelete = new List<EISLecturer>();
-            foreach (var item in Grid.Items)
-            {
-                var x = ((DataGridTemplateColumn)Grid.Columns[0]).GetCellContent(item).FindChild<CheckBox>("Check");
-                if (x.IsChecked == true)
-                    dataToDelete.Add((EISLecturer)item);
-            }
+            var dataToDelete = GetSelectedLecturers();
 
             if (dataToDelete.Count == 0)
             {
@@ -119,6 +113,7 @@ namespace ExamEvaluationSystem
                     EISSystem.Lecturers.Remove(data); // Remove from system in memory
                     data.Delete(EISSystem.Connection);  // Remove from database
                 }
+                ParentObject.ViewAdminLectureAssociate.RefreshDataGrid();
                 ParentObject.NotifyInformation($"{ dataToDelete.Count } öğretim elemanı bilgisi silindi.");
             }
             else
@@ -206,6 +201,7 @@ namespace ExamEvaluationSystem
 
                 EISSystem.Lecturers.Add(lec);
                 Grid.Items.Add(lec);
+                ParentObject.ViewAdminLectureAssociate.RefreshDataGrid();
                 ParentObject.NotifySuccess("Öğretim elemanı ekleme başarılı!");
 
                 sideFlyout.IsOpen = false;
@@ -308,6 +304,7 @@ namespace ExamEvaluationSystem
                     elem2.Text = itemToEdit.Surname;
                     elem3.Text = itemToEdit.Faculty.Name;
 
+                    ParentObject.ViewAdminLectureAssociate.RefreshDataGrid();
                     ParentObject.NotifySuccess("Düzenleme başarılı!");
                     sideFlyout.IsOpen = false;
                 }
