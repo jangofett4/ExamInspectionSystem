@@ -116,6 +116,8 @@ namespace ExamEvaluationSystem
 
             current = (EISSingleQuestion)dgSingleAnswers.SelectedItem;
             dgEarnings.SelectedItems.Clear();
+            foreach (var er in dgEarnings.Items)
+                ((EISEarning)er).Checked = false;
             foreach (var er in current.Earnings)
                 er.Checked = true;
             lblSelectedQuestion.Content = $"Grup: { group }, Soru: { current.Nth }, { current.Answer }";
@@ -173,8 +175,7 @@ namespace ExamEvaluationSystem
             }
 
             var selected = GetSelectedEarnings();
-            current.Earnings = selected;
-            ((TextBlock)(dgSingleAnswers.Columns[2].GetCellContent(current))).Text = current.FriendlyEarnings;
+            current.Earnings = selected; current.OnPropertyChanged("FriendlyEarnings"); // trigger this, so datagrid is updated properly
             ParentObject.NotifyInformation("Onaylandı!");
             if (current.Nth != dgSingleAnswers.Items.Count)
             {

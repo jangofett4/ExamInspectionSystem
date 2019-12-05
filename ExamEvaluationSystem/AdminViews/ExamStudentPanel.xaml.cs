@@ -125,15 +125,6 @@ namespace ExamEvaluationSystem
                 return;
             }
 
-            var c1 = ((DataGridTemplateColumn)dgAnswers.Columns[0]);
-            foreach (var a in dgAnswers.Items)
-            {
-                var t = c1.GetCellContent(a).FindChild<TextBox>("Text").Text;
-                var s = ' ';
-                if (!string.IsNullOrWhiteSpace(t))
-                    s = t[0];
-                ((EISSingleQuestion)a).Answer = s;
-            }
             ParentObject.NotifyInformation("Onaylandı!");
             if (selectedIndex + 1 != dgStudents.Items.Count)
             {

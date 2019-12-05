@@ -10,8 +10,10 @@ namespace ExamEvaluationSystem
     public class EISEarning : EISDataPoint<EISEarning>
     {
         public int ID { get; private set; }
-        public string Name { get; set; }
-        public EISEarningType EarningType { get; set; }
+        private string _name { get; set; }
+        public string Name { get { return _name; } set { _name = value; OnPropertyChanged("Name"); } }
+        private EISEarningType _type;
+        public EISEarningType EarningType { get { return _type; } set { _type = value; OnPropertyChanged("EarningType"); } }
 
         public string FriendlyEarningTypeName { get { return EarningType == EISEarningType.Department ? "Bölüm Kazanımı" : "Ders Kazanımı"; } }
 

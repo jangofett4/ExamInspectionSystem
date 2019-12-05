@@ -328,6 +328,14 @@ namespace ExamEvaluationSystem
     /// </summary>
     public abstract class EISDataPoint<T> : INotifyPropertyChanged
     {
+        // a life saver, best thing in the world, the PROPERTY UPDATE NOTIFIER EVENT
+        /*
+         * Literally one of the best things for WPF
+         * Can update UI without bs NullRefernce issues
+         * Also faster and reliable than any other method
+         */
+        public event PropertyChangedEventHandler PropertyChanged;
+
         private bool _checked;
         public bool Checked { 
             get
@@ -341,15 +349,18 @@ namespace ExamEvaluationSystem
             } 
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
 
-        protected void OnPropertyChanged(string propertyName)
+        public void OnPropertyChanged(string propertyName)
         {
-            var propertyChanged = PropertyChanged;
-            if (propertyChanged != null)
-            {
-                propertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        public void OnPropertyChanged(params string[] properties)
+        {
+            if (PropertyChanged == null)
+                return;
+            foreach (var p in properties)
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(p));
         }
 
         public abstract int Update(SQLiteConnection connection);

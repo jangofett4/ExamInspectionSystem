@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace ExamEvaluationSystem
 {
@@ -28,7 +29,10 @@ namespace ExamEvaluationSystem
             selectorLectureEarnings.ClickCallback = () =>
             {
                 var s = new PropertyDataSelector("Ders Kazanımlarını Seç");
-                var builder = new MultiDataSelectorBuilder<EISEarning>(EISSystem.LectureEarnings, s, "ID", ("Name", "Kazanım"));
+                var builder = new MultiDataSelectorBuilder<EISEarning>(EISSystem.LectureEarnings, s, "ID",
+                    (e, q) => e.Name.ToLower().Contains(q) ? true : false,
+                    ("Name", "Kazanım"));
+                builder.DisableSearch = false;
                 builder.BuildAll();
 
                 if (selectorLectureEarnings.SelectedData != null)
@@ -48,6 +52,7 @@ namespace ExamEvaluationSystem
                 selectorLectureEarnings.SelectedData = builder.SelectedData;
                 selectorLectureEarnings.Text = $"[{ builder.SelectedData.Count } ders kazanımı]";
             };
+            SetupSearch();
         }
 
         public void ClearSelected()
@@ -85,13 +90,10 @@ namespace ExamEvaluationSystem
         {
             sideFlyout.Header = "Ekle";
             sideFlyout.IsOpen = true;
-             // might be artifact from edit mode
+            // might be artifact from edit mode
             SideMenuState = FlyoutState.Add;
         }
-        private void TileSearchClick(object sender, RoutedEventArgs e)
-        {
-            
-        }
+
         private void GridDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             if (Grid.SelectedItem == null)
@@ -140,11 +142,11 @@ namespace ExamEvaluationSystem
             // Flyout is in add mode
             if (SideMenuState == FlyoutState.Add)
             {
-                var lec = new EISLecture(-1, txtLecturesName.Text,(int)txtLecturesCredit.Value.Value);
+                var lec = new EISLecture(-1, txtLecturesName.Text, (int)txtLecturesCredit.Value.Value);
                 var result = lec.Insert(EISSystem.Connection);
                 lec.Earnings = earnings;
                 lec.InsertEarnings(EISSystem.Connection);
-                
+
                 EISSystem.Lectures.Add(lec);
                 Grid.Items.Add(lec);
                 ParentObject.NotifySuccess("Ders ekleme başarılı!");
@@ -157,16 +159,14 @@ namespace ExamEvaluationSystem
                 if (itemToEdit == null)
                     return; // somehow??
 
-                var elem = (TextBlock)Grid.Columns[2].GetCellContent(itemToEdit);
-                var elem2 = (TextBlock)Grid.Columns[3].GetCellContent(itemToEdit);
                 itemToEdit.Name = txtLecturesName.Text;
                 itemToEdit.Credit = (int)txtLecturesCredit.Value.Value;
                 itemToEdit.Earnings = (List<EISEarning>)selectorLectureEarnings.SelectedData;
                 var result = itemToEdit.Update(EISSystem.Connection);
-                
 
-                elem.Text = txtLecturesName.Text; // Edit the datagrid cell
-                elem2.Text = ((int)txtLecturesCredit.Value.Value).ToString();
+
+                itemToEdit.OnPropertyChanged("Name", "Credit");
+
                 itemToEdit.InsertEarnings(EISSystem.Connection);
                 ParentObject.NotifySuccess("Düzenleme başarılı!");
                 sideFlyout.IsOpen = false;
@@ -197,6 +197,71 @@ namespace ExamEvaluationSystem
             {
                 Grid.SelectedIndex = -1;
                 ParentObject.NotifyInformation("Silme işlemi iptal edildi.");
+            }
+        }
+
+        private void TileSearchClick(object sender, RoutedEventArgs e)
+        {
+            searchFlyout.IsOpen = true;
+        }
+
+        private void ResetSearchClick(object sender, RoutedEventArgs e)
+        {
+            RefreshDataGrid();
+            TileResetSearch.Visibility = Visibility.Hidden;
+        }
+
+        private DelayedActionInvoker searchAction;
+        private void SetupSearch()
+        {
+            if (searchAction != null)
+                searchAction.Dispose();
+            searchAction = new DelayedActionInvoker(() =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    Grid.Items.Clear();
+                    foreach (var data in EISSystem.Lectures)
+                    {
+                        string sq = searchQuery.Text.ToLower();
+                        if (data.Name.ToLower().Contains(sq))
+                            Grid.Items.Add(data);
+                    }
+                    TileResetSearch.Visibility = Visibility.Visible;
+                });
+            }, 1000);
+        }
+
+        private void SearchKeyUp(object sender, KeyEventArgs e)
+        {
+            searchAction.Reset();
+            if (e.Key == Key.Enter)
+                searchFlyout.IsOpen = false;
+        }
+
+        public string GetGridLayout()
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (var c in Grid.Columns)
+            {
+                sb.Append(c.DisplayIndex);
+                sb.Append('/');
+                sb.Append(c.Width.Value);
+                sb.Append('/');
+                sb.Append((int)c.Width.UnitType);
+                sb.Append('/');
+            }
+            return sb.ToString();
+        }
+
+        public void SetGridLayout(string lay)
+        {
+            var split = lay.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+            int i = 0;
+            foreach (var c in Grid.Columns)
+            {
+                c.DisplayIndex = int.Parse(split[i++]);
+                c.Width = new DataGridLength(double.Parse(split[i++]), (DataGridLengthUnitType)int.Parse(split[i++]));
             }
         }
     }

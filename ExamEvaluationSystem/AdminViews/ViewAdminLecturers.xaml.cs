@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace ExamEvaluationSystem
 {
@@ -31,7 +32,10 @@ namespace ExamEvaluationSystem
             selectorLecturerFaculty.ClickCallback = () =>
             {
                 var s = new PropertyDataSelector("Fakülte Seç");
-                var builder = new SingleDataSelectorBuilder<EISFaculty>(EISSystem.Faculties, s, "ID", ("Name", "Fakülte Adı"), ("ID", "Fakülte Kodu"));
+                var builder = new SingleDataSelectorBuilder<EISFaculty>(EISSystem.Faculties, s, "ID",
+                    (f, q) => (f.Name.ToLower().Contains(q) || f.ID.ToString().Contains(q)) ? true : false, 
+                    ("Name", "Fakülte Adı"), ("ID", "Fakülte Kodu"));
+                builder.DisableSearch = false;
                 builder.BuildAll((EISFaculty f) => f.ID >= 10);
 
                 if (selectorLecturerFaculty.SelectedData != null)
@@ -51,7 +55,7 @@ namespace ExamEvaluationSystem
                 selectorLecturerFaculty.SelectedData = builder.SelectedData;
                 selectorLecturerFaculty.Text = builder.SelectedData.Name;
             };
-            
+            SetupSearch();
         }
 
         public void ClearSelected()
@@ -81,6 +85,7 @@ namespace ExamEvaluationSystem
 
         public void RefreshDataGrid()
         {
+            Grid.Items.Clear();
             foreach (var data in EISSystem.Lecturers)
                 if (data.ID > 0)
                     Grid.Items.Add(data);
@@ -212,11 +217,6 @@ namespace ExamEvaluationSystem
                 if (itemToEdit == null)
                     return; // somehow??
 
-                var elem = (TextBlock)Grid.Columns[1].GetCellContent(itemToEdit);
-                var elem1 = (TextBlock)Grid.Columns[2].GetCellContent(itemToEdit);
-                var elem2 = (TextBlock)Grid.Columns[3].GetCellContent(itemToEdit);
-                var elem3 = (TextBlock)Grid.Columns[4].GetCellContent(itemToEdit);
-
                 int id = itemToEdit.ID;
                 itemToEdit.Store();
 
@@ -239,9 +239,7 @@ namespace ExamEvaluationSystem
                     }
 
                     // Edit the datagrid cells
-                    elem1.Text = itemToEdit.Name;
-                    elem2.Text = itemToEdit.Surname;
-                    elem3.Text = itemToEdit.Faculty.Name;
+                    itemToEdit.OnPropertyChanged("Name", "Surname", "FacultyName");
 
                     loginToEdit.Store();
                     loginToEdit.Username = txtLecturerUsername.Text;
@@ -258,7 +256,6 @@ namespace ExamEvaluationSystem
                     }
 
                     trn.Commit(EISSystem.Connection);
-                    // TODO: might add associated lectures
 
                     ParentObject.NotifySuccess("Düzenleme başarılı!");
                     sideFlyout.IsOpen = false;
@@ -298,11 +295,8 @@ namespace ExamEvaluationSystem
                     }
 
                     trn.Commit(EISSystem.Connection);
-                    // Edit the datagrid cell
-                    elem.Text = itemToEdit.ID.ToString(); 
-                    elem1.Text = itemToEdit.Name;
-                    elem2.Text = itemToEdit.Surname;
-                    elem3.Text = itemToEdit.Faculty.Name;
+
+                    itemToEdit.OnPropertyChanged("ID", "Name", "Surname", "FacultyName");
 
                     ParentObject.ViewAdminLectureAssociate.RefreshDataGrid();
                     ParentObject.NotifySuccess("Düzenleme başarılı!");
@@ -313,7 +307,68 @@ namespace ExamEvaluationSystem
 
         private void TileSearchClick(object sender, RoutedEventArgs e)
         {
+            searchFlyout.IsOpen = true;
+        }
 
+        private void ResetSearchClick(object sender, RoutedEventArgs e)
+        {
+            RefreshDataGrid();
+            TileResetSearch.Visibility = Visibility.Hidden;
+        }
+
+        private DelayedActionInvoker searchAction;
+        private void SetupSearch()
+        {
+            if (searchAction != null)
+                searchAction.Dispose();
+            searchAction = new DelayedActionInvoker(() =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    Grid.Items.Clear();
+                    foreach (var data in EISSystem.Lecturers)
+                    {
+                        string sq = searchQuery.Text.ToLower();
+                        string ns = data.Name + data.Surname; ns = ns.ToLower();
+                        if (data.ID > 10 && (ns.Contains(sq) || data.FacultyName.ToLower().Contains(sq)))
+                            Grid.Items.Add(data);
+                    }
+                    TileResetSearch.Visibility = Visibility.Visible;
+                });
+            }, 1000);
+        }
+
+        private void SearchKeyUp(object sender, KeyEventArgs e)
+        {
+            searchAction.Reset();
+            if (e.Key == Key.Enter)
+                searchFlyout.IsOpen = false;
+        }
+
+        public string GetGridLayout()
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (var c in Grid.Columns)
+            {
+                sb.Append(c.DisplayIndex);
+                sb.Append('/');
+                sb.Append(c.Width.Value);
+                sb.Append('/');
+                sb.Append((int)c.Width.UnitType);
+                sb.Append('/');
+            }
+            return sb.ToString();
+        }
+
+        public void SetGridLayout(string lay)
+        {
+            var split = lay.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+            int i = 0;
+            foreach (var c in Grid.Columns)
+            {
+                c.DisplayIndex = int.Parse(split[i++]);
+                c.Width = new DataGridLength(double.Parse(split[i++]), (DataGridLengthUnitType)int.Parse(split[i++]));
+            }
         }
     }
 }

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace ExamEvaluationSystem
 {
@@ -25,6 +26,7 @@ namespace ExamEvaluationSystem
             InitializeComponent();
             ParentObject = parent;
             RefreshDataGrid();
+            SetupSearch();
         }
 
         public void ClearSelected()
@@ -98,7 +100,7 @@ namespace ExamEvaluationSystem
                 {
                     Grid.Items.Remove(data);            // Remove from grid
                     EISSystem.Earnings.Remove(data);    // Remove from system in memory
-                    
+
                     if (data.EarningType == EISEarningType.Department)
                         EISSystem.DepartmentEarnings.Remove(data);
                     else
@@ -139,7 +141,7 @@ namespace ExamEvaluationSystem
                     EISSystem.DepartmentEarnings.Add(ern);
                 else
                     EISSystem.LectureEarnings.Add(ern);
-                
+
                 sideFlyout.IsOpen = false;
             }
             // Flyout is in edit mode
@@ -147,9 +149,6 @@ namespace ExamEvaluationSystem
             {
                 if (itemToEdit == null)
                     return; // somehow??
-
-                var elem = (TextBlock)Grid.Columns[2].GetCellContent(itemToEdit);
-                var elem2 = (TextBlock)Grid.Columns[3].GetCellContent(itemToEdit);
 
                 var type = itemToEdit.EarningType;
                 var newtype = (EISEarningType)comboEarningType.SelectedIndex;
@@ -174,11 +173,69 @@ namespace ExamEvaluationSystem
                 }
 
                 // Edit the datagrid cell
-                elem.Text = txtEarningName.Text;
-                elem2.Text = itemToEdit.FriendlyEarningTypeName;
+                itemToEdit.OnPropertyChanged("Name", "FriendlyEarningTypeName");
 
                 ParentObject.NotifySuccess("Düzenleme başarılı!");
                 sideFlyout.IsOpen = false;
+            }
+        }
+
+        private void TileSearchClick(object sender, RoutedEventArgs e)
+        {
+            searchFlyout.IsOpen = true;
+        }
+
+        private void ResetSearchClick(object sender, RoutedEventArgs e)
+        {
+            RefreshDataGrid();
+            TileResetSearch.Visibility = Visibility.Hidden;
+        }
+
+        private DelayedActionInvoker searchAction;
+        private void SetupSearch() 
+        { 
+            searchAction = new DelayedActionInvoker(() => {
+                Dispatcher.Invoke(() =>
+                {
+                    Grid.Items.Clear();
+                    foreach (var ea in EISSystem.Earnings)
+                        if (ea.Name.ToLower().Contains(searchQuery.Text.ToLower()))
+                            Grid.Items.Add(ea);
+                    TileResetSearch.Visibility = Visibility.Visible;
+                });
+            }, 1000); 
+        }
+
+        private void SearchKeyUp(object sender, KeyEventArgs e)
+        {
+            searchAction.Reset();
+            if (e.Key == Key.Enter)
+                searchFlyout.IsOpen = false;
+        }
+
+        public string GetGridLayout()
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (var c in Grid.Columns)
+            {
+                sb.Append(c.DisplayIndex);
+                sb.Append('/');
+                sb.Append(c.Width.Value);
+                sb.Append('/');
+                sb.Append((int)c.Width.UnitType);
+                sb.Append('/');
+            }
+            return sb.ToString();
+        }
+
+        public void SetGridLayout(string lay)
+        {
+            var split = lay.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+            int i = 0;
+            foreach (var c in Grid.Columns)
+            {
+                c.DisplayIndex = int.Parse(split[i++]);
+                c.Width = new DataGridLength(double.Parse(split[i++]), (DataGridLengthUnitType)int.Parse(split[i++]));
             }
         }
     }

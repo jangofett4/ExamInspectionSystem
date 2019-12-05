@@ -19,9 +19,9 @@
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn Width="200" Header="Ders" Binding="{Binding Path=LectureName}"/>
-                <DataGridTextColumn Width="150" Header="Dönem" Binding="{Binding Path=PeriodName}"/>
-                <DataGridTextColumn Width="120" Header="Sınav Türü" Binding="{Binding Path=ExamType}"/>
+                <DataGridTextColumn Width="250" Header="Ders" Binding="{Binding Path=LectureName}"/>
+                <DataGridTextColumn Width="200" Header="Dönem" Binding="{Binding Path=PeriodName}"/>
+                <DataGridTextColumn Width="120*" Header="Sınav Türü" Binding="{Binding Path=ExamType}"/>
                 <!-- <DataGridHyperlinkColumn Width="100" Header="Cevaplar" Binding="{Binding Path=Answers}"/> -->
             </DataGrid.Columns>
         </DataGrid>

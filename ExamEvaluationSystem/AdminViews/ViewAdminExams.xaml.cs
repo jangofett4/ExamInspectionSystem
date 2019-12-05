@@ -30,8 +30,9 @@ namespace ExamEvaluationSystem
             ParentObject = parent;
             selectorExamLectures.ClickCallback = () =>
             {
-                var s = new PropertyDataSelector("Ders Seç");
-                var builder = new SingleDataSelectorBuilder<EISLecture>(EISSystem.Lectures, s, "ID", ("Name", "Ders Adı"), ("Credit", "Kredi"));
+                var s = new PropertyDataSelector("Ders Seç", 350);
+                var builder = new SingleDataSelectorBuilder<EISLecture>(EISSystem.Lectures, s, "ID", (l, q) => l.Name.ToLower().Contains(q) ? true : false, ("Name", "Ders Adı"), ("Credit", "Kredi"));
+                builder.DisableSearch = false;
                 builder.BuildAll();
 
                 if (selectorExamLectures.SelectedData != null)
@@ -80,7 +81,7 @@ namespace ExamEvaluationSystem
 
             selectorExamTypes.ClickCallback = () =>
             {
-                var s = new PropertyDataSelector("Sınav Türü Seç");
+                var s = new PropertyDataSelector("Sınav Türü Seç", 300);
                 var builder = new SingleDataSelectorBuilder<EISExamType>(EISSystem.ExamTypes, s, "ID", ("Name", "Sınav Türü")/*, ("Multiple", "Çoklu Sınav")*/);
                 builder.BuildAll();
 
@@ -409,6 +410,32 @@ namespace ExamEvaluationSystem
 
             sideFlyout.IsOpen = false;
             questions = null;
+        }
+
+        public string GetGridLayout()
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (var c in Grid.Columns)
+            {
+                sb.Append(c.DisplayIndex);
+                sb.Append('/');
+                sb.Append(c.Width.Value);
+                sb.Append('/');
+                sb.Append((int)c.Width.UnitType);
+                sb.Append('/');
+            }
+            return sb.ToString();
+        }
+
+        public void SetGridLayout(string lay)
+        {
+            var split = lay.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+            int i = 0;
+            foreach (var c in Grid.Columns)
+            {
+                c.DisplayIndex = int.Parse(split[i++]);
+                c.Width = new DataGridLength(double.Parse(split[i++]), (DataGridLengthUnitType)int.Parse(split[i++]));
+            }
         }
     }
 }

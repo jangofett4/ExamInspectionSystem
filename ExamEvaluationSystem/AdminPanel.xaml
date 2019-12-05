@@ -72,7 +72,7 @@
             <!--  Options  -->
             <Controls:HamburgerMenu.OptionsItemsSource>
                 <Controls:HamburgerMenuItemCollection>
-                    <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=UserSolid}" Label="Sistem Yöneticisi">
+                    <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=UserSolid}" Label="Sistem Yöneticisi" IsEnabled="False">
                         <!--<Controls:HamburgerMenuIconItem.Tag>
                             Yes
                         </Controls:HamburgerMenuIconItem.Tag>-->

@@ -10,11 +10,16 @@ namespace ExamEvaluationSystem
 {
     public class EISExam : EISDataPoint<EISExam>
     {
+        private EISLecture _lecture;
+        private EISPeriod _period;
+        private EISExamType _type;
+        private List<EISQuestion> _questions;
+
         public int ID { get; private set; }
-        public EISLecture Lecture { get; set; }
-        public EISPeriod Period { get; set; }
-        public EISExamType Type { get; set; }
-        public List<EISQuestion> Questions { get; set; }
+        public EISLecture Lecture { get => _lecture; set { _lecture = value; OnPropertyChanged("Lecture"); } }
+        public EISPeriod Period { get =>_period; set { _period = value; OnPropertyChanged("Period"); } }
+        public EISExamType Type { get => _type; set { _type = value; OnPropertyChanged("Type"); } }
+        public List<EISQuestion> Questions { get => _questions; set { _questions = value; OnPropertyChanged("Questions"); } }
 
         // Datagrid Helper
         public string LectureName { get { return Lecture.Name; } }
@@ -161,7 +166,7 @@ namespace ExamEvaluationSystem
             {
                 var group = "";
                 int i = 0;
-                while (i < line.Length && !char.IsWhiteSpace(line[i]))
+                while (i < line.Length && (!char.IsWhiteSpace(line[i]) && line[i] != ';'))
                     group += line[i++];
                 if (i >= line.Length)
                     return null;
@@ -183,9 +188,12 @@ namespace ExamEvaluationSystem
 
     public class EISExamType : EISDataPoint<EISExamType>
     {
+        private string _name;
+        private bool _multiple;
+
         public int ID { get; private set; }
-        public string Name { get; set; }
-        public bool Multiple { get; set; }
+        public string Name { get => _name; set { _name = value; OnPropertyChanged("Name"); } }
+        public bool Multiple { get => _multiple; set { _multiple = value; OnPropertyChanged("Multiple"); } }
 
         public EISExamType(int id)
         {

@@ -12,22 +12,29 @@
     <Grid>
         <DataGrid Margin="10,10,119,10" Name="Grid" IsReadOnly="True" MouseDoubleClick="GridDoubleClick">
             <DataGrid.Columns>
-                <DataGridTemplateColumn>
+                <DataGridTemplateColumn CanUserReorder="False">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <CheckBox Name="Check" IsChecked="{Binding Checked, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"></CheckBox>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
-                <DataGridTextColumn Width="300" Header="Bölüm Adı" Binding="{Binding Path=Name}"/>
-                <DataGridTextColumn Width="110" Header="Bölüm Kodu" Binding="{Binding Path=ID}"/>
-                <DataGridTextColumn Width="200" Header="Fakülte Adı" Binding="{Binding Path=FacultyName}"/>
+                <DataGridTextColumn Header="Bölüm Adı" Binding="{Binding Path=Name}"/>
+                <DataGridTextColumn Header="Bölüm Kodu" Binding="{Binding Path=ID}"/>
+                <DataGridTextColumn Width="*" Header="Fakülte Adı" Binding="{Binding Path=FacultyName}"/>
             </DataGrid.Columns>
         </DataGrid>
         <Controls:Tile Margin="0,10,10,0" Height="100" Width="100" Content="{iconPacks:FontAwesome Kind=PlusCircleSolid, Height=50, Width=30}" HorizontalAlignment="Right" VerticalAlignment="Top" Click="TileAddClick" TabIndex="0"/>
         <Controls:Tile Margin="0,115,10,0" Height="100" Width="100" Content="{iconPacks:FontAwesome Kind=MinusCircleSolid, Height=50, Width=30}" HorizontalAlignment="Right" VerticalAlignment="Top" Click="TileDeleteClick" TabIndex="1"/>
-        <Controls:Tile Margin="0,330,10,10" Height="100" Width="100" Content="{iconPacks:FontAwesome Kind=SearchSolid, Height=50, Width=30}" HorizontalAlignment="Right" VerticalAlignment="Bottom" TabIndex="2"/>
+        <Controls:Tile Margin="0,330,10,10" Height="100" Width="100" Content="{iconPacks:FontAwesome Kind=SearchSolid, Height=50, Width=30}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="TileSearchClick" TabIndex="2"/>
+        <Controls:Tile Margin="0,0,10,90" Height="20" Width="20" Content="{iconPacks:FontAwesome Kind=TimesSolid, Height=20, Width=10}" Background="Red" HorizontalAlignment="Right" VerticalAlignment="Bottom" Click="ResetSearchClick" Name="TileResetSearch" Visibility="Hidden"/>
         <Controls:FlyoutsControl>
+            <Controls:Flyout Header="Ara" Position="Right" Width="300" Name="searchFlyout">
+                <Grid>
+                    <Label Content="Arama Metni:" HorizontalContentAlignment="Right" Margin="10,10,0,0" Height="26" HorizontalAlignment="Left" Width="85" VerticalAlignment="Top"/>
+                    <TextBox HorizontalAlignment="Left" Height="16" Margin="100,10,0,0" TextWrapping="NoWrap" Text="" VerticalAlignment="Top" Width="190" TabIndex="0" Name="searchQuery" KeyUp="SearchKeyUp"/>
+                </Grid>
+            </Controls:Flyout>
             <Controls:Flyout Header="$FlyoutName" Position="Right" Width="300" Name="sideFlyout">
                 <Grid>
                     <Label Content="Bölüm Adı:" HorizontalContentAlignment="Right" Margin="10,10,0,0" Height="26" HorizontalAlignment="Left" Width="91" VerticalAlignment="Top"/>

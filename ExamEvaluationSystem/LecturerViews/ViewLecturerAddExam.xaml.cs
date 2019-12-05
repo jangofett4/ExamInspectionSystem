@@ -38,8 +38,12 @@ namespace ExamEvaluationSystem
             selectorExamLectures.ClickCallback = () =>
             {
                 var s = new PropertyDataSelector("Ders Seç");
-                var builder = new SingleDataSelectorBuilder<EISLecture>(EISSystem.Lectures, s, "ID", ("Name", "Ders Adı"), ("Credit", "Kredi"));
+                var builder = new SingleDataSelectorBuilder<EISLecture>(EISSystem.Lectures, s, "ID", 
+                    ("Name", "Ders Adı"), ("Credit", "Kredi"));
+                builder.DisableSearch = false;
                 builder.BuildAll((e) => Lecturer.Associated.Contains(e));
+                builder.SearchPredicate = (l, q) => l.Name.ToLower().Contains(q) ? true : false;
+                builder.SetupSearch();
 
                 if (selectorExamLectures.SelectedData != null)
                 {

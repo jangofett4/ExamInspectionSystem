@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace ExamEvaluationSystem
 {
@@ -28,8 +29,11 @@ namespace ExamEvaluationSystem
 
             selectorDepartmentFaculty.ClickCallback = () =>
             {
-                var s = new PropertyDataSelector("Fakülte Seç");
-                var builder = new SingleDataSelectorBuilder<EISFaculty>(EISSystem.Faculties, s, "ID", ("Name", "Fakülte Adı"), ("ID", "Fakülte Kodu"));
+                var s = new PropertyDataSelector("Fakülte Seç", 300);
+                var builder = new SingleDataSelectorBuilder<EISFaculty>(EISSystem.Faculties, s, "ID", 
+                    (f, q) => (f.Name.ToLower().Contains(q) || f.ID.ToString().Contains(q)) ? true : false, 
+                    ("Name", "Fakülte Adı"), ("ID", "Fakülte Kodu"));
+                builder.DisableSearch = false;
                 builder.BuildAll((EISFaculty f) => f.ID >= 10);
                 
                 if (selectorDepartmentFaculty.SelectedData != null)
@@ -52,8 +56,11 @@ namespace ExamEvaluationSystem
 
             selectorDepartmentEarnings.ClickCallback = () =>
             {
-                var s = new PropertyDataSelector("Bölüm Kazanımlarını Seç");
-                var builder = new MultiDataSelectorBuilder<EISEarning>(EISSystem.DepartmentEarnings, s, "ID", ("Name", "Kazanım"));
+                var s = new PropertyDataSelector("Bölüm Kazanımlarını Seç") { WindowState = WindowState.Maximized };
+                var builder = new MultiDataSelectorBuilder<EISEarning>(EISSystem.DepartmentEarnings, s, "ID", 
+                    (e, q) =>  e.Name.ToLower().Contains(q) ? true : false, 
+                    ("Name", "Kazanım"));
+                builder.DisableSearch = false;
                 builder.BuildAll();
 
                 if (selectorDepartmentEarnings.SelectedData != null)
@@ -73,6 +80,7 @@ namespace ExamEvaluationSystem
                 selectorDepartmentEarnings.SelectedData = builder.SelectedData;
                 selectorDepartmentEarnings.Text = $"[{ builder.SelectedData.Count } bölüm kazanımı]";
             };
+            SetupSearch();
         }
 
         public void ClearSelected()
@@ -226,10 +234,6 @@ namespace ExamEvaluationSystem
                 if (itemToEdit == null)
                     return; // somehow??
 
-                var elem = (TextBlock)Grid.Columns[1].GetCellContent(itemToEdit);
-                var elem1 = (TextBlock)Grid.Columns[3].GetCellContent(itemToEdit);
-                var elem2 = (TextBlock)Grid.Columns[2].GetCellContent(itemToEdit);
-
                 int id = itemToEdit.ID;
 
                 if ((int)txtDepartmentID.Value.Value == id) // ID is NOT changed
@@ -246,8 +250,7 @@ namespace ExamEvaluationSystem
                     }
 
                     // Edit the datagrid cell
-                    elem.Text = itemToEdit.Name;
-                    elem1.Text = itemToEdit.Faculty.Name;
+                    itemToEdit.OnPropertyChanged("Name", "FacultyName"); // update datagrid
 
                     itemToEdit.InsertEarnings(EISSystem.Connection);
 
@@ -273,15 +276,78 @@ namespace ExamEvaluationSystem
                         return;
                     }
 
-                    elem.Text = itemToEdit.Name; // Edit the datagrid cell
-                    elem1.Text = itemToEdit.Faculty.Name;
-                    elem2.Text = itemToEdit.ID.ToString();
+                    itemToEdit.OnPropertyChanged("ID", "Name", "FacultyName");
 
                     itemToEdit.InsertEarnings(EISSystem.Connection);
 
                     ParentObject.NotifySuccess("Düzenleme başarılı!");
                     sideFlyout.IsOpen = false;
                 }
+            }
+        }
+
+        private void TileSearchClick(object sender, RoutedEventArgs e)
+        {
+            searchFlyout.IsOpen = true;
+        }
+
+        private void ResetSearchClick(object sender, RoutedEventArgs e)
+        {
+            RefreshDataGrid();
+            TileResetSearch.Visibility = Visibility.Hidden;
+        }
+
+        private DelayedActionInvoker searchAction;
+        private void SetupSearch()
+        {
+            if (searchAction != null)
+                searchAction.Dispose();
+            searchAction = new DelayedActionInvoker(() =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    Grid.Items.Clear();
+                    foreach (var data in EISSystem.Departments)
+                    {
+                        string sq = searchQuery.Text.ToLower();
+                        if (data.ID >= 10 && (data.Name.ToLower().Contains(sq) || data.FacultyName.ToLower().Contains(sq)))
+                            Grid.Items.Add(data);
+                    }
+                    TileResetSearch.Visibility = Visibility.Visible;
+                });
+            }, 1000);
+        }
+
+        private void SearchKeyUp(object sender, KeyEventArgs e)
+        {
+            searchAction.Reset();
+            if (e.Key == Key.Enter)
+                searchFlyout.IsOpen = false;
+        }
+
+        public string GetGridLayout()
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (var c in Grid.Columns)
+            {
+                sb.Append(c.DisplayIndex);
+                sb.Append('/');
+                sb.Append(c.Width.Value);
+                sb.Append('/');
+                sb.Append((int)c.Width.UnitType);
+                sb.Append('/');
+            }
+            return sb.ToString();
+        }
+
+        public void SetGridLayout(string lay)
+        {
+            var split = lay.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+            int i = 0;
+            foreach (var c in Grid.Columns)
+            {
+                c.DisplayIndex = int.Parse(split[i++]);
+                c.Width = new DataGridLength(double.Parse(split[i++]), (DataGridLengthUnitType)int.Parse(split[i++]));
             }
         }
     }

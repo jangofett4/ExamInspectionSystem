@@ -122,6 +122,8 @@
     <Compile Include="AdminViews\ExamStudentPanel.xaml.cs">
       <DependentUpon>ExamStudentPanel.xaml</DependentUpon>
     </Compile>
+    <Compile Include="HelperClasses\MemoryRenderer.cs" />
+    <Compile Include="HelperClasses\DelayedActionInvoker.cs" />
     <Compile Include="HelperClasses\FlyoutState.cs" />
     <Compile Include="HelperClasses\IChildObject.cs" />
     <Compile Include="HelperClasses\PropertyCallAdapter.cs" />

@@ -110,13 +110,13 @@ namespace ExamEvaluationSystem
 
                             for (int q = 0; q < st.Answers.Length; q++)
                             {
-                                var __3 = q_row.CreateCell(l++); __3.SetCellValue(st_qres[q][k]); __3.CellStyle = borderedStyle;
+                                var __3 = q_row.CreateCell(l++); __3.SetCellValue(float.Parse(st_qres[q][k].ToString("0.##"))); __3.CellStyle = borderedStyle;
                             }
 
                             var prow = q_row.CreateCell(l++);
                             prow.CellStyle = borderedStyle;
-                            prow.SetCellType(NPOI.SS.UserModel.CellType.Formula);
-                            prow.SetCellFormula($"SUM({ ColumnIndexToColumnLetter(3) }{ i1 }:{ ColumnIndexToColumnLetter(l - 1) }{ i1 })");
+                            prow.SetCellType(CellType.Formula);
+                            prow.SetCellFormula($"ROUND(SUM({ ColumnIndexToColumnLetter(3) }{ i1 }:{ ColumnIndexToColumnLetter(l - 1) }{ i1 }), 0)");
 
                         }
                         var _4 = col_row.CreateCell(j++); _4.SetCellValue("Puan"); _4.CellStyle = borderedHeaderStyle;
@@ -129,7 +129,7 @@ namespace ExamEvaluationSystem
                         {
                             var avgcell = a_row.CreateCell(a++);
                             avgcell.CellStyle = borderedStyle;
-                            avgcell.SetCellType(NPOI.SS.UserModel.CellType.Formula);
+                            avgcell.SetCellType(CellType.Formula);
                             avgcell.SetCellFormula($"SUM({ ColumnIndexToColumnLetter(a) }{ avg_start }:{ ColumnIndexToColumnLetter(a)}{ avg_end })/{ g.Students.Count }");
                         }
                         i1++;

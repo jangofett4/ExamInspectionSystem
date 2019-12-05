@@ -24,5 +24,8 @@
                 </DataGrid.Columns>
             </DataGrid>
         </DockPanel>
+        <Label Content="Ara: " VerticalAlignment="Top" Margin="46,3,0,0" HorizontalAlignment="Left" Width="30" Name="lblSearch"/>
+        <TextBox Height="23" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Margin="76,3,10,0" Name="searchQuery"/>
+        <Label Content="|" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="32,-3,0,0" Foreground="#FFC7C7C7" FontSize="18" Height="41" Name="lblSeperator"/>
     </Grid>
 </Controls:MetroWindow>

@@ -12,6 +12,7 @@ using ToastNotifications;
 using ToastNotifications.Messages;
 using ToastNotifications.Lifetime;
 using ToastNotifications.Position;
+using System.Windows.Input;
 
 namespace ExamEvaluationSystem
 {
@@ -30,6 +31,7 @@ namespace ExamEvaluationSystem
             InitializeComponent();
             ParentObject = parent;
             RefreshDataGrid();
+            SetupSearch();
         }
 
         public void ClearSelected()
@@ -158,8 +160,6 @@ namespace ExamEvaluationSystem
                 if (itemToEdit == null)
                     return; // somehow??
 
-                var elem = (TextBlock)Grid.Columns[1].GetCellContent(itemToEdit);
-                var elem1 = (TextBlock)Grid.Columns[2].GetCellContent(itemToEdit);
                 int id = itemToEdit.ID;
                 itemToEdit.Store();
 
@@ -197,8 +197,7 @@ namespace ExamEvaluationSystem
                 ParentObject.HandleUpdate("faculty");
 
                 // Edit the datagrid cell
-                elem.Text = txtFacultyName.Text;
-                elem1.Text = ((int)txtFacultyID.Value.Value).ToString();
+                itemToEdit.OnPropertyChanged("ID", "Name");
 
                 ParentObject.NotifySuccess("Düzenleme başarılı!");
                 sideFlyout.IsOpen = false;
@@ -207,8 +206,67 @@ namespace ExamEvaluationSystem
 
         private void TileSearchClick(object sender, RoutedEventArgs e)
         {
-
+            searchFlyout.IsOpen = true;
         }
 
+        private void ResetSearchClick(object sender, RoutedEventArgs e)
+        {
+            RefreshDataGrid();
+            TileResetSearch.Visibility = Visibility.Hidden;
+        }
+
+        private DelayedActionInvoker searchAction;
+        private void SetupSearch()
+        {
+            if (searchAction != null)
+                searchAction.Dispose();
+            searchAction = new DelayedActionInvoker(() =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    Grid.Items.Clear();
+                    foreach (var data in EISSystem.Faculties)
+                    {
+                        string sq = searchQuery.Text.ToLower();
+                        if (data.ID >= 10 && data.Name.ToLower().Contains(sq))
+                            Grid.Items.Add(data);
+                    }
+                    TileResetSearch.Visibility = Visibility.Visible;
+                });
+            }, 1000);
+        }
+
+        private void SearchKeyUp(object sender, KeyEventArgs e)
+        {
+            searchAction.Reset();
+            if (e.Key == Key.Enter)
+                searchFlyout.IsOpen = false;
+        }
+
+        public string GetGridLayout()
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (var c in Grid.Columns)
+            {
+                sb.Append(c.DisplayIndex);
+                sb.Append('/');
+                sb.Append(c.Width.Value);
+                sb.Append('/');
+                sb.Append((int)c.Width.UnitType);
+                sb.Append('/');
+            }
+            return sb.ToString();
+        }
+
+        public void SetGridLayout(string lay)
+        {
+            var split = lay.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+            int i = 0;
+            foreach (var c in Grid.Columns)
+            {
+                c.DisplayIndex = int.Parse(split[i++]);
+                c.Width = new DataGridLength(double.Parse(split[i++]), (DataGridLengthUnitType)int.Parse(split[i++]));
+            }
+        }
     }
 }

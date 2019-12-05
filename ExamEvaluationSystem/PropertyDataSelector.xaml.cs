@@ -18,15 +18,21 @@ namespace ExamEvaluationSystem
     public partial class PropertyDataSelector
     {
         public object SelectedData;
-        public Action OnShow;
-
+        
         public PropertyDataSelector(string title)
         {
             InitializeComponent();
             Title = title;
         }
 
-        private void MenuSelectClick(object sender, System.Windows.RoutedEventArgs e)
+        public PropertyDataSelector(string title, int width)
+        {
+            InitializeComponent();
+            Title = title;
+            Width = width;
+        }
+
+        private void MenuSelectClick(object sender, RoutedEventArgs e)
         {
             // actually nothing.
         }
@@ -41,8 +47,11 @@ namespace ExamEvaluationSystem
         public bool CloseAfterSelection { get; set; } = true;
         public Action DataDoubleClickCallback { get; set; } = null;
         public bool DisableMenu { get; set; } = false;
+        public bool DisableSearch { get; set; } = true;
 
         public PropertyDataSelector Form;
+
+        public Func<T, string, bool> SearchPredicate;
 
         public string Select;
         public (string, string)[] Show;
@@ -55,36 +64,70 @@ namespace ExamEvaluationSystem
             Show = show;
             DisableDoubleClickBehaviour = false;
             DisableMenu = false;
+        }
 
-            Form.Closing += (sender, e) =>
+        public SingleDataSelectorBuilder(List<T> data, PropertyDataSelector form, string select, Func<T, string, bool> predicate, params (string, string)[] show)
+        {
+            Form = form;
+            Data = data;
+            Select = select;
+            Show = show;
+            DisableDoubleClickBehaviour = false;
+            DisableMenu = false;
+            SearchPredicate = predicate;
+            SetupSearch();
+        }
+
+        public void ResetSearch()
+        {
+            if (buildDataPredicate != null)
+                BuildData(Form.dgSelector, buildDataPredicate);
+            else
+                BuildData(Form.dgSelector);
+        }
+
+        private DelayedActionInvoker searchAction;
+        public void SetupSearch()
+        {
+            if (SearchPredicate == null)
+                return;
+            if (searchAction != null)
+                searchAction.Dispose();
+            searchAction = new DelayedActionInvoker(() =>
             {
-                ClearSelected();
-            };
+                Form.Dispatcher.Invoke(() =>
+                {
+                    Form.dgSelector.Items.Clear();
+                    foreach (var data in Data)
+                    {
+                        string sq = Form.searchQuery.Text.ToLower();
+                        var datapred = buildDataPredicate?.Invoke(data);
+                        if (datapred.HasValue)
+                        {
+                            if (SearchPredicate(data, sq) && datapred.Value)
+                                Form.dgSelector.Items.Add(data);
+                        }
+                        else if (SearchPredicate(data, sq))
+                            Form.dgSelector.Items.Add(data);
+                    }
+                });
+            }, 1000);
+        }
+
+        private void SearchKeyUp(object sender, KeyEventArgs e)
+        {
+            searchAction.Reset();
         }
 
         public void ClearSelected()
         {
+            ResetSearch();
             foreach (var data in Form.dgSelector.Items)
             {
                 var x = ((T)data);
                 if (x.Checked)
                     x.Checked = false;
             }
-        }
-
-        private List<T> GetSelectedPeriods()
-        {
-            var lst = new List<T>();
-            foreach (var data in Form.dgSelector.Items)
-            {
-                var x = ((T)data);
-                if (x.Checked)
-                {
-                    x.Checked = false;
-                    lst.Add(x);
-                }
-            }
-            return lst;
         }
 
         public void BuildAll()
@@ -106,9 +149,20 @@ namespace ExamEvaluationSystem
             grid.Columns[0].Visibility = Visibility.Hidden;
             grid.IsReadOnly = true;                             // Restrict editing
             grid.SelectionMode = DataGridSelectionMode.Single;  // Restrict multiple selection
+            
+            if (DisableSearch)
+            {
+                Form.searchQuery.Visibility = Visibility.Hidden;
+                Form.lblSearch.Visibility = Visibility.Hidden;
+                Form.lblSeperator.Visibility = Visibility.Hidden;
+            }
+            else
+            {
+                Form.searchQuery.KeyUp += SearchKeyUp;
+            }
 
             if (!DisableDoubleClickBehaviour)
-                grid.MouseDoubleClick += (object sender, System.Windows.Input.MouseButtonEventArgs e) =>
+                grid.MouseDoubleClick += (object sender, MouseButtonEventArgs e) =>
                 {
                     if (SelectedData != null && ReferenceEquals(SelectedData, grid.SelectedItem)) // If someone already set data
                     {
@@ -141,23 +195,35 @@ namespace ExamEvaluationSystem
                 };
             else
                 Form.MainMenu.Visibility = Visibility.Hidden;
+            Form.Closing += (sender, e) => { ClearSelected(); };
         }
 
         public void BuildColumns(DataGrid grid)
         {
-            grid.Columns.Add(new DataGridTextColumn() { Header = Select, Visibility = System.Windows.Visibility.Hidden });
-            foreach (var s in Show)
-                grid.Columns.Add(new DataGridTextColumn() { Header = s.Item2, Binding = new System.Windows.Data.Binding(s.Item1) });
+            grid.Columns.Add(new DataGridTextColumn() { Header = Select, Visibility = Visibility.Hidden });
+            var star = new DataGridLength(1, DataGridLengthUnitType.Star);
+            for (int i = 0; i < Show.Length; i++)
+            {
+                var item = Show[i];
+                if (i == Show.Length - 1)
+                    grid.Columns.Add(new DataGridTextColumn() { Header = item.Item2, Binding = new System.Windows.Data.Binding(item.Item1), Width = star });
+                else
+                    grid.Columns.Add(new DataGridTextColumn() { Header = item.Item2, Binding = new System.Windows.Data.Binding(item.Item1), Width = DataGridLength.SizeToCells });
+            }
         }
 
         public void BuildData(DataGrid grid)
         {
+            grid.Items.Clear();
             foreach (var d in Data)
                 grid.Items.Add(d);
         }
 
+        private Predicate<T> buildDataPredicate;
         public void BuildData(DataGrid grid, Predicate<T> predicate)
         {
+            buildDataPredicate = predicate;
+            grid.Items.Clear();
             foreach (var d in Data)
                 if (predicate(d))
                     grid.Items.Add(d);
@@ -177,6 +243,10 @@ namespace ExamEvaluationSystem
 
         public PropertyDataSelector Form;
 
+        public bool DisableSearch { get; set; } = true;
+
+        public Func<T, string, bool> SearchPredicate;
+
         public string Select;
         public (string, string)[] Show;
 
@@ -188,8 +258,51 @@ namespace ExamEvaluationSystem
             Show = show;
         }
 
+        public MultiDataSelectorBuilder(List<T> data, PropertyDataSelector form, string select, Func<T, string, bool> predicate, params (string, string)[] show)
+        {
+            Form = form;
+            Data = data;
+            Select = select;
+            Show = show;
+            SearchPredicate = predicate;
+            SetupSearch();
+        }
+
+        public void ResetSearch()
+        {
+            BuildData(Form.dgSelector);
+        }
+
+        private DelayedActionInvoker searchAction;
+        public void SetupSearch()
+        {
+            if (SearchPredicate == null)
+                return;
+            if (searchAction != null)
+                searchAction.Dispose();
+            searchAction = new DelayedActionInvoker(() =>
+            {
+                Form.Dispatcher.Invoke(() =>
+                {
+                    Form.dgSelector.Items.Clear();
+                    foreach (var data in Data)
+                    {
+                        string sq = Form.searchQuery.Text.ToLower();
+                        if (SearchPredicate(data, sq))
+                            Form.dgSelector.Items.Add(data);
+                    }
+                });
+            }, 1000);
+        }
+
+        private void SearchKeyUp(object sender, KeyEventArgs e)
+        {
+            searchAction.Reset();
+        }
+
         public void ClearSelected()
         {
+            ResetSearch();
             foreach (var data in Form.dgSelector.Items)
             {
                 var x = ((T)data);
@@ -225,6 +338,17 @@ namespace ExamEvaluationSystem
             grid.IsReadOnly = true;                                 // Restrict editing
             grid.SelectionMode = DataGridSelectionMode.Extended;    // Enable multiple selection
 
+            if (DisableSearch)
+            {
+                Form.searchQuery.Visibility = Visibility.Hidden;
+                Form.lblSearch.Visibility = Visibility.Hidden;
+                Form.lblSeperator.Visibility = Visibility.Hidden;
+            }
+            else
+            {
+                Form.searchQuery.KeyUp += SearchKeyUp;
+            }
+
             Form.MenuSelectButton.Click += (object sender, RoutedEventArgs e) =>
             {
                 /*
@@ -246,14 +370,21 @@ namespace ExamEvaluationSystem
 
                 Form.Close();
             };
+            Form.Closing += (sender, e) => { ClearSelected(); };
         }
 
         public void BuildColumns(DataGrid grid)
         {
-            grid.Columns[0].IsReadOnly = false;
-            grid.Columns.Add(new DataGridTextColumn() { Header = Select, Visibility = System.Windows.Visibility.Hidden });
-            foreach (var s in Show)
-                grid.Columns.Add(new DataGridTextColumn() { Header = s.Item2, Binding = new System.Windows.Data.Binding(s.Item1) });
+            grid.Columns.Add(new DataGridTextColumn() { Header = Select, Visibility = Visibility.Hidden });
+            var star = new DataGridLength(1, DataGridLengthUnitType.Star);
+            for (int i = 0; i < Show.Length; i++)
+            {
+                var item = Show[i];
+                if (i == Show.Length - 1)
+                    grid.Columns.Add(new DataGridTextColumn() { Header = item.Item2, Binding = new System.Windows.Data.Binding(item.Item1), Width = star });
+                else
+                    grid.Columns.Add(new DataGridTextColumn() { Header = item.Item2, Binding = new System.Windows.Data.Binding(item.Item1), Width = DataGridLength.SizeToCells });
+            }
         }
 
         public void BuildData(DataGrid grid)
@@ -265,15 +396,9 @@ namespace ExamEvaluationSystem
         public void GridSelect(DataGrid grid, object data)
         {
             // developer takes full reponsibility on these
-            var lst = data as IList;
-            if (lst != null)
-            {
+            if (data is IList lst)
                 foreach (var i in lst)
                     ((T)i).Checked = true;
-            }
-            else
-            {
-            }
         }
     }
 }

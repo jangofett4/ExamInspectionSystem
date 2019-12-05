@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace ExamEvaluationSystem
 {
-    public class EISSingleQuestion
+    public class EISSingleQuestion : INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+
         public char Answer { get; set; }
         public List<EISEarning> Earnings { get; set; }
 
@@ -19,6 +22,11 @@ namespace ExamEvaluationSystem
             Nth = nth;
             Answer = a;
             Earnings = e;
+        }
+
+        public void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }
