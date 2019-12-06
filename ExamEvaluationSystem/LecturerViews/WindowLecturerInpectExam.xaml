@@ -7,7 +7,7 @@
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         mc:Ignorable="d"
-        Title="Sınav İncele" Height="409.091" Width="434">
+        Title="Sınav İncele" Height="501.091" Width="494">
     <Grid>
         <DockPanel>
             <Menu DockPanel.Dock="Top" Name="MainMenu">
@@ -22,5 +22,8 @@
                 </DataGrid.Columns>
             </DataGrid>
         </DockPanel>
+        <Label Content="Ara: " VerticalAlignment="Top" Margin="156,2,0,0" HorizontalAlignment="Left" Width="30" x:Name="lblSearch"/>
+        <TextBox Height="23" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Margin="186,2,10,0" x:Name="searchQuery" KeyUp="SearchKeyUp"/>
+        <Label Content="|" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="142,-4,0,0" Foreground="#FFC7C7C7" FontSize="18" Height="41" x:Name="lblSeperator"/>
     </Grid>
 </Controls:MetroWindow>

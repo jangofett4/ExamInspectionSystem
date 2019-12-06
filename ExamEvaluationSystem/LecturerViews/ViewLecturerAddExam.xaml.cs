@@ -207,6 +207,7 @@ namespace ExamEvaluationSystem
                 }
             };
             RefreshDataGrid();
+            SetupSearch();
         }
 
         public void RefreshDataGrid()
@@ -423,6 +424,68 @@ namespace ExamEvaluationSystem
             ParentObject.InspectView.RefreshData();
             sideFlyout.IsOpen = false;
             questions = null;
+        }
+
+        private void TileSearchClick(object sender, RoutedEventArgs e)
+        {
+            searchFlyout.IsOpen = true;
+        }
+
+        private void ResetSearchClick(object sender, RoutedEventArgs e)
+        {
+            RefreshDataGrid();
+            TileResetSearch.Visibility = Visibility.Hidden;
+        }
+
+        private DelayedActionInvoker searchAction;
+        private void SetupSearch()
+        {
+            searchAction = new DelayedActionInvoker(() => {
+                Dispatcher.Invoke(() =>
+                {
+                    Grid.Items.Clear();
+                    foreach (var ea in EISSystem.Exams)
+                    {
+                        var sq = searchQuery.Text.ToLower();
+                        if (Lecturer.Associated.Contains(ea.Lecture) && (ea.PeriodName.ToLower().Contains(sq) || ea.LectureName.ToLower().Contains(sq) || ea.ExamType.ToLower().Contains(sq)))
+                            Grid.Items.Add(ea);
+                    }
+                    TileResetSearch.Visibility = Visibility.Visible;
+                });
+            }, 1000);
+        }
+
+        private void SearchKeyUp(object sender, KeyEventArgs e)
+        {
+            searchAction.Reset();
+            if (e.Key == Key.Enter)
+                searchFlyout.IsOpen = false;
+        }
+
+        public string GetGridLayout()
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (var c in Grid.Columns)
+            {
+                sb.Append(c.DisplayIndex);
+                sb.Append('/');
+                sb.Append(c.Width.Value);
+                sb.Append('/');
+                sb.Append((int)c.Width.UnitType);
+                sb.Append('/');
+            }
+            return sb.ToString();
+        }
+
+        public void SetGridLayout(string lay)
+        {
+            var split = lay.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+            int i = 0;
+            foreach (var c in Grid.Columns)
+            {
+                c.DisplayIndex = int.Parse(split[i++]);
+                c.Width = new DataGridLength(double.Parse(split[i++]), (DataGridLengthUnitType)int.Parse(split[i++]));
+            }
         }
     }
 }

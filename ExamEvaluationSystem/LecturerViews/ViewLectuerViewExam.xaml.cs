@@ -114,5 +114,31 @@ namespace ExamEvaluationSystem
             var res = new EISExamResult(-1).SelectList(EISSystem.Connection, Where.Equals("ExamID", d.Complement.ID.ToString()));
             new WindowLecturerInpectExam(d.Complement, res, ParentObject).ShowDialog();
         }
+
+        public string GetGridLayout()
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (var c in Grid.Columns)
+            {
+                sb.Append(c.DisplayIndex);
+                sb.Append('/');
+                sb.Append(c.Width.Value);
+                sb.Append('/');
+                sb.Append((int)c.Width.UnitType);
+                sb.Append('/');
+            }
+            return sb.ToString();
+        }
+
+        public void SetGridLayout(string lay)
+        {
+            var split = lay.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+            int i = 0;
+            foreach (var c in Grid.Columns)
+            {
+                c.DisplayIndex = int.Parse(split[i++]);
+                c.Width = new DataGridLength(double.Parse(split[i++]), (DataGridLengthUnitType)int.Parse(split[i++]));
+            }
+        }
     }
 }

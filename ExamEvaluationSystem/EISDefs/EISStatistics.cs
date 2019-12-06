@@ -240,6 +240,15 @@ namespace ExamEvaluationSystem
 
                 foreach (var result in res)
                 {
+                    if (!groupsdict.ContainsKey(result.Group))
+                    {
+                        // application will presume they left the questions empty and create statistics based on that
+                        // also they will be associated to first group
+                        int len = result.Answers.Length;
+                        result.Answers = "";
+                        for (int i = 0; i < len; i++) result.Answers += " ";
+                        result.Group = groupsdict.ElementAt(0).Key;
+                    }
                     var g = groupsdict[result.Group];
                     InternalStudent student = new InternalStudent(result.No, result.Name, result.Surname, result.Answers);
                     g.AddStudent(student);
@@ -295,7 +304,7 @@ namespace ExamEvaluationSystem
             // Yüzde kazanım puanlarını hesaplar
             public float[] GetPercentageEarningPoints(float[] avgs)
             {
-                float pts = 100f / DisticntEarningList.Count;
+                float pts = 100f / Answers.Length;
                 var a = new float[DisticntEarningList.Count];
                 for (int i = 0; i < DisticntEarningList.Count; i++)
                     a[i] = (avgs[i] / pts) * 100;

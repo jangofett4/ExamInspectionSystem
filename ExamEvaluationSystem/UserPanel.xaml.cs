@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -53,7 +54,7 @@ namespace ExamEvaluationSystem
             Notifier = new Notifier(cfg =>
             {
                 cfg.PositionProvider = new WindowPositionProvider(
-                    parentWindow: Application.Current.MainWindow,
+                    parentWindow: this,
                     corner: Corner.BottomRight,
                     offsetX: 10,
                     offsetY: 10);
@@ -62,12 +63,43 @@ namespace ExamEvaluationSystem
                     notificationLifetime: TimeSpan.FromSeconds(3),
                     maximumNotificationCount: MaximumNotificationCount.FromCount(3));
 
-                cfg.Dispatcher = Application.Current.Dispatcher;
+                cfg.Dispatcher = Dispatcher;
 
                 cfg.DisplayOptions.TopMost = false; // Needs to be set to false in order to toast to function properly
             });
 
             UserHamburgerMenuFrame.Content = ExamView; // Initial view
+
+            Loaded += (sender, e) => LoadLayouts();
+            Closing += (sender, e) => SaveLayouts();
+        }
+
+        public void LoadLayouts()
+        {
+            var path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "/EIS/";
+            string file = path + "/user.layout";
+            if (!File.Exists(file))
+                return;
+            var content = File.ReadAllText(file, Encoding.UTF8);
+            var split = content.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            var i = 0;
+            ExamView.SetGridLayout(split[i++]);
+            InspectView.SetGridLayout(split[i++]);
+        }
+
+        public void SaveLayouts()
+        {
+            StringBuilder save = new StringBuilder();
+            MemoryRenderer.Render(
+                ExamView,
+                InspectView
+            );
+            save.AppendLine(ExamView.GetGridLayout());
+            save.AppendLine(InspectView.GetGridLayout());
+            var path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "/EIS/";
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+            File.WriteAllText(path + "/user.layout", save.ToString(), Encoding.UTF8);
         }
 
         public List<EISExamTriple> GenerateExamTriple()
@@ -78,7 +110,7 @@ namespace ExamEvaluationSystem
                 bool found = false;
                 foreach (var disc in distinctex)
                 {
-                    if (disc.LectureName == de.LectureName)
+                    if (disc.LectureName == de.LectureName && disc.PeriodName == de.PeriodName)
                     {
                         found = true;
                         break;
@@ -114,6 +146,9 @@ namespace ExamEvaluationSystem
                     break;
                 case "2":
                     UserHamburgerMenuFrame.Content = InspectView;
+                    break;
+                case "3":
+                    helpFlyout.IsOpen = true;
                     break;
                 default:
                     break;

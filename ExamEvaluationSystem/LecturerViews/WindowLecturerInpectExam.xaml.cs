@@ -59,11 +59,13 @@ namespace ExamEvaluationSystem
                 }
             }
             Exam = iex;
-            RefreshData();
+            RefreshDataGrid();
+            SetupSearch();
         }
 
-        public void RefreshData()
+        public void RefreshDataGrid()
         {
+            Grid.Items.Clear();
             foreach (var data in Results)
                 Grid.Items.Add(data);
         }
@@ -101,6 +103,30 @@ namespace ExamEvaluationSystem
                 .Replace('ö', 'o').Replace('Ö', 'O')
                 .Replace('ğ', 'g').Replace('Ğ', 'G')
                 .Replace('ü', 'u').Replace('Ü', 'u');
+        }
+
+        private void ResetSearchClick(object sender, RoutedEventArgs e)
+        {
+            RefreshDataGrid();
+        }
+
+        private DelayedActionInvoker searchAction;
+        private void SetupSearch()
+        {
+            searchAction = new DelayedActionInvoker(() => {
+                Dispatcher.Invoke(() =>
+                {
+                    Grid.Items.Clear();
+                    foreach (var ea in Results)
+                        if (ea.No.Contains(searchQuery.Text) || (ea.Name + ea.Surname).ToLower().Contains(searchQuery.Text.ToLower()))
+                            Grid.Items.Add(ea);
+                });
+            }, 1000);
+        }
+
+        private void SearchKeyUp(object sender, KeyEventArgs e)
+        {
+            searchAction.Reset();
         }
     }
 }

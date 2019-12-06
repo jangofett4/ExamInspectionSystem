@@ -18,7 +18,7 @@ namespace ExamEvaluationSystem
     /// <summary>
     /// AdminPanel.xaml etkileşim mantığı
     /// </summary>
-    public partial class AdminPanel : IDisposable, IHasNotifiers
+    public partial class AdminPanel : IHasNotifiers
     {
         public ViewAdminDepartment ViewAdminDepartment;
         public ViewAdminEarnings ViewAdminEarnings;
@@ -30,7 +30,7 @@ namespace ExamEvaluationSystem
         public ViewAdminLectureAssociate ViewAdminLectureAssociate;
         public ViewAdminInspectExam ViewAdminInspectExam;
 
-        private Notifier Notifier;
+        private Notifier Notifier { get; set; }
 
         public AdminPanel()
         {
@@ -51,7 +51,7 @@ namespace ExamEvaluationSystem
             Notifier = new Notifier(cfg =>
             {
                 cfg.PositionProvider = new WindowPositionProvider(
-                    parentWindow: Application.Current.MainWindow,
+                    parentWindow: this,
                     corner: Corner.BottomRight,
                     offsetX: 10,
                     offsetY: 10);
@@ -60,27 +60,21 @@ namespace ExamEvaluationSystem
                     notificationLifetime: TimeSpan.FromSeconds(3),
                     maximumNotificationCount: MaximumNotificationCount.FromCount(3));
 
-                cfg.Dispatcher = Application.Current.Dispatcher;
+                cfg.Dispatcher = Dispatcher;
 
                 cfg.DisplayOptions.TopMost = false; // Needs to be set to false in order to toast to function properly
             });
 
             AdminHamburgerMenuFrame.Content = ViewAdminFaculty;
 
-            Loaded += (sender, e) =>
-            {
-                LoadLayouts();
-            };
-
-            Closing += (sender, e) =>
-            {
-                SaveLayouts(); // Save layouts into file
-            };
+            Loaded += (sender, e) => LoadLayouts();
+            Closing += (sender, e) => SaveLayouts();
         }
 
         public void LoadLayouts()
         {
-            string file = "grids-admin.layout";
+            var path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "/EIS/";
+            string file = path + "/admin.layout";
             if (!File.Exists(file))
                 return;
             var content = File.ReadAllText(file, Encoding.UTF8);
@@ -121,7 +115,10 @@ namespace ExamEvaluationSystem
             save.AppendLine(ViewAdminPeriods.GetGridLayout());
             save.AppendLine(ViewAdminLectureAssociate.GetGridLayout());
             save.AppendLine(ViewAdminInspectExam.GetGridLayout());
-            File.WriteAllText("grids-admin.layout", save.ToString(), Encoding.UTF8);
+            var path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "/EIS/";
+            if (!Directory.Exists(path))
+                Directory.CreateDirectory(path);
+            File.WriteAllText(path + "/admin.layout", save.ToString(), Encoding.UTF8);
         }
 
         public List<EISExamTriple> GenerateExamTriple()
@@ -132,7 +129,7 @@ namespace ExamEvaluationSystem
                 bool found = false;
                 foreach (var disc in distinctex)
                 {
-                    if (disc.LectureName == de.LectureName)
+                    if (disc.LectureName == de.LectureName && disc.PeriodName == de.PeriodName)
                     {
                         found = true;
                         break;
@@ -189,11 +186,6 @@ namespace ExamEvaluationSystem
             Notifier.ShowError(message);
         }
 
-        public void Dispose()
-        {
-            Notifier.Dispose();
-        }
-
         // Hamburger menu switcher
         private void HamburgerMenu_ItemClick(object sender, MahApps.Metro.Controls.ItemClickEventArgs e)
         {
@@ -225,15 +217,18 @@ namespace ExamEvaluationSystem
                     AdminHamburgerMenuFrame.Content = ViewAdminExams;
                     ViewAdminExams.ClearSelected();
                     break;
-                case "9":
-                    AdminHamburgerMenuFrame.Content = ViewAdminInspectExam;
-                    break;
                 case "7":
                     AdminHamburgerMenuFrame.Content = ViewAdminEarnings;
                     ViewAdminEarnings.ClearSelected();
                     break;
                 case "8":
                     AdminHamburgerMenuFrame.Content = ViewAdminLectureAssociate;
+                    break;
+                case "9":
+                    AdminHamburgerMenuFrame.Content = ViewAdminInspectExam;
+                    break;
+                case "10":
+                    helpFlyout.IsOpen = true;
                     break;
                 default:
                     // impossible?

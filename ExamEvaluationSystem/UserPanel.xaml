@@ -7,7 +7,7 @@
         xmlns:Controls="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
         xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
         mc:Ignorable="d"
-        Title="UserPanel" Height="450" Width="800" WindowState="Maximized">
+        Title="UserPanel" Height="651" Width="860" WindowState="Maximized">
     <Window.Resources>
         <DataTemplate x:Key="UserHamburger">
             <Grid Height="48">
@@ -46,14 +46,11 @@
         </DataTemplate>
     </Window.Resources>
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="0*"/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
         <Controls:HamburgerMenu 
             ItemTemplate="{StaticResource UserHamburger}" x:Name="UserHamburgerMenu"
-            OptionsItemTemplate="{StaticResource UserHamburgerOptions}" Grid.RowSpan="2" IsPaneOpen="True"
-            ItemClick="HamburgerItemClick">
+            OptionsItemTemplate="{StaticResource UserHamburgerOptions}"
+            ItemClick="HamburgerItemClick"
+            OptionsItemClick="HamburgerItemClick">
             <Controls:HamburgerMenu.Content>
                 <Frame x:Name="UserHamburgerMenuFrame" NavigationUIVisibility="Hidden"/>
             </Controls:HamburgerMenu.Content>
@@ -61,6 +58,8 @@
                 <Controls:HamburgerMenuItemCollection>
                     <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=BookOpenSolid}" Label="Sınav Ekle/Sil" Tag="1"></Controls:HamburgerMenuIconItem>
                     <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=SearchSolid}" Label="Sınav İncele" Tag="2"></Controls:HamburgerMenuIconItem>
+                    <Controls:HamburgerMenuIconItem Icon="{iconPacks:FontAwesome Kind=QuestionSolid}" Label="Yardım" Tag="3">
+                    </Controls:HamburgerMenuIconItem>
                 </Controls:HamburgerMenuItemCollection>
             </Controls:HamburgerMenu.ItemsSource>
 
@@ -71,5 +70,69 @@
                 </Controls:HamburgerMenuItemCollection>
             </Controls:HamburgerMenu.OptionsItemsSource>
         </Controls:HamburgerMenu>
+        <Controls:FlyoutsControl>
+            <Controls:Flyout Header="Yardım" Position="Right" Width="800" Name="helpFlyout">
+                <Grid>
+                    <ScrollViewer>
+                        <StackPanel VerticalAlignment="Top" HorizontalAlignment="Left">
+                            <Image Height="284" Width="498" Source="Assets/HelpAssets/Help-1-3-Grid_Defs.png"/>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Text="Veri: Bu tabloda ilgili görünüm içindeki (bu durumda Fakülteler) verileri listelenir. Veriler alt alta listelenir." Width="780"/>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Text="Bu liste üzerinde tablo sütunlarına tıklanılarak alfabetik ya da büyükten küçüğe sıralama yapılabilir." Width="780"/>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Text="Veri seçmek için tablonun en sonunda bulunan alanlar işaretlenebilir. Seçilen veriler toplu silmede kullanılır." Width="780"/>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Text="Çoğu görünüm verinin düzenlenmesine olanak sağlar. Herhangi bir veriyi düzenlemek için alakalı veriye tablodan çift tıklamak yeterlidir.             Açılır pencere veriler doldurulmuş olarak görünümün sağından belirecektir. İlgili alanların düzenlenip onayla butonuna basılması düzenlemeyi tamamlayacaktır. Açılır pencere bir sonraki kısımda detaylı olarak gösterilecektir." Width="780"/>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Text="Uygulamadaki ana görünümler üzerinde yapılan sütun büyüklüğü ya da sütun sırası değişiklikleri otomatik olarak kaydedilir. Programın sonraki açılışında bu kayıtlar yüklenir." Width="780"/>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Text="Tekil Veri Seçici" Width="780"/>
+                            <Image Height="293" Width="224" Source="Assets/HelpAssets/Help-1-8-Data_Selector_Single.png"/>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Text="Bu pencere tekli veri seçilmesi gereken alanlar için açılır. Seçilecek veri tablodan seçilir ve pencerenin üstündeki 'Seç' butonu ile seçilebilir, ya da seçilecek veriye çift tıklanılarak veri seçilebilir" Width="780"/>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Text="Ayrıca pencerenin üstünde bulunan 'Ara' alanı ile tablo içinde veri aranabilir. Seçilen yeşil arkaplan rengi ile görüntülenir." Width="780"/>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Text="Çoklu Veri Seçici" Width="780"/>
+                            <Image Height="309" Width="460" Source="Assets/HelpAssets/Help-1-7-Data_Selector.png"/>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Text="Bu pencere çoklu veri seçilmesi gereken alanlar için açılır. Bu pencerede birden fazla veri seçmek için tablonun en sağında bulunan alanlar işaretlenilerek veriler seçilir. İşaretlemeler tamamlandıktan sonra pencerenin sol üstündeki 'Seç' butonu kullanılarak seçilen veriler onaylanılabilir." Width="780"/>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Text="Ayrıca pencerenin üstünde bulunan 'Ara' alanı ile tablo içinde veri aranabilir." Width="780"/>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Text="Veri Silme" Width="780"/>
+                            <Image Height="420" Width="774" Source="Assets/HelpAssets/Help-1-9-Item_Remove.png"/>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Text="Silinecek veriler ana görünümde tablonun en sağındaki bulunan alanlar işaretlenilerek seçilir. Veriler seçildekten sonra görünümün sağında bulunan 'Sil' (üzerinde '-' işareti bulunan) butonuna basılarak silme işlemi başlatılır." Width="780"/>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Text="Butona basılınca seçilen veriler hemen silinmez. Kullanıcı tarafından onay alınılır. Silme işlemi her zaman bağlı olan verileri siler. Kullanıcı bu veriyi silmeyi onaylayınca verinin silindiğine dair bir bilgi mesajı pencerenin sağ altından belirir ve veriler silinmiş olur." Width="780"/>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Text="Veri Arama" Width="780"/>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Text="Çoğu görünümün sağ altında bir arama butonu mevcuttur" Width="780"/>
+                            <Image Height="75" Width="73" Source="Assets/HelpAssets/Help-1-5-Search_Tile.png"/>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Text="Bu butona basmak ekranın sağından arama açılır penceresi açılır. Resimde gösterilen butonun üstündeki çarpı ('X') butonu her zaman görünür değildir. Arama yapıldıktan sonra sonuçları temizlemede kullanılır." Width="780"/>
+                            <Image Height="417" Width="772" Source="Assets/HelpAssets/Help-1-10-Search.png"/>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Text="Bu açılır pencerede 'Arama Metni' alanına herhangi bir yazı yazmak aramayı başlatır. Arama işlemi son klavye tıklamasından 1 saniye sonra tabloda sonuçların belirmesini sağlar. Aramalar verinin büyüklüğüne göre genelde hızlı gerçekleşir. Ayrıca 'Arama Metni' alanındayken 'Enter' tuşuna basmak açılır pencereyi otomatik kapatacaktır." Width="780"/>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Text="Sınav Değerlendirme" Width="780"/>
+                            <Image Height="177" Width="210" Source="Assets/HelpAssets/Help-2-0-Add_Exam.png"/>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Text="Yan menüden 'Sınavlar' görünümü seçildikten sonra ekle ('+') butonuna basılır. Klasik veri ekleme açılır penceresi pencerinin sağından belirecektir. Bu ekleme penceresi diğerlerine göre daha özel olduğundan tüm alanlar anlatılacaktır." Width="780"/>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Text="'Ders' alanı klasik veri seçme penceresini açar ve bu pencereden sınavın dersi seçilir. Bu alan cevap anahtarını eklemeden önce zorunludur.   'Dönem' alanı otomatik olarak aktif dönem olarak seçilir. Bu alan elle değiştirilemez" Width="780"/>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Text="'Sınav Türü' alanı klasik veri seçme penceresini açar ve bu pencereden sınavın türü belirlenir (Vize, Final vb.). Bu alan zorunludur." Width="780"/>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Text="'Cevap Anahtarı' alanı dosya seçme ekranını açar. Bu alanın seçilmeden önce 'Ders' ve 'Sınav Türü' alanlarının seçilmesi gereklidir." Width="780"/>
+                            <Image Height="295" Width="412" Source="Assets/HelpAssets/Help-2-1-Select_Answers.png"/>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Text="Açılan pencereden grupların ve cevap anahtalarlarının bulunduğu dosya seçilir. Dosya okutma işlemi büyük toleranslıdır ve bozuk dosyaları bir noktaya kadar doğru okuyabilir. Yanlış dosya seçilmesi durumunda uygulama hata mesajı verir ve çalışmaya devam eder. Bu alanın seçilmesi 'Optik' alanının seçilmesi için zorunludur" Width="780"/>
+                            <Image Height="356" Width="574" Source="Assets/HelpAssets/Help-2-2-Answer_Earnings.png"/>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Text="Cevap anahtarı seçildiği anda dosya ayrıştırılır ve sistemi anlayabileceği bir formata dönüştürülür. Bu sırada Sınav Düzenleme Paneli açılır.              Bu pencereden sorular ile eşleşecek olan kazanımlar belirlenmelidir. Her soruyla en az bir kazanım eşleştirilmelidir." Width="780"/>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Text="Gruplar tablosundan bir kayda çift tıklanılarak gruptaki cevaplar ikinci tabloya doldurulur." Width="780"/>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Text="İkinci tablodan bir soruya çift tıklanılarak o soruya ait kazanımlar belirlenmeye başlanılır. Soruya ait kazanım var ise üçüncü tabloda seçilmiş olarak gösterilecektir." Width="780"/>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Text="Üçüncü tablodan kazanımlar seçilir (tablonun solundaki yer alan alanlar ile) ve alttaki onayla butonuna basılır. Soru için kazanımlar kaydedilip bir sonraki soruya otomatik geçilir." Width="780"/>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Text="Tüm sorulara kazanımlar atandıktan sonra pencerenin sol üstünde bulunan 'Onayla' butonu ile cevap anahtarı kaydedilir. Eğer kazanım atanmamış soru tespit edilirse uygulama hangi gruplarda eksikler olduğunu mesaj ile belirtecektir." Width="780"/>
+                            <TextBlock></TextBlock>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Text="'Optik' Alanı" Width="780"/>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Text="'Optik' alanı dosya seçme ekranı açar. Bu alan seçilmeden önce 'Cevap Anahtarı' alanlarının seçilmesi gereklidir. Tıpkı 'Cevap Anahtarı' alanı gibi 'Optik' dosyası seçilir. Dosya okutma 'Cevap Anahatarı' okutma işlemi gibi toleranslı değildir ve belli formata uymayan dosyalar sistem tarafından reddedilir." Width="780"/>
+                            <Image Height="356" Width="494" Source="Assets/HelpAssets/Help-2-3-Student_Answers.png"/>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Text="Bu pencerede işlenen optik verilerinin eksikleri ve hataları görüntülenir. Tabloda görüntülenen alanlar klavye ile direk düzenlenerek doğru değerlere atanır. Hatalı gruplar açılır listeden seçilebilir. Ayrıca cevaplar her satırın sonunda bulunan '...' butonuyla görüntülenebilir." Width="780"/>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Text="'...' butonuna basılınca öğrencinin verdiği cevaplar sağdaki tabloda görüntülencektir. Bu tabloda hatalı kısımlar düzenlenilebilir. Hatalı kısımlar düzeltildikten sonra pencerenin sağ altında bulunan onayla butonu ile otomatik olarak bir sonraki öğrencinin verdiği cevaplar kontrol edilebilir." Width="780"/>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Text="Tüm kontroller yapıldıktan sonra pencerenin sol üstünde bulunan 'Onayla' butonu ile sınav sonuçları kaydedilir. Dikkat! Boş bırakılan gruplar otomatik olarak ilk gruba (örn. A grubu) atanır ve tüm cevaplar boş varsayılır (0 not)." Width="780"/>
+                            <TextBlock></TextBlock>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Text="Tüm alanlar dolduruldu ise sınav sisteme eklenebilir. Sisteme eklenen sınavlar düzenlenemez konuma gelir ve üzerlerinde sadece görüntüleme ve silme işlemleri yapılabilir." Width="780"/>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Text="Sınavların Excel ile Değerlendirmelerinin Oluşturulmas" Width="780"/>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Text="Yan menüden 'Sınav İncele' görünümü seçilir." Width="780"/>
+                            <Image Height="417" Width="770" Source="Assets/HelpAssets/Help-2-4-Inspect_Exams.png"/>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Text="Bu ekranda sisteme eklenmiş olan sınavların listesi belirecektir. Diğer sınav görünümünün aksine bu ekranda her ders ve dönem kendi içinde gruplanır ve Viza, Final vb. şeklinde ayrılır. Diğer ekrandan sınav eklemek bu ekranda linkin aktifleşmesini sağlar. Sonucu eklenmiş sınavlar burdan görüntülenebilir." Width="780"/>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Text="Vize, Final ya da Bütünleme linklerinden birine tıklanınca ekranda sınav sonuçlalrı penceresi belirecektir" Width="780"/>
+                            <Image Height="281" Width="285" Source="Assets/HelpAssets/Help-2-5-Inspect_Exam.png"/>
+                            <TextBlock TextAlignment="Center" TextWrapping="Wrap" Text="Bu ekranda sonuçlar direk görüntülenecektir. Pencerenin sol üstünde bulunan 'Detaylı Excel Çıktısı Al' butonuna tıklanılarak soru bazlı ve kazanım bazlı değerlendirme dosyaları alınabilir. Bu butona tıklandıktan sonra açılacak diyalogdan bir klasör belirlenir. Sistem bu klasöre soru bazlı ve kazanım bazlı olmak üzere iki farklı excel raporu çıkarır." Width="780"/>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </Controls:Flyout>
+        </Controls:FlyoutsControl>
     </Grid>
 </Controls:MetroWindow>

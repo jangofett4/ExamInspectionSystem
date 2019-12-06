@@ -12,7 +12,7 @@ namespace ExamEvaluationSystem
         public int ID { get; set; }
         public EISStudent Student { get; set; }
         public EISExam Exam { get; set; }
-        public string Answers { get { return enc_answers.Substring(1); } set { enc_answers = enc_answers[1] + value; } }
+        public string Answers { get { return enc_answers.Substring(1); } set { enc_answers = enc_answers[0] + value; } }
 
         private string enc_answers { get; set; }
 

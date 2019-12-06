@@ -197,6 +197,7 @@ namespace ExamEvaluationSystem
                 }
             };
             RefreshDataGrid();
+            SetupSearch();
         }
 
         public void RefreshDataGrid()
@@ -410,6 +411,42 @@ namespace ExamEvaluationSystem
 
             sideFlyout.IsOpen = false;
             questions = null;
+        }
+
+        private void TileSearchClick(object sender, RoutedEventArgs e)
+        {
+            searchFlyout.IsOpen = true;
+        }
+
+        private void ResetSearchClick(object sender, RoutedEventArgs e)
+        {
+            RefreshDataGrid();
+            TileResetSearch.Visibility = Visibility.Hidden;
+        }
+
+        private DelayedActionInvoker searchAction;
+        private void SetupSearch()
+        {
+            searchAction = new DelayedActionInvoker(() => {
+                Dispatcher.Invoke(() =>
+                {
+                    Grid.Items.Clear();
+                    foreach (var ea in EISSystem.Exams)
+                    {
+                        var sq = searchQuery.Text.ToLower();
+                        if (ea.PeriodName.ToLower().Contains(sq) || ea.LectureName.ToLower().Contains(sq) || ea.ExamType.ToLower().Contains(sq))
+                            Grid.Items.Add(ea);
+                    }
+                    TileResetSearch.Visibility = Visibility.Visible;
+                });
+            }, 1000);
+        }
+
+        private void SearchKeyUp(object sender, KeyEventArgs e)
+        {
+            searchAction.Reset();
+            if (e.Key == Key.Enter)
+                searchFlyout.IsOpen = false;
         }
 
         public string GetGridLayout()
