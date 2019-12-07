@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using ToastNotifications;
+using ToastNotifications.Core;
 using ToastNotifications.Lifetime;
 using ToastNotifications.Messages;
 using ToastNotifications.Position;
@@ -29,7 +30,8 @@ namespace ExamEvaluationSystem
         // Views
         public ViewLecturerAddExam ExamView;
         public ViewLecturerViewExam InspectView;
-        private Notifier Notifier;
+
+        public Notifier Notifier { get; set; }
 
         public UserPanel(EISLecturer lec)
         {
@@ -70,13 +72,14 @@ namespace ExamEvaluationSystem
 
             UserHamburgerMenuFrame.Content = ExamView; // Initial view
 
-            Loaded += (sender, e) => LoadLayouts();
-            Closing += (sender, e) => SaveLayouts();
+            Loaded += (sender, e) => EISSystem.Config.If("SaveLayouts", LoadLayouts);
+            Closing += (sender, e) => EISSystem.Config.If("SaveLayouts", SaveLayouts);
         }
 
         public void LoadLayouts()
         {
-            var path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "/EIS/";
+            var path = ".";
+            EISSystem.Config.If("LayoutsToAppdata", () => path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "/EIS/");
             string file = path + "/user.layout";
             if (!File.Exists(file))
                 return;
@@ -96,7 +99,8 @@ namespace ExamEvaluationSystem
             );
             save.AppendLine(ExamView.GetGridLayout());
             save.AppendLine(InspectView.GetGridLayout());
-            var path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "/EIS/";
+            var path = ".";
+            EISSystem.Config.If("LayoutsToAppdata", () => path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "/EIS/");
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
             File.WriteAllText(path + "/user.layout", save.ToString(), Encoding.UTF8);
@@ -167,12 +171,19 @@ namespace ExamEvaluationSystem
 
         public void NotifyWarning(string message)
         {
+            NotifierClear();
             Notifier.ShowWarning(message);
         }
 
         public void NotifyError(string message)
         {
+            NotifierClear();
             Notifier.ShowError(message);
+        }
+
+        public void NotifierClear()
+        {
+            Notifier.ClearMessages(new ToastNotifications.Lifetime.Clear.ClearAll());
         }
     }
 }

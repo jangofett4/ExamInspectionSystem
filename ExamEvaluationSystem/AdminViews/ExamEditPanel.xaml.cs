@@ -13,12 +13,17 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
+using ToastNotifications;
+using ToastNotifications.Lifetime;
+using ToastNotifications.Messages;
+using ToastNotifications.Position;
+
 namespace ExamEvaluationSystem
 {
     /// <summary>
     /// ExamEditPanel.xaml etkileşim mantığı
     /// </summary>
-    public partial class ExamEditPanel : IChildObject<IHasNotifiers>
+    public partial class ExamEditPanel : IHasNotifiers
     {
         public List<EISQuestion> Questions;
         public EISLecture Lecture;
@@ -26,17 +31,60 @@ namespace ExamEvaluationSystem
         private EISSingleQuestion current;
         private string group = "N/A";
 
-        public IHasNotifiers ParentObject { get; set; }
-
         public List<List<EISSingleQuestion>> AllQuestions;
 
-        public ExamEditPanel(IHasNotifiers parent)
+        public Notifier Notifier { get; set; }
+
+        public ExamEditPanel()
         {
-            ParentObject = parent;
             InitializeComponent();
             AllQuestions = new List<List<EISSingleQuestion>>();
 
-            Closing += (sender, e) => { ClearSelected(); };
+            Notifier = new Notifier(cfg =>
+            {
+                cfg.PositionProvider = new WindowPositionProvider(
+                    parentWindow: this,
+                    corner: Corner.BottomRight,
+                    offsetX: 10,
+                    offsetY: 10);
+
+                cfg.LifetimeSupervisor = new TimeAndCountBasedLifetimeSupervisor(
+                    notificationLifetime: TimeSpan.FromSeconds(3),
+                    maximumNotificationCount: MaximumNotificationCount.FromCount(3));
+
+                cfg.Dispatcher = Dispatcher;
+
+                cfg.DisplayOptions.TopMost = false; // Needs to be set to false in order to toast to function properly
+            });
+
+            Closing += (sender, e) => { ClearSelected(); Notifier.Dispose();  };
+        }
+
+        public void NotifySuccess(string message)
+        {
+            Notifier.ShowSuccess(message);
+        }
+
+        public void NotifyInformation(string message)
+        {
+            Notifier.ShowInformation(message);
+        }
+
+        public void NotifyWarning(string message)
+        {
+            NotifierClear();
+            Notifier.ShowWarning(message);
+        }
+
+        public void NotifyError(string message)
+        {
+            NotifierClear();
+            Notifier.ShowError(message);
+        }
+
+        public void NotifierClear()
+        {
+            Notifier.ClearMessages(new ToastNotifications.Lifetime.Clear.ClearAll());
         }
 
         private void ExamEditPanel_Loaded(object sender, RoutedEventArgs e)
@@ -156,7 +204,7 @@ namespace ExamEvaluationSystem
                     groupsfriendly += $"{ Questions[g].Group }, ";
                 groupsfriendly = groupsfriendly.Remove(groupsfriendly.Length - 2);
                 string message = groupsfriendly + " gruplarında kazanımlarla eşleştirilmemiş sorular bulunmakta.\nKaydetmeden çıkmak için sağ üstteki çıkış butonunu kullanın.";
-                ParentObject.NotifyWarning(message);
+                NotifyWarning(message);
                 return false;
             }
 
@@ -170,13 +218,13 @@ namespace ExamEvaluationSystem
         {
             if (current == null)
             {
-                ParentObject.NotifyWarning("Soru seçilmedi!");
+                NotifyWarning("Soru seçilmedi!");
                 return;
             }
 
             var selected = GetSelectedEarnings();
             current.Earnings = selected; current.OnPropertyChanged("FriendlyEarnings"); // trigger this, so datagrid is updated properly
-            ParentObject.NotifyInformation("Onaylandı!");
+            NotifyInformation("Onaylandı!");
             if (current.Nth != dgSingleAnswers.Items.Count)
             {
                 current = (EISSingleQuestion)dgSingleAnswers.Items[current.Nth];

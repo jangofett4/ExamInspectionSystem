@@ -46,7 +46,7 @@ namespace ExamEvaluationSystem
             var d = (EISExamTriple)sel;
             if (d.Visa == null) return;
             var res = new EISExamResult(-1).SelectList(EISSystem.Connection, Where.Equals("ExamID", d.Visa.ID.ToString()));
-            new WindowLecturerInpectExam(d.Visa, res, ParentObject).ShowDialog();
+            new WindowLecturerInpectExam(d.Visa, res).ShowDialog();
         }
 
         private void ClickFinal(object sender, RoutedEventArgs e)
@@ -56,7 +56,7 @@ namespace ExamEvaluationSystem
             var d = (EISExamTriple)sel;
             if (d.Final == null) return;
             var res = new EISExamResult(-1).SelectList(EISSystem.Connection, Where.Equals("ExamID", d.Final.ID.ToString()));
-            new WindowLecturerInpectExam(d.Final, res, ParentObject).ShowDialog();
+            new WindowLecturerInpectExam(d.Final, res).ShowDialog();
         }
 
         private void ClickComplement(object sender, RoutedEventArgs e)
@@ -66,7 +66,7 @@ namespace ExamEvaluationSystem
             var d = (EISExamTriple)sel;
             if (d.Complement == null) return;
             var res = new EISExamResult(-1).SelectList(EISSystem.Connection, Where.Equals("ExamID", d.Complement.ID.ToString()));
-            new WindowLecturerInpectExam(d.Complement, res, ParentObject).ShowDialog();
+            new WindowLecturerInpectExam(d.Complement, res).ShowDialog();
         }
 
         public string GetGridLayout()

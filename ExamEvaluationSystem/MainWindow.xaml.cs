@@ -39,12 +39,49 @@ namespace ExamEvaluationSystem
 
             FreeConsole();*/
 
+            string configfile = "config.cfg";
+            EISSystem.Config = new BasicConfig(configfile);
+            if (!File.Exists(configfile))
+            {
+                try
+                {
+                    File.WriteAllText(configfile, "SaveLayouts = true\nLayoutsToAppdata = true\nDbToAppdata = true", Encoding.UTF8);
+                }
+                catch (Exception)
+                {
+                    // Probably UAC, just push default values, nothing we can do anyway
+                    EISSystem.Config.Push("SaveLayouts", true, ConfigValueType.Boolean);
+                    EISSystem.Config.Push("LayoutsToAppdata", true, ConfigValueType.Boolean);
+                    EISSystem.Config.Push("DbToAppdata", true, ConfigValueType.Boolean);
+                }
+            }
+            else
+            {
+                if (!EISSystem.Config.Read())
+                {
+                    System.Windows.Forms.MessageBox.Show("Hatalı konfigürasyon dosyası (config.cfg). Dosyayı sıfırlamak için silmeyi deneyin.\nVarsayılan değerler kullanılacak.", "Hata", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Exclamation);
+                    EISSystem.Config.Push("SaveLayouts", true, ConfigValueType.Boolean);
+                    EISSystem.Config.Push("LayoutsToAppdata", true, ConfigValueType.Boolean);
+                    EISSystem.Config.Push("DbToAppdata", true, ConfigValueType.Boolean);
+                }
+            }
+
+            string dbfile = "./data.db";
+
+            EISSystem.Config.If("DbToAppdata", () => {
+                string appdata = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "/EIS/data.db";
+                if (!File.Exists(appdata))
+                    File.Copy(dbfile, appdata);
+                dbfile = appdata;
+            });
+
             InitializeComponent();
-            EISSystem.Connection = new SQLiteConnection($"Data Source=./data.db; Version=3;");
+            EISSystem.Connection = new SQLiteConnection($"Data Source={ dbfile }; Version=3;");
             EISSystem.Connection.Open();
 
             var fkcmd = new SQLiteCommand("PRAGMA foreign_keys = ON;", EISSystem.Connection);
             fkcmd.ExecuteNonQuery();
+            fkcmd.Dispose();
 
             using (var rd = new EISFaculty(-1).SelectAll(EISSystem.Connection))
             {

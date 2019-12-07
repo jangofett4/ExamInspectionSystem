@@ -137,7 +137,7 @@ namespace ExamEvaluationSystem
                         return;
                     }
 
-                    var panel = new ExamStudentPanel(ParentObject);
+                    var panel = new ExamStudentPanel();
                     panel.ExamResults = res;
                     panel.Resources.Add("GroupItemSource", ((EISExam)selectorExamAnswers.SelectedData).Groups);
                     panel.RefreshStudents();
@@ -188,7 +188,7 @@ namespace ExamEvaluationSystem
                         return;
                     }
 
-                    var panel = new ExamEditPanel(ParentObject);
+                    var panel = new ExamEditPanel();
                     panel.Lecture = (EISLecture)selectorExamLectures.SelectedData;
                     panel.lblLecture.Content = "Ders: " + panel.Lecture.Name;
                     panel.Questions = res;
@@ -390,7 +390,7 @@ namespace ExamEvaluationSystem
 
             if (result == -1)
             {
-                ParentObject.NotifyError($"Sistemde { ex.Lecture.Name } için { ex.Type.Name } sınavı zaten mevcut!");
+                ParentObject.NotifyError($"Sistemde { ex.PeriodName } dönemi için { ex.LectureName } için { ex.Type.Name } sınavı zaten mevcut!");
                 trn.Rollback(EISSystem.Connection);
                 return;
             }
@@ -405,12 +405,11 @@ namespace ExamEvaluationSystem
             foreach (var v in dict)
             {
                 if (v.Key.Insert(EISSystem.Connection) == -1)
-                {
                     v.Key.Update(EISSystem.Connection);
-                    if (EISSystem.GetStudent(v.Key.ID) == null)
-                        EISSystem.Students.Add(v.Key);
-                }
+                if (EISSystem.GetStudent(v.Key.ID) == null)
+                    EISSystem.Students.Add(v.Key);
                 v.Value.Exam = ex;
+                v.Value.Student = v.Key;
                 v.Value.Insert(EISSystem.Connection);
             }
 

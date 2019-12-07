@@ -30,6 +30,8 @@ namespace ExamEvaluationSystem
 
         public static EISPeriod ActivePeriod;
 
+        public static BasicConfig Config;
+
         public static EISDepartment GetDepartment(int DID)
         {
             foreach (var d in Departments)

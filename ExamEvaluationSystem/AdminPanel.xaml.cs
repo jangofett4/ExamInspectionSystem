@@ -30,7 +30,7 @@ namespace ExamEvaluationSystem
         public ViewAdminLectureAssociate ViewAdminLectureAssociate;
         public ViewAdminInspectExam ViewAdminInspectExam;
 
-        private Notifier Notifier { get; set; }
+        public Notifier Notifier { get; set; }
 
         public AdminPanel()
         {
@@ -67,13 +67,14 @@ namespace ExamEvaluationSystem
 
             AdminHamburgerMenuFrame.Content = ViewAdminFaculty;
 
-            Loaded += (sender, e) => LoadLayouts();
-            Closing += (sender, e) => SaveLayouts();
+            Loaded += (sender, e) => EISSystem.Config.If("SaveLayouts", LoadLayouts);
+            Closing += (sender, e) => EISSystem.Config.If("SaveLayouts", SaveLayouts);
         }
 
         public void LoadLayouts()
         {
-            var path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "/EIS/";
+            var path = ".";
+            EISSystem.Config.If("LayoutsToAppdata", () => path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "/EIS/");
             string file = path + "/admin.layout";
             if (!File.Exists(file))
                 return;
@@ -115,7 +116,8 @@ namespace ExamEvaluationSystem
             save.AppendLine(ViewAdminPeriods.GetGridLayout());
             save.AppendLine(ViewAdminLectureAssociate.GetGridLayout());
             save.AppendLine(ViewAdminInspectExam.GetGridLayout());
-            var path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "/EIS/";
+            var path = ".";
+            EISSystem.Config.If("LayoutsToAppdata", () => path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "/EIS/");
             if (!Directory.Exists(path))
                 Directory.CreateDirectory(path);
             File.WriteAllText(path + "/admin.layout", save.ToString(), Encoding.UTF8);
@@ -178,12 +180,19 @@ namespace ExamEvaluationSystem
 
         public void NotifyWarning(string message)
         {
+            NotifierClear();
             Notifier.ShowWarning(message);
         }
 
         public void NotifyError(string message)
         {
+            NotifierClear();
             Notifier.ShowError(message);
+        }
+
+        public void NotifierClear()
+        {
+            Notifier.ClearMessages(new ToastNotifications.Lifetime.Clear.ClearAll());
         }
 
         // Hamburger menu switcher

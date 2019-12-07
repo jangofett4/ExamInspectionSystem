@@ -12,14 +12,18 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
+using ToastNotifications;
+using ToastNotifications.Lifetime;
+using ToastNotifications.Messages;
+using ToastNotifications.Position;
+
 namespace ExamEvaluationSystem
 {
     /// <summary>
     /// WindowLecturerInpectExam.xaml etkileşim mantığı
     /// </summary>
-    public partial class WindowLecturerInpectExam : IChildObject<IHasNotifiers>
+    public partial class WindowLecturerInpectExam : IHasNotifiers
     {
-        public IHasNotifiers ParentObject { get; set; }
 
         private struct BasicResultType
         {
@@ -34,10 +38,11 @@ namespace ExamEvaluationSystem
 
         List<BasicResultType> Results;
 
-        public WindowLecturerInpectExam(EISExam ex, List<EISExamResult> res, IHasNotifiers parent)
+        public Notifier Notifier { get; set; }
+
+        public WindowLecturerInpectExam(EISExam ex, List<EISExamResult> res)
         {
             BaseExam = ex;
-            ParentObject = parent;
             InitializeComponent();
             var iex = EISStatistics.InternalExam.FromExam(ex, res);
             Results = new List<BasicResultType>();
@@ -59,8 +64,53 @@ namespace ExamEvaluationSystem
                 }
             }
             Exam = iex;
+
+            Notifier = new Notifier(cfg =>
+            {
+                cfg.PositionProvider = new WindowPositionProvider(
+                    parentWindow: this,
+                    corner: Corner.BottomRight,
+                    offsetX: 10,
+                    offsetY: 10);
+
+                cfg.LifetimeSupervisor = new TimeAndCountBasedLifetimeSupervisor(
+                    notificationLifetime: TimeSpan.FromSeconds(3),
+                    maximumNotificationCount: MaximumNotificationCount.FromCount(3));
+
+                cfg.Dispatcher = Dispatcher;
+
+                cfg.DisplayOptions.TopMost = false; // Needs to be set to false in order to toast to function properly
+            });
+
             RefreshDataGrid();
             SetupSearch();
+        }
+
+        public void NotifySuccess(string message)
+        {
+            Notifier.ShowSuccess(message);
+        }
+
+        public void NotifyInformation(string message)
+        {
+            Notifier.ShowInformation(message);
+        }
+
+        public void NotifyWarning(string message)
+        {
+            NotifierClear();
+            Notifier.ShowWarning(message);
+        }
+
+        public void NotifyError(string message)
+        {
+            NotifierClear();
+            Notifier.ShowError(message);
+        }
+
+        public void NotifierClear()
+        {
+            Notifier.ClearMessages(new ToastNotifications.Lifetime.Clear.ClearAll());
         }
 
         public void RefreshDataGrid()
@@ -76,7 +126,7 @@ namespace ExamEvaluationSystem
             {
                 if (dlg.ShowDialog() != System.Windows.Forms.DialogResult.OK)
                 {
-                    ParentObject.NotifyWarning("Çıktı için klasör belirlenmedi!");
+                    NotifyWarning("Çıktı için klasör belirlenmedi!");
                     return;
                 }
 
@@ -86,10 +136,10 @@ namespace ExamEvaluationSystem
                 }
                 catch (Exception)
                 {
-                    ParentObject.NotifyWarning("Değerlendirme çıktısı oluşturma başarısız. Dosya kullanımda olabilir mi?");
+                    NotifyWarning("Değerlendirme çıktısı oluşturma başarısız. Dosya kullanımda olabilir mi?");
                     return;
                 }
-                ParentObject.NotifySuccess("Değerlendirme çıktısı kaydedildi!");
+                NotifySuccess("Değerlendirme çıktısı kaydedildi!");
             }
         }
 

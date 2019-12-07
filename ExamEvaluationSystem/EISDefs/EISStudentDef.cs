@@ -82,19 +82,14 @@ namespace ExamEvaluationSystem
         {
             var cmd = new EISInsertCommand("Students");
             var sql = cmd.Create(connection, "ID", ID, "Name", $"'{ Name }'", "Surname", $"'{ Surname }'", "DepartmentID", Department.ID.ToString());
-            int res;
             try
             {
-                res = sql.ExecuteNonQuery();
+                return sql.ExecuteNonQuery();
             }
             catch (SQLiteException)
             {
                 return -1;
             }
-            sql = new SQLiteCommand("SELECT * FROM Students ORDER BY ID DESC LIMIT 1", connection);
-            ID = ((long)sql.ExecuteScalar()).ToString();
-
-            return res;
         }
 
         public override int Delete(SQLiteConnection connection)

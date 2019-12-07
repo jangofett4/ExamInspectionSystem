@@ -13,22 +13,71 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
+using ToastNotifications;
+using ToastNotifications.Lifetime;
+using ToastNotifications.Messages;
+using ToastNotifications.Position;
 namespace ExamEvaluationSystem
 {
     /// <summary>
     /// ExamStudentPanel.xaml etkileşim mantığı
     /// </summary>
-    public partial class ExamStudentPanel : IChildObject<IHasNotifiers>
+    public partial class ExamStudentPanel : IHasNotifiers
     {
-        public IHasNotifiers ParentObject { get; set; }
-
         public Dictionary<EISStudent, EISExamResult> ExamResults;
         public EISExam Exam;
 
-        public ExamStudentPanel(IHasNotifiers parent)
+        public Notifier Notifier { get; set; }
+
+        public ExamStudentPanel()
         {
-            ParentObject = parent;
             InitializeComponent();
+
+            Notifier = new Notifier(cfg =>
+            {
+                cfg.PositionProvider = new WindowPositionProvider(
+                    parentWindow: this,
+                    corner: Corner.BottomRight,
+                    offsetX: 10,
+                    offsetY: 10);
+
+                cfg.LifetimeSupervisor = new TimeAndCountBasedLifetimeSupervisor(
+                    notificationLifetime: TimeSpan.FromSeconds(3),
+                    maximumNotificationCount: MaximumNotificationCount.FromCount(3));
+
+                cfg.Dispatcher = Dispatcher;
+
+                cfg.DisplayOptions.TopMost = false; // Needs to be set to false in order to toast to function properly
+            });
+
+            Closing += (sender, e) => Notifier.Dispose();
+        }
+
+        public void NotifySuccess(string message)
+        {
+            Notifier.ShowSuccess(message);
+        }
+
+        public void NotifyInformation(string message)
+        {
+            Notifier.ShowInformation(message);
+        }
+
+        public void NotifyWarning(string message)
+        {
+            NotifierClear();
+            Notifier.ShowWarning(message);
+        }
+
+        public void NotifyError(string message)
+        {
+            NotifierClear();
+            Notifier.ShowError(message);
+        }
+
+        public void NotifierClear()
+        {
+            Notifier.ClearMessages(new ToastNotifications.Lifetime.Clear.ClearAll());
         }
 
         public void RefreshStudents()
@@ -55,51 +104,36 @@ namespace ExamEvaluationSystem
 
         private void MenuCheckClick(object sender, RoutedEventArgs e)
         {
-            var c1 = ((DataGridTemplateColumn)dgAnswers.Columns[0]);
             var needno = new StringBuilder();
-            var needgroup = new StringBuilder();
             var neednoi = 0;
-            var needgroupi = 0;
 
             foreach (var i in dgStudents.Items)
             {
                 var val = (EISExamResult)i;
-                
-                if (neednoi > 3 && needgroupi > 3)
+                val.No = val.No.Trim().TrimStart('0'); // yes, we explicitly get rid of zeroes at the start
+                val.Name = val.Name.Trim();
+                val.Surname = val.Surname.Trim();
+
+                if (neednoi == 4)
                     break;
 
-                if (val.No.Length != 9 && neednoi < 3)
+                if ((string.IsNullOrWhiteSpace(val.No) || val.No.Length != 9) && neednoi < 4)
                 {
-                    needno.Append($"{ val.Student.Name } { val.Student.Surname }, ");
+                    if (neednoi == 3)
+                        needno.Append($"{ val.Student.Name } { val.Student.Surname }");
+                    else
+                        needno.Append($"{ val.Student.Name } { val.Student.Surname }, ");
                     neednoi++;
-                }
-
-                if (string.IsNullOrWhiteSpace(val.Group.ToString()) && needgroupi < 3)
-                {
-                    needgroup.Append($"{ val.Student.Name } { val.Student.Surname }, ");
-                    needgroupi++;
                 }
             }
 
             if (neednoi > 0)
             {
                 string str = needno.ToString();
-                str.Substring(0, str.Length - 2);
-                if (neednoi == 3)
-                    ParentObject.NotifyWarning($"Onaylama başarısız, numara alanlarında geçeriz veriler mevcut: { str }...");
+                if (neednoi == 4)
+                    NotifyWarning($"Onaylama başarısız, numara alanlarında geçeriz veriler mevcut: { str }...");
                 else
-                    ParentObject.NotifyWarning($"Onaylama başarısız, numara alanlarında geçeriz veriler mevcut: { str }.");
-                return;
-            }
-
-            if (needgroupi > 0)
-            {
-                string str = needgroup.ToString();
-                str.Substring(0, str.Length - 2);
-                if (neednoi == 3)
-                    ParentObject.NotifyWarning($"Onaylama başarısız, grup alanlarında geçeriz veriler mevcut: { str }...");
-                else
-                    ParentObject.NotifyWarning($"Onaylama başarısız, grup alanlarında geçeriz veriler mevcut: { str }.");
+                    NotifyWarning($"Onaylama başarısız, numara alanlarında geçeriz veriler mevcut: { str }.");
                 return;
             }
 
@@ -121,11 +155,11 @@ namespace ExamEvaluationSystem
         {
             if (selectedIndex == -1)
             {
-                ParentObject.NotifyWarning("Tablodan öğrenci seçin!");
+                NotifyWarning("Tablodan öğrenci seçin!");
                 return;
             }
 
-            ParentObject.NotifyInformation("Onaylandı!");
+            NotifyInformation("Onaylandı!");
             if (selectedIndex + 1 != dgStudents.Items.Count)
             {
                 selectedIndex++;
@@ -153,7 +187,7 @@ namespace ExamEvaluationSystem
                     
                     if (Exam.Questions.Count == 0)
                     {
-                        ParentObject.NotifyError($"Cevap anahtarında grup bulunamadı, tekrar yüklemeyi deneyin!");
+                        NotifyError($"Cevap anahtarında grup bulunamadı, tekrar yüklemeyi deneyin!");
                         return;
                     }
                     
@@ -165,7 +199,7 @@ namespace ExamEvaluationSystem
             }
             catch(Exception ex)
             {
-                ParentObject.NotifyError($"Cevap anahtarında grup bulunamadı, tekrar yüklemeyi deneyin!\nGeliştirici hata mesajı: { ex.Message }");
+                NotifyError($"Cevap anahtarında grup bulunamadı, tekrar yüklemeyi deneyin!\nGeliştirici hata mesajı: { ex.Message }");
                 Close();
             }
         }
