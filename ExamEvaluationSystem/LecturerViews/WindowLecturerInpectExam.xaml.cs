@@ -130,15 +130,15 @@ namespace ExamEvaluationSystem
                     return;
                 }
 
-                try
-                {
+                /*try
+                {*/
                     Exam.ExportStatistics($"{ dlg.SelectedPath }/{ GetNonLocalizedFilename(BaseExam.Period.Name) }_{ GetNonLocalizedFilename(BaseExam.Type.Name) }_{ GetNonLocalizedFilename(BaseExam.Lecture.Name) }_Soru_Bazli_Degerlendirme.xlsx", $"{ dlg.SelectedPath }/{ GetNonLocalizedFilename(BaseExam.Period.Name) }_{ GetNonLocalizedFilename(BaseExam.Type.Name) }_{ GetNonLocalizedFilename(BaseExam.Lecture.Name) }_Kazanim_Bazli_Degerlendirme.xlsx");
-                }
-                catch (Exception)
+                /*}
+                catch (Exception ee)
                 {
                     NotifyWarning("Değerlendirme çıktısı oluşturma başarısız. Dosya kullanımda olabilir mi?");
-                    return;
-                }
+                    throw;
+                }*/
                 NotifySuccess("Değerlendirme çıktısı kaydedildi!");
             }
         }

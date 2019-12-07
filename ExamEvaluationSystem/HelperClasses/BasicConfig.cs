@@ -141,6 +141,7 @@ namespace ExamEvaluationSystem
                     if (c == '"' || c == '\'')
                     {
                         char starter = c;
+                        i++;
                         string str = "";
                         while (i < line.Length && (c = line[i++]) != starter)
                             str += c;

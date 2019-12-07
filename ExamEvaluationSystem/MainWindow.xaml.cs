@@ -45,7 +45,7 @@ namespace ExamEvaluationSystem
             {
                 try
                 {
-                    File.WriteAllText(configfile, "SaveLayouts = true\nLayoutsToAppdata = true\nDbToAppdata = true", Encoding.UTF8);
+                    File.WriteAllText(configfile, "SaveLayouts = true\nLayoutsToAppdata = true\nDbToAppdata = true\nDbFile = \"data.db\"", Encoding.UTF8);
                 }
                 catch (Exception)
                 {
@@ -66,17 +66,28 @@ namespace ExamEvaluationSystem
                 }
             }
 
-            string dbfile = "./data.db";
+
+            string dbfile = "";
+
+            if (EISSystem.Config.GetString("DbFile", out string dbfilename))
+            {
+                if (!File.Exists(dbfilename))
+                {
+                    System.Windows.Forms.MessageBox.Show("Konfigürasyonda belirtilen veritabanı dosyası ({ dbfilename }) bulunamadı!\nKonfigürasyonu kontrol edin ya da silip sıfırlamayı deneyin.", "Hata", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Exclamation);
+                    Environment.Exit(1);
+                }
+                dbfile = dbfilename;
+            }
 
             EISSystem.Config.If("DbToAppdata", () => {
                 string appdata = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "/EIS/";
                 if (!Directory.Exists(appdata))
                     Directory.CreateDirectory(appdata);
-                appdata = appdata + "data.db";
+                appdata = appdata + dbfile;
                 if (!File.Exists(appdata))
                     File.Copy(dbfile, appdata);
                 dbfile = appdata;
-            });
+            }, () => dbfile = "./" + dbfile);
 
             InitializeComponent();
             EISSystem.Connection = new SQLiteConnection($"Data Source={ dbfile }; Version=3;");
