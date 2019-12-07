@@ -13,5 +13,13 @@ namespace ExamEvaluationSystem
     /// </summary>
     public partial class App : Application
     {
+        public App()
+        {
+            Exit += (sender, e) =>
+            {
+                if (EISSystem.Connection != null)
+                    EISSystem.Connection.Close();
+            };
+        }
     }
 }

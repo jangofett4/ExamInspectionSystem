@@ -69,7 +69,10 @@ namespace ExamEvaluationSystem
             string dbfile = "./data.db";
 
             EISSystem.Config.If("DbToAppdata", () => {
-                string appdata = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "/EIS/data.db";
+                string appdata = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "/EIS/";
+                if (!Directory.Exists(appdata))
+                    Directory.CreateDirectory(appdata);
+                appdata = appdata + "data.db";
                 if (!File.Exists(appdata))
                     File.Copy(dbfile, appdata);
                 dbfile = appdata;
