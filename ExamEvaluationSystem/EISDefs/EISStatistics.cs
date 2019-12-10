@@ -26,11 +26,13 @@ namespace ExamEvaluationSystem
                 var sheet_success = wb_1.CreateSheet("Sorular için Ortalama ve Başarım"); // second sheet
                 var sheet_ernasso = wb_1.CreateSheet("Soru-Kazanım Eşleştirmesi");        // third sheet
                 var sheet_earning = wb_2.CreateSheet("Kazanım için Ortalama ve Başarım"); // first sheet of second workbook
+                var sheet_ernasso2 = wb_2.CreateSheet("Soru-Kazanım Eşleştirmesi");       // second sheet
 
                 int i1 = 0; // first sheet
                 int i2 = 0; // second sheet
                 int i3 = 0; // third sheet
                 var i4 = 0;
+                var i5 = 0;
 
                 // create font style
                 XSSFFont headersfnt = (XSSFFont)wb_1.CreateFont();
@@ -108,7 +110,7 @@ namespace ExamEvaluationSystem
                 for (int gg = 0; gg < Groups.Count; gg++)
                 {
                     var g = Groups[gg];
-                    
+
                     var st_qres = g.GetResultsForQuestions();       // Get results
                     // First sheet
                     {
@@ -247,12 +249,42 @@ namespace ExamEvaluationSystem
                             sheet_ernasso.CreateRow(i4++); // see above, just above else
                     }
                     {
+                        var col_row = sheet_ernasso2.CreateRow(i5++);
+                        int j = 0;
+                        var _1 = col_row.CreateCell(j++); _1.SetCellValue("Soru Numarası"); _1.CellStyle = borderedHeaderStyle2;
+                        for (int q = 0; q < g.DisticntEarningList.Count; q++)
+                        {
+                            var de = g.DisticntEarningList.ElementAt(q);
+                            var __2 = col_row.CreateCell(j++); __2.SetCellValue($"K-{ q + 1 }"); __2.CellStyle = borderedHeaderStyle2;
+                        }
+                        for (int q = 0; q < g.Answers.Length; q++)
+                        {
+                            var qrow = sheet_ernasso2.CreateRow(i5++);
+                            int l = 0;
+                            var __2 = qrow.CreateCell(l++); __2.SetCellValue($"Soru { q + 1 }"); __2.CellStyle = borderedStyle2;
+                            for (int qq = 0; qq < g.DisticntEarningList.Count; qq++)
+                            {
+                                var de = g.DisticntEarningList.ElementAt(qq);
+                                if (de.Value.Contains(q))
+                                {
+                                    var __3 = qrow.CreateCell(l++); __3.SetCellValue(" X "); __3.CellStyle = borderedCenteredStyle2;
+                                }
+                                else
+                                {
+                                    var __3 = qrow.CreateCell(l++); __3.SetCellValue(""); __3.CellStyle = borderedCenteredStyle2;
+                                }
+                            }
+                        }
+                        if (g.Answers.Length >= g.DisticntEarningList.Count)
+                            sheet_ernasso2.CreateRow(i5++); // see above, just above else
+                    }
+                    {
                         var col_row = sheet_earning.CreateRow(i3++);
                         int j = 0;
                         var _1 = col_row.CreateCell(j++); _1.SetCellValue("Kazanım Numarası"); _1.CellStyle = borderedHeaderStyle2;
                         var _2 = col_row.CreateCell(j++); _2.SetCellValue("Ortalaması (Puan)"); _2.CellStyle = borderedHeaderStyle2;
                         var _3 = col_row.CreateCell(j++); _3.SetCellValue("Başarımı (%)"); _3.CellStyle = borderedHeaderStyle2;
-                        var _4 = col_row.CreateCell(j++); _4.SetCellValue("Sorular"); _4.CellStyle = borderedHeaderStyle2;
+                        // var _4 = col_row.CreateCell(j++); _4.SetCellValue("Sorular"); _4.CellStyle = borderedHeaderStyle2;
                         var _5 = col_row.CreateCell(j++); _5.SetCellValue("Kazanım Açıklaması"); _5.CellStyle = borderedHeaderStyle2;
                         var avgs = g.GetAveragesForQuestions(st_qres);  // Get averages
                         var e_avgs = g.GetAverageEarningPoints(avgs);
@@ -265,14 +297,14 @@ namespace ExamEvaluationSystem
                             var __7 = q_row.CreateCell(l++); __7.SetCellValue(e_avgs[q]); __7.CellStyle = borderedStyle2;
                             var __8 = q_row.CreateCell(l++); __8.SetCellValue("%" + percs[q].ToString()); __8.CellStyle = borderedCenteredStyle2;
                             var de = g.DisticntEarningList.ElementAt(q);
-                            StringBuilder sb = new StringBuilder();
+                            /*StringBuilder sb = new StringBuilder();
                             for (int m = 0; m < de.Value.Count; m++)
                             {
                                 sb.Append(de.Value[m] + 1);
                                 if (m != de.Value.Count - 1)
                                     sb.Append(", ");
                             }
-                            var __9 = q_row.CreateCell(l++); __9.SetCellValue(sb.ToString()); __9.CellStyle = borderedStyle2;
+                            var __9 = q_row.CreateCell(l++); __9.SetCellValue(sb.ToString()); __9.CellStyle = borderedStyle2;*/
                             var __10 = q_row.CreateCell(l++); __10.SetCellValue(de.Key); __10.CellStyle = borderedStyle2;
                         }
                         i3++;
@@ -289,6 +321,8 @@ namespace ExamEvaluationSystem
                 sheet_ernasso.AutoSizeColumn(0);
                 sheet_ernasso.AutoSizeColumn(earnasso_0);
                 sheet_ernasso.AutoSizeColumn(earnasso_1);
+
+                sheet_ernasso2.AutoSizeColumn(0);
 
                 sheet_earning.AutoSizeColumn(0);
                 sheet_earning.AutoSizeColumn(1);
@@ -327,7 +361,7 @@ namespace ExamEvaluationSystem
                 {
                     var g = e.Questions[i];
                     var gg = new InternalGroup(g.Group, g.Answer);
-                    
+
                     if (g.EarningsWithType == null || g.EarningsWithType.Count == 0)
                         g.ConvertEarnings();
 
@@ -401,7 +435,7 @@ namespace ExamEvaluationSystem
                     var acc = 0f;
                     foreach (var q in lst)
                         acc += avgs[q];
-                    acc = acc / lst.Count;
+                    acc /= lst.Count;
                     a[i] = acc;
                 }
                 return a;
@@ -419,7 +453,7 @@ namespace ExamEvaluationSystem
 
             // Tüm soruların sonuçlarını hesaplar
             public float[][] GetResultsForQuestions()
-            { 
+            {
                 var m = new float[Answers.Length][];
                 float pts = 100f / Answers.Length;
                 for (int i = 0; i < Answers.Length; i++)
@@ -496,7 +530,11 @@ namespace ExamEvaluationSystem
                         }
                     }
                 }
-                DisticntEarningList = lst;
+                // fix for issue where earning list gets a little confused
+                var d = new Dictionary<string, List<int>>();
+                foreach (var e in lst.OrderBy((k1) => k1.Key))
+                    d.Add(e.Key, e.Value);
+                DisticntEarningList = d;
             }
 
             public void AddStudent(InternalStudent s)
@@ -513,7 +551,7 @@ namespace ExamEvaluationSystem
             public string No;
             public string Answers;
             public InternalGroup ParentObject { get; set; }
-            
+
             public InternalStudent(string no, string name, string surname, string answer)
             {
                 Name = name;
