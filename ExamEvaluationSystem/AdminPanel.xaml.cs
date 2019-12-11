@@ -73,54 +73,68 @@ namespace ExamEvaluationSystem
 
         public void LoadLayouts()
         {
-            var path = ".";
-            EISSystem.Config.If("LayoutsToAppdata", () => path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "/EIS/");
-            string file = path + "/admin.layout";
-            if (!File.Exists(file))
+            try
+            {
+                var path = ".";
+                EISSystem.Config.If("LayoutsToAppdata", () => path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "/EIS/");
+                string file = path + "/admin.layout";
+                if (!File.Exists(file))
+                    return;
+                var content = File.ReadAllText(file, Encoding.UTF8);
+                var split = content.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                var i = 0;
+                ViewAdminDepartment.SetGridLayout(split[i++]);
+                ViewAdminEarnings.SetGridLayout(split[i++]);
+                ViewAdminExams.SetGridLayout(split[i++]);
+                ViewAdminFaculty.SetGridLayout(split[i++]);
+                ViewAdminLecturers.SetGridLayout(split[i++]);
+                ViewAdminLectures.SetGridLayout(split[i++]);
+                ViewAdminPeriods.SetGridLayout(split[i++]);
+                ViewAdminLectureAssociate.SetGridLayout(split[i++]);
+                ViewAdminInspectExam.SetGridLayout(split[i++]);
+            }
+            catch (Exception)
+            {
                 return;
-            var content = File.ReadAllText(file, Encoding.UTF8);
-            var split = content.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-            var i = 0;
-            ViewAdminDepartment.SetGridLayout(split[i++]);
-            ViewAdminEarnings.SetGridLayout(split[i++]);
-            ViewAdminExams.SetGridLayout(split[i++]);
-            ViewAdminFaculty.SetGridLayout(split[i++]);
-            ViewAdminLecturers.SetGridLayout(split[i++]);
-            ViewAdminLectures.SetGridLayout(split[i++]);
-            ViewAdminPeriods.SetGridLayout(split[i++]);
-            ViewAdminLectureAssociate.SetGridLayout(split[i++]);
-            ViewAdminInspectExam.SetGridLayout(split[i++]);
+            }
         }
 
         public void SaveLayouts()
         {
-            StringBuilder save = new StringBuilder();
-            // Render the grids, so columns are actually have index at least once
-            MemoryRenderer.Render(
-                ViewAdminDepartment.Grid,
-                ViewAdminEarnings.Grid,
-                ViewAdminExams.Grid,
-                ViewAdminFaculty.Grid,
-                ViewAdminLecturers.Grid,
-                ViewAdminLectures.Grid,
-                ViewAdminPeriods.Grid,
-                ViewAdminLectureAssociate.Grid,
-                ViewAdminInspectExam.Grid
-            );
-            save.AppendLine(ViewAdminDepartment.GetGridLayout());
-            save.AppendLine(ViewAdminEarnings.GetGridLayout());
-            save.AppendLine(ViewAdminExams.GetGridLayout());
-            save.AppendLine(ViewAdminFaculty.GetGridLayout());
-            save.AppendLine(ViewAdminLecturers.GetGridLayout());
-            save.AppendLine(ViewAdminLectures.GetGridLayout());
-            save.AppendLine(ViewAdminPeriods.GetGridLayout());
-            save.AppendLine(ViewAdminLectureAssociate.GetGridLayout());
-            save.AppendLine(ViewAdminInspectExam.GetGridLayout());
-            var path = ".";
-            EISSystem.Config.If("LayoutsToAppdata", () => path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "/EIS/");
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-            File.WriteAllText(path + "/admin.layout", save.ToString(), Encoding.UTF8);
+            try
+            {
+                StringBuilder save = new StringBuilder();
+                // Render the grids, so columns are actually have index at least once
+                MemoryRenderer.Render(
+                    ViewAdminDepartment.Grid,
+                    ViewAdminEarnings.Grid,
+                    ViewAdminExams.Grid,
+                    ViewAdminFaculty.Grid,
+                    ViewAdminLecturers.Grid,
+                    ViewAdminLectures.Grid,
+                    ViewAdminPeriods.Grid,
+                    ViewAdminLectureAssociate.Grid,
+                    ViewAdminInspectExam.Grid
+                );
+                save.AppendLine(ViewAdminDepartment.GetGridLayout());
+                save.AppendLine(ViewAdminEarnings.GetGridLayout());
+                save.AppendLine(ViewAdminExams.GetGridLayout());
+                save.AppendLine(ViewAdminFaculty.GetGridLayout());
+                save.AppendLine(ViewAdminLecturers.GetGridLayout());
+                save.AppendLine(ViewAdminLectures.GetGridLayout());
+                save.AppendLine(ViewAdminPeriods.GetGridLayout());
+                save.AppendLine(ViewAdminLectureAssociate.GetGridLayout());
+                save.AppendLine(ViewAdminInspectExam.GetGridLayout());
+                var path = ".";
+                EISSystem.Config.If("LayoutsToAppdata", () => path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "/EIS/");
+                if (!Directory.Exists(path))
+                    Directory.CreateDirectory(path);
+                File.WriteAllText(path + "/admin.layout", save.ToString(), Encoding.UTF8);
+            }
+            catch (Exception)
+            {
+                return;
+            }
         }
 
         public List<EISExamTriple> GenerateExamTriple()

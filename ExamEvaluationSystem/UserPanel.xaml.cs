@@ -78,32 +78,46 @@ namespace ExamEvaluationSystem
 
         public void LoadLayouts()
         {
-            var path = ".";
-            EISSystem.Config.If("LayoutsToAppdata", () => path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "/EIS/");
-            string file = path + "/user.layout";
-            if (!File.Exists(file))
+            try
+            {
+                var path = ".";
+                EISSystem.Config.If("LayoutsToAppdata", () => path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "/EIS/");
+                string file = path + "/user.layout";
+                if (!File.Exists(file))
+                    return;
+                var content = File.ReadAllText(file, Encoding.UTF8);
+                var split = content.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                var i = 0;
+                ExamView.SetGridLayout(split[i++]);
+                InspectView.SetGridLayout(split[i++]);
+            }
+            catch (Exception)
+            {
                 return;
-            var content = File.ReadAllText(file, Encoding.UTF8);
-            var split = content.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
-            var i = 0;
-            ExamView.SetGridLayout(split[i++]);
-            InspectView.SetGridLayout(split[i++]);
+            }
         }
 
         public void SaveLayouts()
         {
-            StringBuilder save = new StringBuilder();
-            MemoryRenderer.Render(
-                ExamView,
-                InspectView
-            );
-            save.AppendLine(ExamView.GetGridLayout());
-            save.AppendLine(InspectView.GetGridLayout());
-            var path = ".";
-            EISSystem.Config.If("LayoutsToAppdata", () => path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "/EIS/");
-            if (!Directory.Exists(path))
-                Directory.CreateDirectory(path);
-            File.WriteAllText(path + "/user.layout", save.ToString(), Encoding.UTF8);
+            try
+            {
+                StringBuilder save = new StringBuilder();
+                MemoryRenderer.Render(
+                    ExamView,
+                    InspectView
+                );
+                save.AppendLine(ExamView.GetGridLayout());
+                save.AppendLine(InspectView.GetGridLayout());
+                var path = ".";
+                EISSystem.Config.If("LayoutsToAppdata", () => path = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData) + "/EIS/");
+                if (!Directory.Exists(path))
+                    Directory.CreateDirectory(path);
+                File.WriteAllText(path + "/user.layout", save.ToString(), Encoding.UTF8);
+            }
+            catch (Exception)
+            {
+                return;
+            }
         }
 
         public List<EISExamTriple> GenerateExamTriple()

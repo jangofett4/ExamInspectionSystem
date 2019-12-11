@@ -52,6 +52,7 @@ namespace ExamEvaluationSystem
                     EISSystem.Config.Push("SaveLayouts", true, ConfigValueType.Boolean);
                     EISSystem.Config.Push("LayoutsToAppdata", true, ConfigValueType.Boolean);
                     EISSystem.Config.Push("DbToAppdata", true, ConfigValueType.Boolean);
+                    EISSystem.Config.Push("DbFile", "data.db", ConfigValueType.Boolean);
                 }
             }
             else
@@ -62,6 +63,7 @@ namespace ExamEvaluationSystem
                     EISSystem.Config.Push("SaveLayouts", true, ConfigValueType.Boolean);
                     EISSystem.Config.Push("LayoutsToAppdata", true, ConfigValueType.Boolean);
                     EISSystem.Config.Push("DbToAppdata", true, ConfigValueType.Boolean);
+                    EISSystem.Config.Push("DbFile", "data.db", ConfigValueType.Boolean);
                 }
             }
 
