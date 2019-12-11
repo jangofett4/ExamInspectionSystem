@@ -128,6 +128,7 @@
     <Compile Include="HelperClasses\DelayedActionInvoker.cs" />
     <Compile Include="HelperClasses\FlyoutState.cs" />
     <Compile Include="HelperClasses\IChildObject.cs" />
+    <Compile Include="HelperClasses\PragmaDataFixers.cs" />
     <Compile Include="HelperClasses\PropertyCallAdapter.cs" />
     <Compile Include="HelperClasses\IHasNotifiers.cs" />
     <Compile Include="LecturerViews\ViewLectuerViewExam.xaml.cs">
@@ -135,6 +136,9 @@
     </Compile>
     <Compile Include="PropertyDataSelector.xaml.cs">
       <DependentUpon>PropertyDataSelector.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UpdateProgress.xaml.cs">
+      <DependentUpon>UpdateProgress.xaml</DependentUpon>
     </Compile>
     <Compile Include="UserPanel.xaml.cs">
       <DependentUpon>UserPanel.xaml</DependentUpon>
@@ -218,6 +222,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="PropertyDataSelector.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UpdateProgress.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

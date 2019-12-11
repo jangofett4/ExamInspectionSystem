@@ -183,7 +183,7 @@ namespace ExamEvaluationSystem
                         for (int q = 0; q < g.DisticntEarningList.Count; q++)
                         {
                             var de = g.DisticntEarningList.ElementAt(q);
-                            var __2 = col_row.CreateCell(j++); __2.SetCellValue($"K-{ q + 1 }"); __2.CellStyle = borderedHeaderStyle;
+                            var __2 = col_row.CreateCell(j++); __2.SetCellValue(de.Key.Item1); __2.CellStyle = borderedHeaderStyle;
                         }
                         if (gg == 0) // If this is first group
                         {
@@ -218,8 +218,8 @@ namespace ExamEvaluationSystem
                                     i4 = ii4;
                                 }
                                 int m = 2 + g.DisticntEarningList.Count;
-                                var __2 = erow.CreateCell(m++); __2.SetCellValue($"K-{ q + 1 }"); __2.CellStyle = borderedHeaderStyle;
-                                var __3 = erow.CreateCell(m++); __3.SetCellValue(de.Key); __3.CellStyle = borderedStyle;
+                                var __2 = erow.CreateCell(m++); __2.SetCellValue(de.Key.Item1); __2.CellStyle = borderedHeaderStyle;
+                                var __3 = erow.CreateCell(m++); __3.SetCellValue(de.Key.Item2); __3.CellStyle = borderedStyle;
                             }
                             if (g.DisticntEarningList.Count > g.Answers.Length)
                                 sheet_ernasso.CreateRow(i4++); // lets add some broken-a** fixes here
@@ -255,7 +255,7 @@ namespace ExamEvaluationSystem
                         for (int q = 0; q < g.DisticntEarningList.Count; q++)
                         {
                             var de = g.DisticntEarningList.ElementAt(q);
-                            var __2 = col_row.CreateCell(j++); __2.SetCellValue($"K-{ q + 1 }"); __2.CellStyle = borderedHeaderStyle2;
+                            var __2 = col_row.CreateCell(j++); __2.SetCellValue(de.Key.Item1); __2.CellStyle = borderedHeaderStyle2;
                         }
                         for (int q = 0; q < g.Answers.Length; q++)
                         {
@@ -291,12 +291,12 @@ namespace ExamEvaluationSystem
                         var percs = g.GetPercentageEarningPoints(e_avgs);
                         for (int q = 0; q < g.DisticntEarningList.Count; q++)
                         {
+                            var de = g.DisticntEarningList.ElementAt(q);
                             var q_row = sheet_earning.CreateRow(i3++);
                             int l = 0;
-                            var __6 = q_row.CreateCell(l++); __6.SetCellValue($"K-{ q + 1 }"); __6.CellStyle = borderedStyle2;
+                            var __6 = q_row.CreateCell(l++); __6.SetCellValue(de.Key.Item1); __6.CellStyle = borderedStyle2;
                             var __7 = q_row.CreateCell(l++); __7.SetCellValue(e_avgs[q]); __7.CellStyle = borderedStyle2;
                             var __8 = q_row.CreateCell(l++); __8.SetCellValue("%" + percs[q].ToString()); __8.CellStyle = borderedCenteredStyle2;
-                            var de = g.DisticntEarningList.ElementAt(q);
                             /*StringBuilder sb = new StringBuilder();
                             for (int m = 0; m < de.Value.Count; m++)
                             {
@@ -305,7 +305,7 @@ namespace ExamEvaluationSystem
                                     sb.Append(", ");
                             }
                             var __9 = q_row.CreateCell(l++); __9.SetCellValue(sb.ToString()); __9.CellStyle = borderedStyle2;*/
-                            var __10 = q_row.CreateCell(l++); __10.SetCellValue(de.Key); __10.CellStyle = borderedStyle2;
+                            var __10 = q_row.CreateCell(l++); __10.SetCellValue(de.Key.Item2); __10.CellStyle = borderedStyle2;
                         }
                         i3++;
                     }
@@ -365,12 +365,12 @@ namespace ExamEvaluationSystem
                     if (g.EarningsWithType == null || g.EarningsWithType.Count == 0)
                         g.ConvertEarnings();
 
-                    var conv = new List<List<string>>();
+                    var conv = new List<List<(string, string)>>();
                     foreach (var eee in g.EarningsWithType)
                     {
-                        var lst = new List<string>();
+                        var lst = new List<(string, string)>();
                         foreach (var eeee in eee)
-                            lst.Add(eeee.Name);
+                            lst.Add((eeee.Code, eeee.Name));
                         conv.Add(lst);
                     }
                     gg.Earnings = conv;
@@ -408,8 +408,8 @@ namespace ExamEvaluationSystem
         {
             public string Group;
             public string Answers;
-            public List<List<string>> Earnings;
-            public Dictionary<string, List<int>> DisticntEarningList;
+            public List<List<(string, string)>> Earnings;
+            public Dictionary<(string, string), List<int>> DisticntEarningList;
             public List<InternalStudent> Students;
             public InternalExam ParentObject { get; set; }
 
@@ -419,8 +419,8 @@ namespace ExamEvaluationSystem
                 Answers = answers;
                 ParentObject = null;
                 Students = new List<InternalStudent>();
-                DisticntEarningList = new Dictionary<string, List<int>>();
-                Earnings = new List<List<string>>();
+                DisticntEarningList = new Dictionary<(string, string), List<int>>();
+                Earnings = new List<List<(string, string)>>();
             }
 
             // Ortamala kazanım puanlarını hesaplar
@@ -509,7 +509,7 @@ namespace ExamEvaluationSystem
             // Birbirinden farklı kazanımları açığa çıkarır
             public void GetDistinctEarnings()
             {
-                var lst = new Dictionary<string, List<int>>();
+                var lst = new Dictionary<(string, string), List<int>>();
                 for (int i = 0; i < Earnings.Count; i++) // Question
                 {
                     var q = Earnings[i];
@@ -531,7 +531,7 @@ namespace ExamEvaluationSystem
                     }
                 }
                 // fix for issue where earning list gets a little confused
-                var d = new Dictionary<string, List<int>>();
+                var d = new Dictionary<(string, string), List<int>>();
                 foreach (var e in lst.OrderBy((k1) => k1.Key))
                     d.Add(e.Key, e.Value);
                 DisticntEarningList = d;

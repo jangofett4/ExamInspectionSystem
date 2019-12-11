@@ -401,5 +401,9 @@ namespace ExamEvaluationSystem
         {
             throw new NotImplementedException();
         }
+        public virtual object GetStored(string prop)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

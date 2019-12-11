@@ -57,6 +57,18 @@ namespace ExamEvaluationSystem
             Department = dep;
         }
 
+        public override object GetStored(string prop)
+        {
+            switch (prop)
+            {
+                case "ID": return id;
+                case "Name": return name;
+                case "Surname": return surname;
+                case "Department": return dep;
+            }
+            return null;
+        }
+
         public override int Update(SQLiteConnection connection)
         {
             var cmd = new EISUpdateCommand("Students", $"ID = { ID }");

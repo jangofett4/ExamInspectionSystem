@@ -16,9 +16,9 @@ namespace ExamEvaluationSystem
         private List<EISQuestion> _questions;
 
         public int ID { get; private set; }
-        public EISLecture Lecture { get => _lecture; set { _lecture = value; OnPropertyChanged("Lecture"); } }
-        public EISPeriod Period { get =>_period; set { _period = value; OnPropertyChanged("Period"); } }
-        public EISExamType Type { get => _type; set { _type = value; OnPropertyChanged("Type"); } }
+        public EISLecture Lecture { get => _lecture; set { _lecture = value; OnPropertyChanged("Lecture"); OnPropertyChanged("LectureName"); } }
+        public EISPeriod Period { get =>_period; set { _period = value; OnPropertyChanged("Period"); OnPropertyChanged("PeriodName"); } }
+        public EISExamType Type { get => _type; set { _type = value; OnPropertyChanged("Type"); OnPropertyChanged("ExamType"); } }
         public List<EISQuestion> Questions { get => _questions; set { _questions = value; OnPropertyChanged("Questions"); } }
 
         // Datagrid Helper
@@ -87,13 +87,27 @@ namespace ExamEvaluationSystem
 
         public override int Update(SQLiteConnection connection)
         {
-            var cmd = new EISUpdateCommand("Exams", $"ID = { ID }");
-            var sql = cmd.Create(connection, "LectureID", Lecture.ID.ToString(), "PeriodID", Period.ID.ToString(), "TypeID", Type.ID.ToString(), "Questions", JsonConvert.SerializeObject(Questions).EncapsulateQuote());
-            return sql.ExecuteNonQuery();
+            {
+                var cmd = new EISSelectCommand("Exams", Where.Equals("LectureID", Lecture.ID.ToString(), "PeriodID", Period.ID.ToString(), "TypeID", Type.ID.ToString()));
+                var sql = cmd.Create(connection);
+                var res = sql.ExecuteReader();
+                if (res.HasRows)
+                {
+                    res.Read();
+                    if (res.GetInt32(0) != ID) // If not self
+                        return -1;
+                }
+            }
+            {
+                var cmd = new EISUpdateCommand("Exams", $"ID = { ID }");
+                var sql = cmd.Create(connection, "LectureID", Lecture.ID.ToString(), "PeriodID", Period.ID.ToString(), "TypeID", Type.ID.ToString(), "Questions", JsonConvert.SerializeObject(Questions).EncapsulateQuote());
+                return sql.ExecuteNonQuery();
+            }
         }
 
         public override int Insert(SQLiteConnection connection)
         {
+            // Check for duplicate exams
             {
                 var cmd = new EISSelectCommand("Exams", Where.Equals("LectureID", Lecture.ID.ToString(), "PeriodID", Period.ID.ToString(), "TypeID", Type.ID.ToString()));
                 var sql = cmd.Create(connection);

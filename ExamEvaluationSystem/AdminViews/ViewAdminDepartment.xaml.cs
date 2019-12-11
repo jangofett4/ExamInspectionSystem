@@ -58,8 +58,8 @@ namespace ExamEvaluationSystem
             {
                 var s = new PropertyDataSelector("Bölüm Kazanımlarını Seç") { WindowState = WindowState.Maximized };
                 var builder = new MultiDataSelectorBuilder<EISEarning>(EISSystem.DepartmentEarnings, s, "ID", 
-                    (e, q) =>  e.Name.ToLower().Contains(q) ? true : false, 
-                    ("Name", "Kazanım"));
+                    (e, q) =>  (e.Name.ToLower().Contains(q) || e.Code.ToLower().Contains(q)) ? true : false, 
+                    ("Code", "Kod"), ("Name", "Kazanım"));
                 builder.DisableSearch = false;
                 builder.BuildAll();
 

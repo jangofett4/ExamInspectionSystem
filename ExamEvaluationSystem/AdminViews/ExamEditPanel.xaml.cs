@@ -117,18 +117,38 @@ namespace ExamEvaluationSystem
             return lst;
         }
 
-        public void RefreshDataGroups()
+        public void RefreshDataGroups(bool prefilled = false)
         {
             AllQuestions = new List<List<EISSingleQuestion>>();
             dgGroups.Items.Clear();
-            foreach (var g in Questions)
+            if (!prefilled)
             {
-                var lst = new List<EISSingleQuestion>(g.Answer.Length);
-                for (int i = 0; i < g.Answer.Length; i++)
-                    lst.Add(new EISSingleQuestion(g.Answer[i], new List<EISEarning>(), i + 1));
+                foreach (var g in Questions)
+                {
+                    var lst = new List<EISSingleQuestion>(g.Answer.Length);
+                    for (int i = 0; i < g.Answer.Length; i++)
+                        lst.Add(new EISSingleQuestion(g.Answer[i], new List<EISEarning>(), i + 1));
 
-                AllQuestions.Add(lst);
-                dgGroups.Items.Add(g);
+                    AllQuestions.Add(lst);
+                    dgGroups.Items.Add(g);
+                }
+            }
+            else
+            {
+                foreach (var g in Questions)
+                {
+                    var lst = new List<EISSingleQuestion>(g.Answer.Length);
+                    for (int i = 0; i < g.Answer.Length; i++)
+                    {
+                        var elst = new List<EISEarning>();
+                        foreach (var ei in g.Earnings[i])
+                            elst.Add(EISSystem.GetEarning(ei));
+                        lst.Add(new EISSingleQuestion(g.Answer[i], elst, i + 1));
+                    }
+
+                    AllQuestions.Add(lst);
+                    dgGroups.Items.Add(g);
+                }
             }
         }
 

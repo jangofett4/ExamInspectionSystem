@@ -1,16 +1,15 @@
-﻿using MahApps.Metro.Controls;
-using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
-using System.Data.SQLite;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System;
 using System.IO;
-using Newtonsoft.Json;
+using System.Text;
+using System.Windows;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Diagnostics;
+
+using ExamEvaluationSystem;
+
+using System.Data.SQLite;
+
+using Newtonsoft.Json;
 
 namespace ExamEvaluationSystem
 {
@@ -59,7 +58,7 @@ namespace ExamEvaluationSystem
             {
                 if (!EISSystem.Config.Read())
                 {
-                    System.Windows.Forms.MessageBox.Show("Hatalı konfigürasyon dosyası (config.cfg). Dosyayı sıfırlamak için silmeyi deneyin.\nVarsayılan değerler kullanılacak.", "Hata", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Exclamation);
+                    MessageBox.Show("Hatalı konfigürasyon dosyası (config.cfg). Dosyayı sıfırlamak için silmeyi deneyin.\nVarsayılan değerler kullanılacak.", "Hata", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                     EISSystem.Config.Push("SaveLayouts", true, ConfigValueType.Boolean);
                     EISSystem.Config.Push("LayoutsToAppdata", true, ConfigValueType.Boolean);
                     EISSystem.Config.Push("DbToAppdata", true, ConfigValueType.Boolean);
@@ -73,7 +72,7 @@ namespace ExamEvaluationSystem
             {
                 if (!File.Exists(dbfilename))
                 {
-                    System.Windows.Forms.MessageBox.Show("Konfigürasyonda belirtilen veritabanı dosyası ({ dbfilename }) bulunamadı!\nKonfigürasyonu kontrol edin ya da silip sıfırlamayı deneyin.", "Hata", System.Windows.Forms.MessageBoxButtons.OK, System.Windows.Forms.MessageBoxIcon.Exclamation);
+                    MessageBox.Show("Konfigürasyonda belirtilen veritabanı dosyası ({ dbfilename }) bulunamadı!\nKonfigürasyonu kontrol edin ya da silip sıfırlamayı deneyin.", "Hata", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                     Environment.Exit(1);
                 }
                 dbfile = dbfilename;
@@ -97,6 +96,29 @@ namespace ExamEvaluationSystem
             fkcmd.ExecuteNonQuery();
             fkcmd.Dispose();
 
+            // Data fixers
+            {
+                var earningFix = new DataFixer.EarningCodeFix(EISSystem.Connection);
+                if (earningFix.NeedFix())
+                {
+                    var res = MessageBox.Show("Görünüşe bakılırsa kullanılan veri tabanı eski kazanım biçimine göre formatlanmış.\nEvet seçeneğini seçerseniz uygulama otomatik olarak bu hataları düzeltecektir.\nHayır seçeneği progamı kapatacaktır\nHatalı kodlamalar yönetici panelinden düzenlenebilir.", "Veritabanı Düzeltme", MessageBoxButton.YesNo, MessageBoxImage.Information);
+                    if (res == MessageBoxResult.No)
+                        Environment.Exit(1);
+                    var prog = new UpdateProgress("Kazanım Formatı Güncelleme", "Veri tabanı yeni formata dönüştürülürken lütfen bekleyin...");
+                    prog.ExecuteProgress(earningFix.Fix);
+                    while (!earningFix.FixDone) ;
+                    if (earningFix.PossibleErrors.Count > 0)
+                    {
+                        string date = DateTime.Now.ToString("dd-MM-yyyy-HH.mm");
+                        MessageBox.Show($"Bazı kazanımlar hatalı dönüştürülmüş olabilir.\nHatalı olabilecek kazanımlar listesi için masaüstünde bulunan 'VT.E.Update-{ date }.txt' dosyasından kontrol edebilirsiniz", "Uyarı", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        StringBuilder sb = new StringBuilder();
+                        foreach (var e in earningFix.PossibleErrors)
+                            sb.AppendLine(e.ToString());
+                        File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + $"./VT.E.Update-{ date }.txt", sb.ToString());
+                    }
+                }
+            }
+
             using (var rd = new EISFaculty(-1).SelectAll(EISSystem.Connection))
             {
                 EISSystem.Faculties = new List<EISFaculty>();
@@ -112,7 +134,7 @@ namespace ExamEvaluationSystem
 
                 while (rd.Read())
                 {
-                    var e = new EISEarning(rd.GetInt32(0), rd.GetString(1), (EISEarningType)rd.GetInt32(2));
+                    var e = new EISEarning(rd.GetInt32(0), rd.GetString(1), rd.GetString(2), (EISEarningType)rd.GetInt32(3));
                     
                     // Categorize earnings so they will be easier to use later
                     if (e.EarningType == EISEarningType.Department)

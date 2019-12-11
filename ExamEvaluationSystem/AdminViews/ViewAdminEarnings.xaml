@@ -20,6 +20,7 @@
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
                 <DataGridTextColumn Width="50" Header="ID" Visibility="Hidden" Binding="{Binding Path=ID}"/>
+                <DataGridTextColumn Width="150" Header="Kazanım Kodu" Binding="{Binding Path=Code}"/>
                 <DataGridTextColumn Width="*" Header="Kazanım Adı" Binding="{Binding Path=Name}"/>
                 <DataGridTextColumn Width="100" Header="Kazanım Tipi" Binding="{Binding Path=FriendlyEarningTypeName}"/>
             </DataGrid.Columns>
@@ -37,16 +38,18 @@
             </Controls:Flyout>
             <Controls:Flyout Header="$FlyoutName" Position="Right" Width="300" Name="sideFlyout">
                 <Grid>
-                    <Label Content="Kazanım Açıklaması / Adı:" HorizontalContentAlignment="Right" Margin="10,10,0,0" Height="26" HorizontalAlignment="Left" Width="147" VerticalAlignment="Top"/>
-                    <TextBox AcceptsReturn="True" HorizontalAlignment="Left" Height="96" Margin="10,41,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="280" HorizontalScrollBarVisibility="Visible" TabIndex="0" Name="txtEarningName"/>
-                    <Label Content="Kazanım Türü:" HorizontalContentAlignment="Right" Margin="10,142,0,0" Height="26" HorizontalAlignment="Left" Width="91" VerticalAlignment="Top"/>
-                    <ComboBox HorizontalAlignment="Left" Margin="106,142,0,0" VerticalAlignment="Top" Width="184" SelectedIndex="0" TabIndex="1" Name="comboEarningType">
+                    <Label Content="Kazanım Kodu:" HorizontalContentAlignment="Right" Margin="10,10,0,0" Height="26" HorizontalAlignment="Left" Width="91" VerticalAlignment="Top"/>
+                    <TextBox HorizontalAlignment="Left" Height="26" Margin="106,10,0,0" Text="" VerticalAlignment="Top" Width="184" TabIndex="0" Name="txtEarningCode" MaxLength="16"/>
+                    <Label Content="Kazanım Açıklaması / Adı:" HorizontalContentAlignment="Right" Margin="10,41,0,0" Height="26" HorizontalAlignment="Left" Width="147" VerticalAlignment="Top"/>
+                    <TextBox AcceptsReturn="True" HorizontalAlignment="Left" Height="96" Margin="10,72,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="280" HorizontalScrollBarVisibility="Visible" TabIndex="1" Name="txtEarningName"/>
+                    <Label Content="Kazanım Türü:" HorizontalContentAlignment="Right" Margin="10,173,0,0" Height="26" HorizontalAlignment="Left" Width="91" VerticalAlignment="Top"/>
+                    <ComboBox HorizontalAlignment="Left" Margin="106,173,0,0" VerticalAlignment="Top" Width="184" SelectedIndex="0" TabIndex="2" Name="comboEarningType">
                         <ComboBox.Items>
                             <ComboBoxItem>Bölüm Kazanımı</ComboBoxItem>
                             <ComboBoxItem>Ders Kazanımı</ComboBoxItem>
                         </ComboBox.Items>
                     </ComboBox>
-                    <Controls:Tile Margin="10,0,10,10" Height="50" Width="Auto" Content="{iconPacks:FontAwesome Kind=CheckSolid, Height=50, Width=30}" Click="TileFlyoutDoneClick" VerticalAlignment="Bottom" TabIndex="2"/>
+                    <Controls:Tile Margin="10,0,10,10" Height="50" Width="Auto" Content="{iconPacks:FontAwesome Kind=CheckSolid, Height=50, Width=30}" Click="TileFlyoutDoneClick" VerticalAlignment="Bottom" TabIndex="3"/>
                 </Grid>
             </Controls:Flyout>
         </Controls:FlyoutsControl>

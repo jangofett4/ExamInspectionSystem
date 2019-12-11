@@ -65,24 +65,46 @@ namespace ExamEvaluationSystem
 
         public override int Update(SQLiteConnection connection)
         {
-            var cmd = new EISUpdateCommand("ExamResults", $"ID = { ID }");
-            var sql = cmd.Create(connection, "StudentID", Student.ID.ToString(), "ExamID", Exam.ID.ToString(), "Answers", enc_answers.EncapsulateQuote());
-            return sql.ExecuteNonQuery();
+            {
+                var cmd = new EISSelectCommand("ExamResults", Where.Equals("StudentID", Student.ID, "ExamID", Exam.ID.ToString(), "Answers", enc_answers.EncapsulateQuote()));
+                var sql = cmd.Create(connection);
+                var res = sql.ExecuteReader();
+                if (res.HasRows)
+                {
+                    res.Read();
+                    if (res.GetInt32(0) != ID) // If not self
+                        return -1;
+                }
+            }
+            {
+                var cmd = new EISUpdateCommand("ExamResults", $"ID = { ID }");
+                var sql = cmd.Create(connection, "StudentID", Student.ID, "ExamID", Exam.ID.ToString(), "Answers", enc_answers.EncapsulateQuote());
+                return sql.ExecuteNonQuery();
+            }
         }
 
         public override int Insert(SQLiteConnection connection)
         {
-            var cmd = new EISInsertCommand("ExamResults");
-            var sql = cmd.Create(connection, "StudentID", Student.ID.ToString(), "ExamID", Exam.ID.ToString(), "Answers", enc_answers.EncapsulateQuote());
-            var res = sql.ExecuteNonQuery();
+            {
+                var cmd = new EISSelectCommand("ExamResults", Where.Equals("StudentID", Student.ID, "ExamID", Exam.ID.ToString(), "Answers", enc_answers.EncapsulateQuote()));
+                var sql = cmd.Create(connection);
+                var res = sql.ExecuteScalar();
+                if (res != null)
+                    return -1;
+            }
+            {
+                var cmd = new EISInsertCommand("ExamResults");
+                var sql = cmd.Create(connection, "StudentID", Student.ID, "ExamID", Exam.ID.ToString(), "Answers", enc_answers.EncapsulateQuote());
+                var res = sql.ExecuteNonQuery();
 
-            sql = new SQLiteCommand("SELECT * FROM ExamResults ORDER BY ID DESC LIMIT 1", connection);
-            var res2 = sql.ExecuteScalar();
-            var id = (int)(long)res2;
+                sql = new SQLiteCommand("SELECT * FROM ExamResults ORDER BY ID DESC LIMIT 1", connection);
+                var res2 = sql.ExecuteScalar();
+                var id = (int)(long)res2;
 
-            ID = id;
+                ID = id;
 
-            return res;
+                return res;
+            }
         }
 
         public override int Delete(SQLiteConnection connection)
@@ -117,9 +139,9 @@ namespace ExamEvaluationSystem
             return sql.ExecuteReader();
         }
 
-        public static Dictionary<EISStudent, EISExamResult> ParseResults(string content)
+        public static List<EISExamResult> ParseResults(string content)
         {
-            var result = new Dictionary<EISStudent, EISExamResult>();
+            var result = new List<EISExamResult>();
             var lines = content.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
             var dummy = new EISDepartment(-1);
             foreach (var line in lines)
@@ -134,7 +156,7 @@ namespace ExamEvaluationSystem
                 var student = new EISStudent(stno, name, surname, dummy);
                 var exresult = new EISExamResult(-1, student, null, answers);
 
-                result.Add(student, exresult);
+                result.Add(exresult);
             }
             return result;
         }

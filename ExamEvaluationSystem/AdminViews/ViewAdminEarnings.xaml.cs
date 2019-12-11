@@ -76,6 +76,7 @@ namespace ExamEvaluationSystem
             var item = (EISEarning)Grid.SelectedItem;
             itemToEdit = item;
             txtEarningName.Text = item.Name;
+            txtEarningCode.Text = item.Code;
             comboEarningType.SelectedIndex = (int)item.EarningType;
 
             sideFlyout.Header = "Düzenle";
@@ -125,11 +126,17 @@ namespace ExamEvaluationSystem
                 ParentObject.NotifyWarning("Kazanım açıklaması/ismi alanı boş bırakılamaz!");
                 return;
             }
+            txtEarningCode.Text = txtEarningCode.Text.Trim();
+            if (string.IsNullOrEmpty(txtEarningCode.Text))
+            {
+                ParentObject.NotifyWarning("Kazanum kodu alanı boş bırakılamaz!");
+                return;
+            }
 
             // Flyout is in add mode
             if (SideMenuState == FlyoutState.Add)
             {
-                var ern = new EISEarning(txtEarningName.Text, (EISEarningType)comboEarningType.SelectedIndex);
+                var ern = new EISEarning(txtEarningCode.Text, txtEarningName.Text, (EISEarningType)comboEarningType.SelectedIndex);
                 ern.Insert(EISSystem.Connection);
 
 
@@ -155,6 +162,7 @@ namespace ExamEvaluationSystem
                 var idxd = type == newtype ? -1 : type == EISEarningType.Department ? EISSystem.DepartmentEarnings.IndexOf(itemToEdit) : EISSystem.LectureEarnings.IndexOf(itemToEdit);
 
                 itemToEdit.Name = txtEarningName.Text;
+                itemToEdit.Code = txtEarningCode.Text;
                 itemToEdit.EarningType = newtype;
                 itemToEdit.Update(EISSystem.Connection);
 
@@ -197,9 +205,10 @@ namespace ExamEvaluationSystem
             searchAction = new DelayedActionInvoker(() => {
                 Dispatcher.Invoke(() =>
                 {
+                    var sq = searchQuery.Text.ToLower();
                     Grid.Items.Clear();
                     foreach (var ea in EISSystem.Earnings)
-                        if (ea.Name.ToLower().Contains(searchQuery.Text.ToLower()))
+                        if (ea.Name.ToLower().Contains(sq) || ea.Code.ToLower().Contains(sq))
                             Grid.Items.Add(ea);
                     TileResetSearch.Visibility = Visibility.Visible;
                 });
@@ -230,12 +239,19 @@ namespace ExamEvaluationSystem
 
         public void SetGridLayout(string lay)
         {
-            var split = lay.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
-            int i = 0;
-            foreach (var c in Grid.Columns)
+            try
             {
-                c.DisplayIndex = int.Parse(split[i++]);
-                c.Width = new DataGridLength(double.Parse(split[i++]), (DataGridLengthUnitType)int.Parse(split[i++]));
+                var split = lay.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
+                int i = 0;
+                foreach (var c in Grid.Columns)
+                {
+                    c.DisplayIndex = int.Parse(split[i++]);
+                    c.Width = new DataGridLength(double.Parse(split[i++]), (DataGridLengthUnitType)int.Parse(split[i++]));
+                }
+            }
+            catch (Exception)
+            {
+                return; // skip it for now, next save will correct the file
             }
         }
     }

@@ -12,21 +12,25 @@ namespace ExamEvaluationSystem
         public int ID { get; private set; }
         private string _name { get; set; }
         public string Name { get { return _name; } set { _name = value; OnPropertyChanged("Name"); } }
+        private string _code { get; set; }
+        public string Code { get { return _code; } set { _code = value; OnPropertyChanged("Code"); } }
         private EISEarningType _type;
         public EISEarningType EarningType { get { return _type; } set { _type = value; OnPropertyChanged("EarningType"); } }
 
         public string FriendlyEarningTypeName { get { return EarningType == EISEarningType.Department ? "Bölüm Kazanımı" : "Ders Kazanımı"; } }
 
-        public EISEarning(int id, string name, EISEarningType type)
+        public EISEarning(int id, string code, string name, EISEarningType type)
         {
             ID = id;
+            Code = code;
             Name = name;
             EarningType = type;
         }
 
-        public EISEarning(string name, EISEarningType type)
+        public EISEarning(string code, string name, EISEarningType type)
         {
             ID = -1;
+            Code = code;
             Name = name;
             EarningType = type;
         }
@@ -34,17 +38,20 @@ namespace ExamEvaluationSystem
         public EISEarning(int id)
         {
             ID = id;
+            Code = "";
             Name = "";
             EarningType = 0;
         }
 
         private int id;
         private string name;
+        private string code;
         private EISEarningType type;
         public override void Store()
         {
             id = ID;
             name = Name;
+            code = Code;
             type = EarningType;
         }
 
@@ -52,20 +59,21 @@ namespace ExamEvaluationSystem
         {
             ID = id;
             Name = name;
+            Code = code;
             EarningType = type;
         }
 
         public override int Update(SQLiteConnection connection)
         {
             var cmd = new EISUpdateCommand("Earnings", $"ID = { ID }");
-            var sql = cmd.Create(connection, "Name", $"'{ Name }'", "EarningType", ((int)EarningType).ToString());
+            var sql = cmd.Create(connection, "Name", Name.EncapsulateQuote(), "Code", Code.EncapsulateQuote(), "EarningType", ((int)EarningType).ToString());
             return sql.ExecuteNonQuery();
         }
 
         public override int Insert(SQLiteConnection connection)
         {
             var cmd = new EISInsertCommand("Earnings");
-            var sql = cmd.Create(connection, "Name", $"'{ Name }'", "EarningType", ((int)EarningType).ToString());
+            var sql = cmd.Create(connection, "Name", Name.EncapsulateQuote(), "Code", Code.EncapsulateQuote(), "EarningType", ((int)EarningType).ToString());
             var res = sql.ExecuteNonQuery();
 
             sql = new SQLiteCommand("SELECT * FROM Earnings ORDER BY ID DESC LIMIT 1", connection);
@@ -102,7 +110,7 @@ namespace ExamEvaluationSystem
             var list = new List<EISEarning>();
             var sql = SelectAll(connection);
             while (sql.Read())
-                list.Add(new EISEarning(sql.GetInt32(0), sql.GetString(1), (EISEarningType)sql.GetInt32(2)));
+                list.Add(new EISEarning(sql.GetInt32(0), sql.GetString(1), sql.GetString(2), (EISEarningType)sql.GetInt32(3)));
             sql.Close();
             return list;
         }

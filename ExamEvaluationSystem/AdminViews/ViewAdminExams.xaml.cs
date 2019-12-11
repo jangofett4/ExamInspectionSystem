@@ -22,6 +22,9 @@ namespace ExamEvaluationSystem
         public AdminPanel ParentObject { get; set; }
         public FlyoutState SideMenuState { get; set; }
 
+        private EISExam itemToEdit;
+        private List<EISExamResult> itemToEditResults;
+
         private List<EISQuestion> questions;
 
         public ViewAdminExams(AdminPanel parent)
@@ -48,6 +51,9 @@ namespace ExamEvaluationSystem
                     selectorExamLectures.Text = "";
                     return;
                 }
+
+                if (SideMenuState == FlyoutState.Edit)
+                    itemToEdit.Lecture = builder.SelectedData;
 
                 selectorExamLectures.SelectedData = builder.SelectedData;
                 selectorExamLectures.Text = builder.SelectedData.Name;
@@ -105,95 +111,165 @@ namespace ExamEvaluationSystem
 
             selectorExamOptics.ClickCallback = () =>
             {
-                if (string.IsNullOrWhiteSpace(selectorExamAnswers.Text))
+                if (SideMenuState == FlyoutState.Add)
                 {
-                    ParentObject.NotifyWarning("Cevaplar anahtarı eklenmeden sınav sonuçları eklemek mümkün değil!");
-                    return;
-                }
-
-                OpenFileDialog dlg = new OpenFileDialog()
-                {
-                    Title = "Sınav Sonuçlarını Seçin",
-                    FileName = "*.txt",
-                    Filter = "Sonuç Dosyaları|*.txt"
-                };
-                var d = dlg.ShowDialog();
-                if (d.HasValue && d.Value)
-                {
-                    var res = EISExamResult.ParseResults(File.ReadAllText(dlg.FileName, Encoding.UTF8));
-                    if (res == null)
+                    if (string.IsNullOrWhiteSpace(selectorExamAnswers.Text))
                     {
-                        ParentObject.NotifyWarning("Sonuç dosyası formatı hatalı! Yanlış dosya mı seçtiniz?");
+                        ParentObject.NotifyWarning("Cevaplar anahtarı eklenmeden sınav sonuçları eklemek mümkün değil!");
+                        return;
+                    }
+
+                    OpenFileDialog dlg = new OpenFileDialog()
+                    {
+                        Title = "Sınav Sonuçlarını Seçin",
+                        FileName = "*.txt",
+                        Filter = "Sonuç Dosyaları|*.txt"
+                    };
+
+                    var d = dlg.ShowDialog();
+                    if (d.HasValue && d.Value)
+                    {
+                        var res = EISExamResult.ParseResults(File.ReadAllText(dlg.FileName, Encoding.UTF8));
+                        if (res == null)
+                        {
+                            ParentObject.NotifyWarning("Sonuç dosyası formatı hatalı! Yanlış dosya mı seçtiniz?");
+                            return;
+                        }
+
+                        var panel = new ExamStudentPanel();
+                        panel.ExamResults = res;
+                        panel.Resources.Add("GroupItemSource", ((EISExam)selectorExamAnswers.SelectedData).Groups);
+                        panel.RefreshStudents();
+                        panel.Exam = (EISExam)selectorExamAnswers.SelectedData;
+                        panel.ProcessAnswers();
+                        var result = panel.ShowDialog();
+                        if (result.HasValue && result.Value)
+                        {
+                            selectorExamOptics.Text = dlg.FileName;
+                            selectorExamOptics.SelectedData = panel.ExamResults;
+                            ParentObject.NotifyInformation("Sınav sonuçları onaylandı!");
+                        }
+                        else
+                        {
+                            selectorExamOptics.Text = "";
+                            ParentObject.NotifyInformation("Sınav sonuçları onaylanmadı.");
+                        }
+                    }
+                }
+                else
+                {
+                    if (string.IsNullOrWhiteSpace(selectorExamAnswers.Text))
+                    {
+                        ParentObject.NotifyWarning("Cevaplar anahtarı eklenmeden sınav sonuçları eklemek mümkün değil!");
                         return;
                     }
 
                     var panel = new ExamStudentPanel();
-                    panel.ExamResults = res;
-                    panel.Resources.Add("GroupItemSource", ((EISExam)selectorExamAnswers.SelectedData).Groups);
+                    panel.ExamResults = itemToEditResults;
+                    panel.Resources.Add("GroupItemSource", itemToEdit.Groups);
                     panel.RefreshStudents();
-                    panel.Exam = (EISExam)selectorExamAnswers.SelectedData;
-                    panel.ProcessAnswers();
+                    panel.Exam = itemToEdit;
+                    panel.ProcessAnswers(true);
                     var result = panel.ShowDialog();
                     if (result.HasValue && result.Value)
                     {
-                        selectorExamOptics.Text = dlg.FileName;
-                        selectorExamOptics.SelectedData = panel.ExamResults;
+                        ParentObject.NotifyInformation("Sınav sonuçlarındaki değişiklikler onaylandı!");
+                        selectorExamOptics.Text = "[ ... ]";
                     }
+                    else
+                        ParentObject.NotifyInformation("Sınav sonuçlarındaki değişiklikler iptal edildi.");
                 }
             };
 
             selectorExamAnswers.ClickCallback = () =>
             {
-                if (string.IsNullOrWhiteSpace(selectorExamLectures.Text))
+                if (SideMenuState == FlyoutState.Add)
                 {
-                    ParentObject.NotifyWarning("Cevap anahtarı eklenmeden önce dersin seçilmesi gerek!");
-                    return;
-                }
-                
-                if (string.IsNullOrWhiteSpace(selectorExamPeriods.Text))
-                {
-                    ParentObject.NotifyWarning("Cevap anahtarı eklenmeden önce dönemin seçilmesi gerek!");
-                    return;
-                }
-
-                if (string.IsNullOrWhiteSpace(selectorExamTypes.Text))
-                {
-                    ParentObject.NotifyWarning("Cevap anahtarı eklenmeden sınav türünün seçilmesi gerek!");
-                    return;
-                }
-
-                OpenFileDialog dlg = new OpenFileDialog()
-                {
-                    Title = "Cevap Anahtarı Seçin",
-                    FileName = "*.txt",
-                    Filter = "Sonuç Dosyaları|*.txt"
-                };
-                var d = dlg.ShowDialog();
-                if (d.HasValue && d.Value)
-                {
-                    var res = EISExam.ParseAnswers(File.ReadAllText(dlg.FileName, Encoding.UTF8));
-                    if (res == null)
+                    if (string.IsNullOrWhiteSpace(selectorExamLectures.Text))
                     {
-                        ParentObject.NotifyWarning("Cevap anahtarı formatı hatalı! Yanlış dosya mı seçtiniz?");
+                        ParentObject.NotifyWarning("Cevap anahtarı eklenmeden önce dersin seçilmesi gerek!");
+                        return;
+                    }
+
+                    if (string.IsNullOrWhiteSpace(selectorExamPeriods.Text))
+                    {
+                        ParentObject.NotifyWarning("Cevap anahtarı eklenmeden önce dönemin seçilmesi gerek!");
+                        return;
+                    }
+
+                    if (string.IsNullOrWhiteSpace(selectorExamTypes.Text))
+                    {
+                        ParentObject.NotifyWarning("Cevap anahtarı eklenmeden sınav türünün seçilmesi gerek!");
+                        return;
+                    }
+
+                    OpenFileDialog dlg = new OpenFileDialog()
+                    {
+                        Title = "Cevap Anahtarı Seçin",
+                        FileName = "*.txt",
+                        Filter = "Sonuç Dosyaları|*.txt"
+                    };
+                    var d = dlg.ShowDialog();
+                    if (d.HasValue && d.Value)
+                    {
+                        var res = EISExam.ParseAnswers(File.ReadAllText(dlg.FileName, Encoding.UTF8));
+                        if (res == null)
+                        {
+                            ParentObject.NotifyWarning("Cevap anahtarı formatı hatalı! Yanlış dosya mı seçtiniz?");
+                            return;
+                        }
+
+                        var panel = new ExamEditPanel();
+                        panel.Lecture = (EISLecture)selectorExamLectures.SelectedData;
+                        panel.lblLecture.Content = "Ders: " + panel.Lecture.Name;
+                        panel.Questions = res;
+                        panel.RefreshDataGroups();
+                        panel.RefreshDataEarnings();
+                        var result = panel.ShowDialog();
+
+                        if (result.HasValue && result.Value)
+                        {
+                            selectorExamAnswers.Text = dlg.FileName;
+                            selectorExamAnswers.SelectedData = new EISExam(-1, (EISLecture)selectorExamLectures.SelectedData, (EISPeriod)selectorExamPeriods.SelectedData, (EISExamType)selectorExamTypes.SelectedData, res);
+                            questions = res;
+                            ParentObject.NotifyInformation("Cevap anahtarı onaylandı!");
+                        }
+                        else
+                            ParentObject.NotifyInformation("Cevap anahtarı onaylanmadı.");
+                    }
+                }
+                else
+                {
+                    if (string.IsNullOrWhiteSpace(selectorExamLectures.Text))
+                    {
+                        ParentObject.NotifyWarning("Cevap anahtarı eklenmeden önce dersin seçilmesi gerek!");
+                        return;
+                    }
+
+                    if (string.IsNullOrWhiteSpace(selectorExamPeriods.Text))
+                    {
+                        ParentObject.NotifyWarning("Cevap anahtarı eklenmeden önce dönemin seçilmesi gerek!");
+                        return;
+                    }
+
+                    if (string.IsNullOrWhiteSpace(selectorExamTypes.Text))
+                    {
+                        ParentObject.NotifyWarning("Cevap anahtarı eklenmeden sınav türünün seçilmesi gerek!");
                         return;
                     }
 
                     var panel = new ExamEditPanel();
-                    panel.Lecture = (EISLecture)selectorExamLectures.SelectedData;
+                    panel.Lecture = itemToEdit.Lecture;
                     panel.lblLecture.Content = "Ders: " + panel.Lecture.Name;
-                    panel.Questions = res;
-                    panel.RefreshDataGroups();
+                    panel.Questions = itemToEdit.Questions;
+                    panel.RefreshDataGroups(true);
                     panel.RefreshDataEarnings();
                     var result = panel.ShowDialog();
 
                     if (result.HasValue && result.Value)
-                    {
-                        selectorExamAnswers.Text = dlg.FileName;
-                        selectorExamAnswers.SelectedData = new EISExam(-1, (EISLecture)selectorExamLectures.SelectedData, (EISPeriod)selectorExamPeriods.SelectedData, (EISExamType)selectorExamTypes.SelectedData, res);
-                        questions = res;
-                    }
+                        ParentObject.NotifyInformation("Cevap anahtarındaki değişiklikler onaylandı!");
                     else
-                        ParentObject.NotifyInformation("Cevap anahtarı onaylanmadı.");
+                        ParentObject.NotifyInformation("Cevap anahtarında yapılan değişiklikler iptal edildi.");
                 }
             };
             RefreshDataGrid();
@@ -209,7 +285,36 @@ namespace ExamEvaluationSystem
 
         private void GridDoubleClick(object sender, MouseButtonEventArgs e)
         {
+            if (Grid.SelectedItem == null)
+                return;
 
+            var item = (EISExam)Grid.SelectedItem;
+            itemToEdit = item;
+            selectorExamLectures.SelectedData = item.Lecture;
+            selectorExamLectures.Text = item.LectureName;
+
+            selectorExamPeriods.SelectedData = item.Period;
+            selectorExamPeriods.Text = item.PeriodName;
+
+            selectorExamTypes.SelectedData = item.Type;
+            selectorExamTypes.Text = item.ExamType;
+
+            selectorExamAnswers.SelectedData = item.Questions;
+            questions = item.Questions;
+            selectorExamAnswers.Text = $"{ item.Questions.Count } grup";
+
+            itemToEditResults = new EISExamResult(-1).SelectList(EISSystem.Connection, Where.Equals("ExamID", item.ID.ToString()));
+            foreach (var r in itemToEditResults)
+                r.Student.Store(); // store inital
+
+            selectorExamOptics.SelectedData = itemToEditResults;
+            selectorExamOptics.Text = "[ ... ]";
+
+            // add answer editing and optic editing?
+
+            SideMenuState = FlyoutState.Edit;
+            sideFlyout.IsOpen = true;
+            sideFlyout.Header = "Düzenle";
         }
 
         private void TileAddClick(object sender, RoutedEventArgs e)
@@ -362,54 +467,95 @@ namespace ExamEvaluationSystem
                 ParentObject.NotifyWarning("Optik alanı boş bırakılamaz!");
                 return;
             }
-
-            var trn = new EISTransaction();
-            trn.Begin(EISSystem.Connection);
-
-            var ex = new EISExam(
-                (EISLecture)selectorExamLectures.SelectedData,
-                (EISPeriod)selectorExamPeriods.SelectedData,
-                (EISExamType)selectorExamTypes.SelectedData,
-                questions
-            );
-            var result = ex.Insert(EISSystem.Connection);
-
-            if (result == -1)
+            if (SideMenuState == FlyoutState.Add)
             {
-                ParentObject.NotifyError($"Sistemde { ex.PeriodName } dönemi için { ex.LectureName } için { ex.Type.Name } sınavı zaten mevcut!");
-                trn.Rollback(EISSystem.Connection);
-                return;
-            }
+                var trn = new EISTransaction();
+                trn.Begin(EISSystem.Connection);
 
-            var dict = (Dictionary<EISStudent, EISExamResult>)selectorExamOptics.SelectedData;
-            if (dict == null)
+                var ex = new EISExam(
+                    (EISLecture)selectorExamLectures.SelectedData,
+                    (EISPeriod)selectorExamPeriods.SelectedData,
+                    (EISExamType)selectorExamTypes.SelectedData,
+                    questions
+                );
+                var result = ex.Insert(EISSystem.Connection);
+
+                if (result == -1)
+                {
+                    ParentObject.NotifyError($"Sistemde { ex.PeriodName } dönemi için { ex.LectureName } için { ex.Type.Name } sınavı zaten mevcut!");
+                    trn.Rollback(EISSystem.Connection);
+                    return;
+                }
+
+                var ress = (List<EISExamResult>)selectorExamOptics.SelectedData;
+                if (ress == null)
+                {
+                    ParentObject.NotifyError("Sonuç belgesi seçilmedi!");
+                    trn.Rollback(EISSystem.Connection);
+                    return;
+                }
+                foreach (var v in ress)
+                {
+                    if (v.Student.Insert(EISSystem.Connection) == -1)
+                        v.Student.Update(EISSystem.Connection);
+                    if (EISSystem.GetStudent(v.Student.ID) == null)
+                        EISSystem.Students.Add(v.Student);
+                    v.Exam = ex;
+                    v.Insert(EISSystem.Connection);
+                }
+
+                trn.Commit(EISSystem.Connection);
+
+
+                EISSystem.Exams.Add(ex);
+                Grid.Items.Add(ex);
+                ParentObject.ViewAdminInspectExam.Exams = ParentObject.GenerateExamTriple();
+                ParentObject.ViewAdminInspectExam.RefreshData();
+                ParentObject.NotifySuccess("Sınav ekleme başarılı!");
+
+                sideFlyout.IsOpen = false;
+                questions = null;
+            }
+            else
             {
-                ParentObject.NotifyError("Sonuç belgesi seçilmedi!");
-                trn.Rollback(EISSystem.Connection);
-                return;
+                var trn = new EISTransaction();
+                trn.Begin(EISSystem.Connection);
+                itemToEdit.Store();
+                itemToEdit.Lecture = (EISLecture)selectorExamLectures.SelectedData;
+                itemToEdit.Type = (EISExamType)selectorExamTypes.SelectedData;
+                var result = itemToEdit.Update(EISSystem.Connection);
+
+                if (result == -1)
+                {
+                    ParentObject.NotifyError($"Düzenleme başarısız: Sistemde { itemToEdit.PeriodName } dönemi için { itemToEdit.LectureName } için { itemToEdit.Type.Name } sınavı zaten mevcut!");
+                    itemToEdit.Restore();
+                    trn.Rollback(EISSystem.Connection);
+                    return;
+                }
+
+                var ress = (List<EISExamResult>)selectorExamOptics.SelectedData;
+                if (ress == null)
+                {
+                    ParentObject.NotifyError("Sonuç belgesi seçilmedi!");
+                    itemToEdit.Restore();
+                    trn.Rollback(EISSystem.Connection);
+                    return;
+                }
+
+                foreach (var v in ress)
+                {
+                    v.Student.UpdateWhere(EISSystem.Connection, Where.Equals("ID", (string)v.Student.GetStored("ID")));
+                    v.Update(EISSystem.Connection);
+                }
+
+                trn.Commit(EISSystem.Connection);
+
+                ParentObject.ViewAdminInspectExam.Exams = ParentObject.GenerateExamTriple();
+                ParentObject.ViewAdminInspectExam.RefreshData();
+                ParentObject.NotifySuccess("Sınav düzenleme başarılı!");
+
+                sideFlyout.IsOpen = false;
             }
-            foreach (var v in dict)
-            {
-                if (v.Key.Insert(EISSystem.Connection) == -1)
-                    v.Key.Update(EISSystem.Connection);
-                if (EISSystem.GetStudent(v.Key.ID) == null)
-                    EISSystem.Students.Add(v.Key);
-                v.Value.Exam = ex;
-                v.Value.Student = v.Key;
-                v.Value.Insert(EISSystem.Connection);
-            }
-
-            trn.Commit(EISSystem.Connection);
-
-
-            EISSystem.Exams.Add(ex);
-            Grid.Items.Add(ex);
-            ParentObject.ViewAdminInspectExam.Exams = ParentObject.GenerateExamTriple();
-            ParentObject.ViewAdminInspectExam.RefreshData();
-            ParentObject.NotifySuccess("Sınav ekleme başarılı!");
-
-            sideFlyout.IsOpen = false;
-            questions = null;
         }
 
         private void TileSearchClick(object sender, RoutedEventArgs e)
@@ -426,7 +572,8 @@ namespace ExamEvaluationSystem
         private DelayedActionInvoker searchAction;
         private void SetupSearch()
         {
-            searchAction = new DelayedActionInvoker(() => {
+            searchAction = new DelayedActionInvoker(() =>
+            {
                 Dispatcher.Invoke(() =>
                 {
                     Grid.Items.Clear();

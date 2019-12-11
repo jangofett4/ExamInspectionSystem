@@ -24,7 +24,7 @@ namespace ExamEvaluationSystem
     /// </summary>
     public partial class ExamStudentPanel : IHasNotifiers
     {
-        public Dictionary<EISStudent, EISExamResult> ExamResults;
+        public List<EISExamResult> ExamResults;
         public EISExam Exam;
 
         public Notifier Notifier { get; set; }
@@ -50,7 +50,9 @@ namespace ExamEvaluationSystem
                 cfg.DisplayOptions.TopMost = false; // Needs to be set to false in order to toast to function properly
             });
 
-            Closing += (sender, e) => Notifier.Dispose();
+            Closing += (sender, e) => {
+                Notifier.Dispose();
+            };
         }
 
         public void NotifySuccess(string message)
@@ -80,23 +82,23 @@ namespace ExamEvaluationSystem
             Notifier.ClearMessages(new ToastNotifications.Lifetime.Clear.ClearAll());
         }
 
-        public void RefreshStudents()
+        public void  RefreshStudents()
         {
             foreach (var r in ExamResults)
-                dgStudents.Items.Add(r.Value);
+                dgStudents.Items.Add(r);
         }
 
         public List<List<EISSingleQuestion>> Questions;
-        public void ProcessAnswers()
+        public void ProcessAnswers(bool prefill = false)
         {
             var answerlen = Exam.Questions[0].Answer.Length;
             Questions = new List<List<EISSingleQuestion>>();
             foreach (var res in ExamResults)
             {
                 var lst = new List<EISSingleQuestion>();
-                res.Value.CutAnswer(0, answerlen);
+                res.CutAnswer(0, answerlen);
                 int i = 1;
-                foreach (var q in res.Value.Answers)
+                foreach (var q in res.Answers)
                     lst.Add(new EISSingleQuestion(q, null, i++));
                 Questions.Add(lst);
             }
@@ -141,10 +143,11 @@ namespace ExamEvaluationSystem
             {
                 StringBuilder sb = new StringBuilder();
                 var elem = ExamResults.ElementAt(i);
-                sb.Append(elem.Value.Group);
+                sb.Append(elem.Group);
                 foreach (var c in Questions[i])
                     sb.Append(c.Answer);
-                elem.Value.SetEncryptedAnswer(sb.ToString());
+                elem.SetEncryptedAnswer(sb.ToString());
+                elem.Student = ((EISExamResult)dgStudents.Items[i]).Student;
             }
 
             DialogResult = true;
@@ -184,20 +187,20 @@ namespace ExamEvaluationSystem
                 {
                     var res = (EISExamResult)sel;
                     dgAnswers.Items.Clear();
-                    
+
                     if (Exam.Questions.Count == 0)
                     {
                         NotifyError($"Cevap anahtarında grup bulunamadı, tekrar yüklemeyi deneyin!");
                         return;
                     }
-                    
+
                     dgAnswers.Items.Clear();
                     selectedIndex = dgStudents.SelectedIndex;
                     foreach (var v in Questions[dgStudents.SelectedIndex])
                         dgAnswers.Items.Add(v);
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 NotifyError($"Cevap anahtarında grup bulunamadı, tekrar yüklemeyi deneyin!\nGeliştirici hata mesajı: { ex.Message }");
                 Close();
