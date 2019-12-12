@@ -79,6 +79,7 @@ namespace ExamEvaluationSystem
 
         public void RefreshDataGrid()
         {
+            Grid.Items.Clear();
             foreach (var data in EISSystem.Lecturers)
                 if (data.ID > 0)
                     Grid.Items.Add(data);

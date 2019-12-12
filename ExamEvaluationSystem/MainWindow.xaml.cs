@@ -119,6 +119,11 @@ namespace ExamEvaluationSystem
                         File.WriteAllText(Environment.GetFolderPath(Environment.SpecialFolder.Desktop) + $"./VT.E.Update-{ date }.txt", sb.ToString());
                     }
                 }
+                var earningTableFix = new DataFixer.EarningTableFix(EISSystem.Connection);
+                if (earningTableFix.NeedFix())
+                {
+                    earningTableFix.Fix(new Progress<int>((i) => { }));
+                }
             }
 
             using (var rd = new EISFaculty(-1).SelectAll(EISSystem.Connection))

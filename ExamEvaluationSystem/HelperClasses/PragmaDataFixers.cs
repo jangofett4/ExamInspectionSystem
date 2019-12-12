@@ -39,6 +39,11 @@ namespace ExamEvaluationSystem.DataFixer
             return Convert.ToInt32(cmd.ExecuteScalar()) != 0;
         }
 
+        public bool CheckForTable(string table)
+        {
+            return Convert.ToInt32(CreateCommand($"SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='{ table }';").ExecuteScalar()) != 0;
+        }
+
         public void DisableFK()
         {
             CreateCommand("PRAGMA foreign_keys = OFF").ExecuteNonQuery();
@@ -57,7 +62,7 @@ namespace ExamEvaluationSystem.DataFixer
 
     public class EarningCodeFix : EISDataFixer
     {
-        public EarningCodeFix(SQLiteConnection c) : base("Kazanım_Kodu_Düzelt", "DF_EARINNG_CODE_FIX", c)
+        public EarningCodeFix(SQLiteConnection c) : base("Kazanım_Tablosu_Düzelt", "DF_EARNING_TABLE_FIX", c)
         {
             Connection = c;
         }
@@ -102,6 +107,35 @@ namespace ExamEvaluationSystem.DataFixer
             }
             EnableFK();
             p.Report(100); // complete
+            FixResultCode = 0;
+            FixDone = true;
+        }
+    }
+
+    public class EarningTableFix : EISDataFixer
+    {
+        public EarningTableFix(SQLiteConnection c) : base("Kazanım_Kodu_Düzelt", "DF_EARNING_CODE_FIX", c)
+        {
+            Connection = c;
+        }
+
+        public override bool NeedFix()
+        {
+            return CheckForTable("Earnings_old");
+        }
+
+        public override void Fix(IProgress<int> p)
+        {
+            DisableFK();
+            CreateCommand("ALTER TABLE Earnings RENAME TO Earnings1").ExecuteNonQuery();
+            p.Report(25); // complete
+            CreateCommand("ALTER TABLE Earnings_old RENAME TO Earnings").ExecuteNonQuery();
+            p.Report(50); // complete
+            CreateCommand("DROP TABLE Earnings").ExecuteNonQuery();
+            p.Report(75); // complete
+            CreateCommand("ALTER TABLE Earnings1 RENAME TO Earnings").ExecuteNonQuery();
+            p.Report(100); // complete
+            EnableFK();
             FixResultCode = 0;
             FixDone = true;
         }
